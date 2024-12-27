@@ -36,6 +36,10 @@
     },
     "compilerOptions": {
         "outDir": "./dist",
+        "baseUrl": "./src",
+        "paths": {
+          "@db/*": ["backend/db/*"]
+        }
         
     },
     "include": ["./*", "./src/**/*", "./db/**/*"]
