@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   date,
+  real,
   foreignKey,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -17,7 +18,7 @@ export const drugTable = pgTable("drug", {
   usage: varchar("usage", { length: 255 }), // วิธีการใช้
   slang_food: text("slang_food"), // อาหารที่ควรหลีกเลี่ยง
   side_effect: text("side_effect"), // ผลข้างเคียง
-  unit_price: varchar("unit_price", { length: 255 }), // ราคาต่อหน่วย
+  unit_price: real("unit_price"), // ราคาต่อหน่วย
   created_at: timestamp("created_at").defaultNow().notNull(), // เวลาที่สร้าง
   updated_at: timestamp("updated_at", { mode: "date", precision: 3 }).$onUpdate(() => new Date()), // เวลาที่อัปเดตล่าสุด
 });
