@@ -6,12 +6,13 @@ import {
   timestamp,
   date,
   real,
+  uuid,
   foreignKey,
 } from "drizzle-orm/pg-core";
 
 // Drug table schema
 export const drugTable = pgTable("drug", {
-  drug_id: integer("drug_id").primaryKey(), // Primary Key
+  drug_id: uuid("drug_id").primaryKey().defaultRandom(), // Primary Key
   name: varchar("name", { length: 255 }).notNull(), // ชื่อยา
   detail: text("detail"), // รายละเอียดยา
   usage: varchar("usage", { length: 255 }), // วิธีการใช้
@@ -24,8 +25,8 @@ export const drugTable = pgTable("drug", {
 
 // Stock table schema
 export const stockTable = pgTable("stock", {
-  stock_id: integer("stock_id").primaryKey(), // Primary Key
-  drug_id: integer("drug_id") // Foreign Key
+  stock_id: uuid("stock_id").primaryKey().defaultRandom(), // Primary Key
+  drug_id: uuid("drug_id") // Foreign Key
     .references(() => drugTable.drug_id), // เชื่อมกับ drugTable
   amount: integer("amount").notNull(), // จำนวนของยาในสต็อก
   expired: date("expired"), // วันหมดอายุ
