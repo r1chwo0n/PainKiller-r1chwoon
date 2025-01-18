@@ -1,7 +1,7 @@
 name: painkiller # You can also change this to another name to avoid warning with existing group. 
 services:
   backend:
-    container_name: poinkiller-backend
+    container_name: painkiller-backend
     build: .
     ports:
       - ${PORT}:3000
