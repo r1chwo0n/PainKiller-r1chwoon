@@ -43,7 +43,9 @@
     "baseUrl": "./",
     "paths": {
       "@db/*": ["./db/*"]
-    }
+    },
+    "skipLibCheck": true,
+    "strict": true
   },
   "include": ["./*", "./src/**/*", "./db/**/*"]
 }
