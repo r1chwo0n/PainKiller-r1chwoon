@@ -7,7 +7,6 @@ import {
   date,
   real,
   foreignKey,
-  uuid,
 } from "drizzle-orm/pg-core";
 
 // Drug table schema
