@@ -50,7 +50,14 @@ app.get("/drugs/search", async (req: Request, res: Response) => {
 });
 
 // 3. Add a new drug
-// http://localhost:3000/drugs
+// {
+// 	"name": "Paracetamol",
+//   "detail": "Pain reliever",
+//   "usage": "Take 1 tablet every 4-6 hours",
+//   "slang_food": "Avoid alcohol",
+//   "side_effect": "Nausea, dizziness",
+//   "unit_price": 50.0
+// }
 app.post("/drugs", async (req, res) => {
   try {
     const newDrug = await dbClient
@@ -65,7 +72,12 @@ app.post("/drugs", async (req, res) => {
 });
 
 // 4. Update a drug
-// http://localhost:3000/drugs
+// {
+//   "id": "uuid",
+//   "updates": { จะอัพเดตอะไรก็ส่งมา
+//     "name": "RabbitWhite"
+//   }
+// }
 app.patch("/drugs", async (req, res, next) => {
   try {
     const id = req.body.id ?? ""; // รับ UUID ของยา
@@ -94,7 +106,9 @@ app.patch("/drugs", async (req, res, next) => {
 });
 
 // 5. Delete a drug
-// http://localhost:3000/drugs
+// {
+//   "id": "uuid"
+// }
 app.delete("/drugs", async (req, res, next) => {
   try {
     const id = req.body.id ?? ""; 
@@ -118,6 +132,11 @@ app.delete("/drugs", async (req, res, next) => {
 });
 
 // 6. Add stock
+// {
+//   "drug_id": "uuid",
+//   "amount": 5,
+//   "expired": "2025-12-31"
+// }
 app.post("/stocks", async (req, res) => {
   try {
     const newStock = await dbClient
@@ -132,6 +151,10 @@ app.post("/stocks", async (req, res) => {
 });
 
 // 7. Update drug stock after a sale
+// {
+//   "drug_id": "uuid",
+//   "quantity_sold": 2
+// }
 app.patch("/stocks/update", async (req, res, next) => {
   try {
     const { drug_id, quantity_sold } = req.body;
@@ -165,6 +188,10 @@ app.patch("/stocks/update", async (req, res, next) => {
 });
 
 // 8. Update drug stock after a purchase
+// {
+//   "drug_id": "uuid",
+//   "new_amount": 50
+// }
 app.patch("/stocks", async (req, res, next) => {
   try {
     const { drug_id, new_amount } = req.body; 
