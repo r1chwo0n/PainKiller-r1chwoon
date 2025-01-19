@@ -13,8 +13,8 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    // origin: false, // Disable CORS
-    origin: "*", // Allow all origins
+    origin: false, // Disable CORS
+    // origin: "*", // Allow all origins
   })
 );
 app.use(bodyParser.json());
@@ -53,7 +53,10 @@ app.get("/drugs/search", async (req: Request, res: Response) => {
 // http://localhost:3000/drugs
 app.post("/drugs", async (req, res) => {
   try {
-    const newDrug = await dbClient.insert(drugTable).values(req.body).returning();
+    const newDrug = await dbClient
+      .insert(drugTable)
+      .values(req.body)
+      .returning();
     res.status(201).json(newDrug);
   } catch (error) {
     console.error(error);
@@ -68,12 +71,10 @@ app.patch("/drugs", async (req, res, next) => {
     const id = req.body.id ?? ""; // รับ UUID ของยา
     const updates = req.body.updates; // รับข้อมูลที่ต้องการอัปเดต
 
-    // ตรวจสอบว่ามีข้อมูลใน body หรือไม่
     if (!updates || Object.keys(updates).length === 0 || !id) {
       throw new Error("Empty updates or id");
     }
 
-    // ตรวจสอบว่ามียาอยู่ในฐานข้อมูลหรือไม่
     const results = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, id),
     });
@@ -82,13 +83,13 @@ app.patch("/drugs", async (req, res, next) => {
     // อัปเดตข้อมูลยา
     const result = await dbClient
       .update(drugTable)
-      .set(updates) // ใช้ข้อมูลที่ส่งมาใน body
-      .where(eq(drugTable.drug_id, id)) // ใช้ UUID เพื่อระบุยา
-      .returning(); // ส่งค่าที่อัปเดตกลับมา
+      .set(updates) 
+      .where(eq(drugTable.drug_id, id)) 
+      .returning(); 
 
-    res.json({ msg: "Update successfully", data: result[0] }); // ส่งผลลัพธ์ที่อัปเดตกลับไป
+    res.json({ msg: "Update successfully", data: result[0] });
   } catch (err) {
-    next(err); // ส่งต่อข้อผิดพลาดไปยัง middleware ถัดไป
+    next(err); 
   }
 });
 
@@ -96,36 +97,100 @@ app.patch("/drugs", async (req, res, next) => {
 // http://localhost:3000/drugs
 app.delete("/drugs", async (req, res, next) => {
   try {
-    const id = req.body.id ?? ""; // รับ UUID ของยา
-    if (!id) throw new Error("Empty id"); // ตรวจสอบว่า id ไม่ว่าง
-
-    // ตรวจสอบว่ามียาอยู่ในฐานข้อมูลหรือไม่
+    const id = req.body.id ?? ""; 
+    if (!id) throw new Error("Empty id"); 
+  
     const results = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, id),
     });
-    if (results.length === 0) throw new Error("Invalid id"); // ถ้าไม่พบให้โยนข้อผิดพลาด
+    if (results.length === 0) throw new Error("Invalid id"); 
 
     // ลบข้อมูลยา
-    await dbClient.delete(drugTable).where(eq(drugTable.drug_id, id)); // ลบยาออกจาก drugTable
-
+    await dbClient.delete(drugTable).where(eq(drugTable.drug_id, id)); 
     // ส่งข้อความยืนยันการลบกลับไป
     res.json({
       msg: "Delete successfully",
-      data: { id }, // ส่ง id ของยาที่ถูกลับกลับไป
+      data: { id }, 
     });
   } catch (err) {
-    next(err); // ส่งข้อผิดพลาดไปยัง middleware ถัดไป
+    next(err); 
   }
 });
 
 // 6. Add stock
 app.post("/stocks", async (req, res) => {
   try {
-    const newStock = await dbClient.insert(stockTable).values(req.body).returning();
+    const newStock = await dbClient
+      .insert(stockTable)
+      .values(req.body)
+      .returning();
     res.status(201).json(newStock);
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Failed to add stock" });
+  }
+});
+
+// 7. Update drug stock after a sale
+app.patch("/stocks/update", async (req, res, next) => {
+  try {
+    const { drug_id, quantity_sold } = req.body;
+    if (!drug_id || !quantity_sold) {
+      throw new Error("Missing required fields");
+    }
+    const stock = await dbClient.query.stockTable.findMany({
+      where: eq(stockTable.drug_id, drug_id),
+    });
+    if (stock.length === 0) throw new Error("Drug not found in stock");
+
+    const currentStock = stock[0].amount;
+    if (currentStock < quantity_sold) {
+      throw new Error("Not enough stock");
+    }
+
+    // ลดยาจากสต็อก
+    const updatedStock = await dbClient
+      .update(stockTable)
+      .set({ amount: currentStock - quantity_sold })
+      .where(eq(stockTable.drug_id, drug_id))
+      .returning();
+
+    res.json({
+      message: "Stock updated successfully",
+      updatedStock: updatedStock[0], 
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 8. Update drug stock after a purchase
+app.patch("/stocks", async (req, res, next) => {
+  try {
+    const { drug_id, new_amount } = req.body; 
+
+    if (!drug_id || new_amount === undefined) {
+      throw new Error("Missing required fields: drug_id or new_amount");
+    }
+
+    const stock = await dbClient.query.stockTable.findMany({
+      where: eq(stockTable.drug_id, drug_id),
+    });
+    if (stock.length === 0) throw new Error("Drug not found in stock");
+
+    // อัปเดตจำนวนใน stockTable
+    const updatedStock = await dbClient
+      .update(stockTable)
+      .set({ amount: new_amount }) // อัปเดตจำนวนสต็อกเป็น new_amount
+      .where(eq(stockTable.drug_id, drug_id))
+      .returning(); 
+
+    res.json({
+      message: "Stock updated successfully",
+      updatedStock: updatedStock[0],
+    });
+  } catch (err) {
+    next(err); 
   }
 });
 
