@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import cors from "cors";
 import helmet from "helmet";
 import "dotenv/config";
+import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 
 const app = express();
 
@@ -35,7 +36,7 @@ app.get("/drugs", async (req, res) => {
 
 // 2. search by name
 // http://localhost:3000/drugs/search?name=ฟ้าทะลายโจร
-app.get("/drugs/search", async (req: Request, res: Response) => {
+app.get("/drugs/search", async (req, res) => {
   const { name } = req.query; // รับ query parameter ชื่อยา
   try {
     const drugs = await dbClient
@@ -45,6 +46,32 @@ app.get("/drugs/search", async (req: Request, res: Response) => {
     res.json(drugs);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "Failed to fetch drugs" });
+  }
+});
+
+// Get a single drug by ID
+// http://localhost:3000/drugs/uuid
+app.get("/drugs/:id", async (req, res) => {
+  const { id } = req.params; 
+  try {
+    if (!id || !uuidValidate(id)) {
+      throw new Error("Invalid UUID format");
+    }
+
+    // Query ข้อมูลจากฐานข้อมูล
+    const drugs = await dbClient
+      .select()
+      .from(drugTable)
+      .where(eq(drugTable.drug_id, id));
+
+    if (drugs.length === 0) {
+      res.status(404).json({ error: "No drug found for the given ID" });
+      return;
+    }
+
+    res.json(drugs);
+  } catch (error) {
     res.status(500).json({ error: "Failed to fetch drugs" });
   }
 });
