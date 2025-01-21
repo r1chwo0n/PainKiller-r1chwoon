@@ -19,7 +19,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.38.3",
+    "drizzle-orm": "^0.38.4",
     "express": "^4.21.2",
     "helmet": "^8.0.0",
     "mysql2": "^3.12.0",
