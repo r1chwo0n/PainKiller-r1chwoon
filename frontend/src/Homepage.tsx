@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Homepage: React.FC = () => {
   return (
@@ -16,8 +16,7 @@ const Homepage: React.FC = () => {
         <nav className="w-full">
           <a
             href="#"
-            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center"
-          >
+            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center">
             คลังยา
           </a>
         </nav>
@@ -45,35 +44,44 @@ const Homepage: React.FC = () => {
 
         {/* Tabs */}
         <div className="flex space-x-4 mb-6">
-          <button className="px-6 py-2 bg-pink-500 text-white rounded-md">ทั้งหมด</button>
-          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md">ยา</button>
-          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md">สมุนไพร</button>
-          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md">ใกล้หมด</button>
+          <button className="px-6 py-2 bg-pink-500 text-white rounded-md">
+            ทั้งหมด
+          </button>
+          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md">
+            ยา
+          </button>
+          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md">
+            สมุนไพร
+          </button>
+          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-md">
+            ใกล้หมด
+          </button>
         </div>
 
         {/* Cards */}
         <div className="grid grid-cols-3 gap-6">
-          {Array(6).fill(0).map((_, index) => (
-            <div
-              key={index}
-              className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm flex flex-col"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="font-bold text-lg">ชื่อ: ชื่อ</h2>
-                <button className="text-red-500">
-                  <i className="fas fa-trash" />
+          {Array(6)
+            .fill(0)
+            .map((_, index) => (
+              <div
+                key={index}
+                className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-bold text-lg">ชื่อ: ชื่อ</h2>
+                  <button className="text-red-500">
+                    <i className="fas fa-trash" />
+                  </button>
+                </div>
+                <p className="text-sm mb-2">รหัสยา: xxxxxxxxx</p>
+                <p className="text-sm mb-2">รายละเอียด: ยานี้ใช้เพื่ออะไร</p>
+                <p className="text-sm mb-2">ขนาดและวิธีใช้: ขนาดและวิธีใช้</p>
+                <p className="text-sm mb-2">วันหมดอายุ: xx xx xxxx</p>
+                <p className="text-sm mb-4">จำนวนคงเหลือ: จำนวนคงเหลือ</p>
+                <button className="mt-auto py-2 bg-pink-500 text-white text-center rounded-md">
+                  แก้ไข
                 </button>
               </div>
-              <p className="text-sm mb-2">รหัสยา: xxxxxxxxx</p>
-              <p className="text-sm mb-2">รายละเอียด: ยานี้ใช้เพื่ออะไร</p>
-              <p className="text-sm mb-2">ขนาดและวิธีใช้: ขนาดและวิธีใช้</p>
-              <p className="text-sm mb-2">วันหมดอายุ: xx xx xxxx</p>
-              <p className="text-sm mb-4">จำนวนคงเหลือ: จำนวนคงเหลือ</p>
-              <button className="mt-auto py-2 bg-pink-500 text-white text-center rounded-md">
-                แก้ไข
-              </button>
-            </div>
-          ))}
+            ))}
         </div>
       </main>
     </div>
