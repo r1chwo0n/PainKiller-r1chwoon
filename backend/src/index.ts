@@ -13,172 +13,276 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    // origin: false, // Disable CORS
-    origin: "*", // Allow all origins
+    origin: false, // Disable CORS
+    // origin: "*", // Allow all origins
   })
 );
 app.use(bodyParser.json());
 
-
-
-
 // Routes
 
-// 1. Get drugs
-app.get("/drugs", async (req, res) => {
+// 1. Get all drugs
+// http://localhost:3000/drugs
+app.get("/drugs", async (req, res, next) => {
   try {
-    const drugs = await dbClient.select().from(drugTable);
-    res.json(drugs);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch drugs" });
+    const drugsWithStock = await dbClient.query.drugTable.findMany({
+      with: {
+        stock: true, // Join ข้อมูล stock
+      },
+    });
+
+    res.json({
+      msg: "Fetch drugs with stock successfully",
+      data: drugsWithStock,
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
-// // 2. search by name
-// // http://localhost:3000/drugs/search?name=ฟ้าทะลายโจร
-// app.get("/drugs/search", async (req: Request, res: Response) => {
-//   const { name } = req.query; // รับ query parameter ชื่อยา
-//   try {
-//     const drugs = await dbClient
-//       .select()
-//       .from(drugTable)
-//       .where(eq(drugTable.name, name as string)); // ค้นหาตามชื่อ
-//     res.json(drugs);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Failed to fetch drugs" });
-//   }
-// });
+// 2. search by name
+// http://localhost:3000/drugs/search?name=ฟ้าทะลายโจร
+app.get("/drugs/search", async (req, res, next) => {
+  try {
+    const drugName = req.query.name; // รับค่า name จาก query string
+    if (!drugName) {
+      res.status(400).json({ msg: "Missing 'name' query parameter" });
+      return;
+    }
+
+    // ดึงข้อมูลยาพร้อมกับข้อมูล stock ที่เกี่ยวข้อง
+    const drugsWithStock = await dbClient.query.drugTable.findMany({
+      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`), 
+      with: {
+        stock: true, // รวมข้อมูล stock
+      },
+    });
+
+    // ส่งผลลัพธ์กลับไป
+    res.json({
+      msg: `Search results for "${drugName}"`,
+      data: drugsWithStock,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+// Get a single drug by ID
+// http://localhost:3000/drugs/uuid
+app.get("/drugs/:id", async (req, res, next) => {
+  try {
+    const drugId = req.params.id; 
+    if (!drugId) {
+      res.status(400).json({ msg: "Missing 'id' parameter" });
+      return;
+    }
+
+    // ดึงข้อมูลยาพร้อมข้อมูลสต็อกที่เกี่ยวข้อง
+    const drugWithStock = await dbClient.query.drugTable.findFirst({
+      where: (drugs, { eq }) => eq(drugs.drug_id, drugId), // ค้นหายาด้วย drug_id
+      with: {
+        stock: true, // รวมข้อมูล stock
+      },
+    });
+
+    if (!drugWithStock) {
+      res.status(404).json({ msg: `Drug with ID ${drugId} not found` });
+      return;
+    }
+
+    // ส่งผลลัพธ์กลับไป
+    res.json({
+      msg: `Drug with ID ${drugId} found`,
+      data: drugWithStock,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 
 // 3. Add a new drug
-app.post("/drugs", async (req, res) => {
+// {
+//   "name": "Paracetamol",
+//   "code": "PARACET",
+//   "detail": "Pain reliever and fever reducer",
+//   "usage": "Take 1-2 tablets every 4-6 hours",
+//   "slang_food": "Alcohol",
+//   "side_effect": "Nausea, rash",
+//   "unit_price": 10.5,
+//   "stock": {
+//     "amount": 100,
+//     "expired": "2025-12-31"
+//   }
+// }
+app.post("/drugs", async (req, res, next) => {
+  const {
+    name,
+    code,
+    detail,
+    usage,
+    slang_food,
+    side_effect,
+    unit_price,
+    stock,
+  } = req.body;
+
   try {
-    const newDrug = await dbClient.insert(drugTable).values(req.body).returning();
-    res.status(201).json(newDrug[0]); // Ensure you're returning the first object
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "Failed to add drug" });
+    // ตรวจสอบว่ามียาในระบบอยู่แล้วหรือไม่ (Case-insensitive)
+    const existingDrug = await dbClient.query.drugTable.findFirst({
+      where: (drugs, { ilike }) => ilike(drugs.name, name), 
+    });
+
+    if (existingDrug) {
+      res.status(400).json({
+        message: "Drug with the same name already exists",
+        existingDrug,
+      });
+      return;
+    }
+
+    // เพิ่มข้อมูลยาใหม่
+    const [newDrug] = await dbClient
+      .insert(drugTable)
+      .values({ name, code, detail, usage, slang_food, side_effect, unit_price })
+      .returning();
+
+    if (!newDrug) {
+      throw new Error("Failed to insert drug data");
+    }
+
+    // เพิ่มข้อมูลสต็อกที่เกี่ยวข้อง
+    await dbClient.insert(stockTable).values({
+      drug_id: newDrug.drug_id, // ใช้ drug_id จาก newDrug
+      amount: stock.amount,
+      expired: stock.expired,
+    });
+
+    res.status(201).json({
+      message: "Drug and stock added successfully",
+      drug: newDrug,
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
-//4. Update drug
-app.patch("/drugs", async (req, res, next) => {
-  try {
-    const id = req.body.id ?? ""; // รับ ID ของยา
-    const updates = req.body.updates; // รับข้อมูลที่ต้องการอัปเดต
 
-    // ตรวจสอบว่ามีข้อมูลใน body หรือไม่
-    if (!updates || Object.keys(updates).length === 0 || !id) {
-      throw new Error("Empty updates or id");
+// 4. Update a drug
+// {
+//   "drug_id": "32e420b5-ddbd-49ef-ade7-2a6a9c0aba41",
+//   "drugData": {
+//     "name": "Updated Paracetamol",
+//     "detail": "Updated pain reliever details",
+//     "unit_price": 15.0
+//   },
+//   "stockData": {
+//     "amount": 200
+//   }
+// }
+app.patch("/update", async (req, res, next) => {
+  try {
+    const { drug_id, drugData, stockData } = req.body;
+
+    // ตรวจสอบว่ามี drug_id หรือไม่
+    if (!drug_id) throw new Error("Drug ID is required");
+
+    // ตรวจสอบว่าข้อมูลใน drugTable มีอยู่จริงหรือไม่
+    const drugExists = await dbClient.query.drugTable.findMany({
+      where: eq(drugTable.drug_id, drug_id),
+    });
+    if (!drugExists) throw new Error("Invalid Drug ID");
+
+    // อัปเดตข้อมูลใน drugTable หากมี drugData
+    if (drugData) {
+      await dbClient
+        .update(drugTable)
+        .set(drugData)
+        .where(eq(drugTable.drug_id, drug_id));
     }
 
-    // ตรวจสอบว่ามียาอยู่ในฐานข้อมูลหรือไม่
+    // อัปเดตข้อมูลใน stockTable หากมี stockData
+    if (stockData) {
+      await dbClient
+        .update(stockTable)
+        .set(stockData)
+        .where(eq(stockTable.drug_id, drug_id));
+    }
+
+    res.json({
+      msg: "Update successful",
+      drug_id,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 5. Delete a drug
+// {
+//   "id": "uuid"
+// }
+app.delete("/drugs", async (req, res, next) => {
+  try {
+    const id = req.body.id ?? "";
+    if (!id) throw new Error("Empty id");
+
     const results = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, id),
     });
     if (results.length === 0) throw new Error("Invalid id");
 
-    // อัปเดตข้อมูลยา
-    const result = await dbClient
-      .update(drugTable)
-      .set(updates) // ใช้ข้อมูลที่ส่งมาใน body
-      .where(eq(drugTable.drug_id, id)) // ใช้ UUID เพื่อระบุยา
-      .returning(); // ส่งค่าที่อัปเดตกลับมา
-
-    res.json({ msg: "Update successfully", data: result[0] }); // ส่งผลลัพธ์ที่อัปเดตกลับไป
-  } catch (err) {
-    next(err); // ส่งต่อข้อผิดพลาดไปยัง middleware ถัดไป
-  }
-});
-
-// 5. Delete a drug
-// http://localhost:3000/drugs
-app.delete("/drugs", async (req, res, next) => {
-  try {
-    const id = req.body.id ?? ""; // รับ UUID ของยา
-    if (!id) throw new Error("Empty id"); // ตรวจสอบว่า id ไม่ว่าง
-
-    // ตรวจสอบว่ามียาอยู่ในฐานข้อมูลหรือไม่
-    const results = await dbClient.query.drugTable.findMany({
-      where: eq(drugTable.drug_id, id),
-    });
-    if (results.length === 0) throw new Error("Invalid id"); // ถ้าไม่พบให้โยนข้อผิดพลาด
-
     // ลบข้อมูลยา
-    await dbClient.delete(drugTable).where(eq(drugTable.drug_id, id)); // ลบยาออกจาก drugTable
-
+    await dbClient.delete(drugTable).where(eq(drugTable.drug_id, id));
     // ส่งข้อความยืนยันการลบกลับไป
     res.json({
       msg: "Delete successfully",
-      data: { id }, // ส่ง id ของยาที่ถูกลับกลับไป
+      data: { id },
     });
   } catch (err) {
-    next(err); // ส่งข้อผิดพลาดไปยัง middleware ถัดไป
+    next(err);
   }
 });
 
-
-
-// 6. GET all stock
-app.get("/stocks", async (req, res) => {
+// 6. Update drug stock after a sale
+// {
+//   "drug_id": "uuid",
+//   "quantity_sold": 2
+// }
+app.patch("/stocks/update", async (req, res, next) => {
   try {
-    const stocks = await dbClient
-      .select()
-      .from(stockTable)
-      .innerJoin(drugTable, eq(stockTable.drug_id, drugTable.drug_id)); // Join with drug table to get drug details
-    res.json(stocks);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch stocks" });
-  }
-});
+    const { drug_id, quantity_sold } = req.body;
+    if (!drug_id || !quantity_sold) {
+      throw new Error("Missing required fields");
+    }
+    const stock = await dbClient.query.stockTable.findMany({
+      where: eq(stockTable.drug_id, drug_id),
+    });
+    if (stock.length === 0) throw new Error("Drug not found in stock");
 
-// 7. Add stock
-app.post("/stocks", async (req, res) => {
-  try {
-    const newStock = await dbClient.insert(stockTable).values(req.body).returning();
-    res.status(201).json(newStock[0]); // Return the new stock
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "Failed to add stock" });
-  }
-});
-
-//8. Update stock
-app.patch("/stocks", async (req, res, next) => {
-  try {
-    const drugId = req.body.drug_id ?? ""; // รับ drug_id ของยา
-    const updates = req.body.updates; // รับข้อมูลที่ต้องการอัปเดต (เช่น amount, expired)
-
-    // ตรวจสอบว่ามีข้อมูลใน body หรือไม่
-    if (!updates || Object.keys(updates).length === 0 || !drugId) {
-      throw new Error("Empty updates or drug_id");
+    const currentStock = stock[0].amount;
+    if (currentStock < quantity_sold) {
+      throw new Error("Not enough stock");
     }
 
-    // ตรวจสอบว่ามี stock อยู่ในฐานข้อมูลหรือไม่
-    const results = await dbClient.query.stockTable.findMany({
-      where: eq(stockTable.drug_id, drugId),
-    });
-    if (results.length === 0) throw new Error("Invalid drug_id");
-
-    // อัปเดตข้อมูล stock
-    const result = await dbClient
+    // ลดยาจากสต็อก
+    const updatedStock = await dbClient
       .update(stockTable)
-      .set(updates) // ใช้ข้อมูลที่ส่งมาใน body
-      .where(eq(stockTable.drug_id, drugId)) // ใช้ drug_id เพื่อระบุ stock
-      .returning(); // ส่งค่าที่อัปเดตกลับมา
+      .set({ amount: currentStock - quantity_sold })
+      .where(eq(stockTable.drug_id, drug_id))
+      .returning();
 
-    res.json({ msg: "Stock updated successfully", data: result[0] }); // ส่งผลลัพธ์ที่อัปเดตกลับไป
+    res.json({
+      message: "Stock updated successfully",
+      updatedStock: updatedStock[0],
+    });
   } catch (err) {
-    next(err); // ส่งต่อข้อผิดพลาดไปยัง middleware ถัดไป
+    next(err);
   }
 });
 
-
-
-// Start the server
 // JSON Error Middleware
 const jsonErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
@@ -193,7 +297,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
 });
-
-// app.listen(port, () => {
-//   console.log(`Server is running on http://localhost:${port}`);
-// });
