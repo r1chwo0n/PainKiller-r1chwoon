@@ -13,8 +13,8 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: false, // Disable CORS
-    // origin: "*", // Allow all origins
+    // origin: false, // Disable CORS
+    origin: "*", // Allow all origins
   })
 );
 app.use(bodyParser.json());
