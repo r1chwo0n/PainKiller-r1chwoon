@@ -4,6 +4,7 @@ import NotiCard from "../components/notiCard";
 type Drug = {
     drug_id: string;
     name: string;
+    drug_type: string;
     stock: {
       amount: number;
       expired: string;
@@ -15,6 +16,7 @@ const NotificationPage: React.FC = () => {
         {
           drug_id: "1",
           name: "Paracetamol",
+          drug_type: "drug",
           stock: [
             { stock_id: "s1", amount: 10, expired: "2025-01-25" }, // หมดอายุในอีก 4 วัน
             { stock_id: "s2", amount: 200, expired: "2026-12-31" }, // ไม่แจ้งเตือน
@@ -22,12 +24,13 @@ const NotificationPage: React.FC = () => {
         },
         {
           drug_id: "2",
-          name: "Ibuprofen",
+          name: "ขมิ้น",
+          drug_type: "herb",
           stock: [
             { stock_id: "s3", amount: 30, expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
             { stock_id: "s4", amount: 100, expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
           ],
-        },
+        },        
       ];
     const [drugs, setDrugs] = useState<Drug[]>([]);
     useEffect(() => {
@@ -44,7 +47,7 @@ const NotificationPage: React.FC = () => {
         fetchDrugs();
     }, []);
     const getWarning = (amount: number, expiredDate: string) => {
-        const thresholdAmount = 50;
+        const thresholdAmount = 20;
         const today = new Date();
         const expired = new Date(expiredDate);
         const daysLeft = Math.ceil((expired.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -78,18 +81,6 @@ const NotificationPage: React.FC = () => {
 
             {/* Content Box */}
             <div className="bg-white h-[785px] mt-4 p-6 pl-4 pb-5 rounded-md overflow-y-auto">
-                {/* {drugs.flatMap((drug) => drug.stock
-                .filter((stock) => getWarning(stock.amount, stock.expired))
-                .map((stock) => (
-                    <NotiCard
-                    key={stock.expired}
-                    name={drug.name}
-                    amount={stock.amount}
-                    expired={stock.expired}
-                    warning={true}
-                    />
-                ))
-                )} */}
                 {/* {drugs.flatMap((drug) =>
                     drug.stock
                     .map((stock) => ({
@@ -120,6 +111,7 @@ const NotificationPage: React.FC = () => {
                         <NotiCard
                         key={stock.stock_id}
                         name={drug.name}
+                        drug_type={drug.drug_type}
                         amount={stock.amount}
                         expired={stock.expired}
                         warning={true}
