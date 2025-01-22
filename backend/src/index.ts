@@ -40,7 +40,7 @@ app.get("/drugs", async (req, res, next) => {
   }
 });
 
-// 2. search by name
+// 2. search by name //
 // http://localhost:3000/drugs/search?name=ฟ้าทะลายโจร
 app.get("/drugs/search", async (req, res, next) => {
   try {
@@ -52,7 +52,7 @@ app.get("/drugs/search", async (req, res, next) => {
 
     // ดึงข้อมูลยาพร้อมกับข้อมูล stock ที่เกี่ยวข้อง
     const drugsWithStock = await dbClient.query.drugTable.findMany({
-      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`), 
+      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`),
       with: {
         stock: true, // รวมข้อมูล stock
       },
@@ -68,12 +68,11 @@ app.get("/drugs/search", async (req, res, next) => {
   }
 });
 
-
 // Get a single drug by ID
 // http://localhost:3000/drugs/uuid
 app.get("/drugs/:id", async (req, res, next) => {
   try {
-    const drugId = req.params.id; 
+    const drugId = req.params.id;
     if (!drugId) {
       res.status(400).json({ msg: "Missing 'id' parameter" });
       return;
@@ -102,8 +101,7 @@ app.get("/drugs/:id", async (req, res, next) => {
   }
 });
 
-
-// 3. Add a new drug
+// 3. Add a new drug//
 // {
 //   "name": "Paracetamol",
 //   "code": "PARACET",
@@ -132,7 +130,7 @@ app.post("/drugs", async (req, res, next) => {
   try {
     // ตรวจสอบว่ามียาในระบบอยู่แล้วหรือไม่ (Case-insensitive)
     const existingDrug = await dbClient.query.drugTable.findFirst({
-      where: (drugs, { ilike }) => ilike(drugs.name, name), 
+      where: (drugs, { ilike }) => ilike(drugs.name, name),
     });
 
     if (existingDrug) {
@@ -146,7 +144,15 @@ app.post("/drugs", async (req, res, next) => {
     // เพิ่มข้อมูลยาใหม่
     const [newDrug] = await dbClient
       .insert(drugTable)
-      .values({ name, code, detail, usage, slang_food, side_effect, unit_price })
+      .values({
+        name,
+        code,
+        detail,
+        usage,
+        slang_food,
+        side_effect,
+        unit_price,
+      })
       .returning();
 
     if (!newDrug) {
@@ -168,7 +174,6 @@ app.post("/drugs", async (req, res, next) => {
     next(err);
   }
 });
-
 
 // 4. Update a drug
 // {

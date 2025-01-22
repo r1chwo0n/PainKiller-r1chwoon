@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 // Define interface for drug data
@@ -25,22 +24,27 @@ const Detail: React.FC = () => {
         throw new Error("Failed to fetch data from API");
       }
       const result = await response.json();
-  
-    //   console.log("API Response:", result); // Debugging API Response
+
+      //   console.log("API Response:", result); // Debugging API Response
       console.log("API Response:", result);
       console.log("API Response data:", result.data[0]);
 
-  
       const formattedData: DataRow[] = [
         { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data[0].name ?? "N/A" },
         { label: "รหัสยา", value: result.data[0].code ?? "N/A" },
-        { label: "จำนวนคงเหลือ", value: result.data[0].stock[0]?.amount?.toString() ?? "N/A" },
+        {
+          label: "จำนวนคงเหลือ",
+          value: result.data[0].stock[0]?.amount?.toString() ?? "N/A",
+        },
         { label: "รายละเอียดยา", value: result?.data[0].detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data[0].usage ?? "N/A" },
-        { label: "วันหมดอายุ", value: result?.data[0].stock[0]?.expired ?? "N/A" },
+        {
+          label: "วันหมดอายุ",
+          value: result?.data[0].stock[0]?.expired ?? "N/A",
+        },
         { label: "ผลข้างเคียง", value: result?.data[0].side_effect ?? "N/A" },
         { label: "อาหารแสลง", value: result?.data[0].slang_food ?? "N/A" },
-      ];      
+      ];
 
       setData(formattedData);
     } catch (err: any) {
@@ -49,7 +53,6 @@ const Detail: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   // Handle search form submission
   const handleSearch = (e: React.FormEvent) => {
@@ -60,8 +63,6 @@ const Detail: React.FC = () => {
     }
     fetchData(searchTerm); // Fetch data based on search term
   };
-
-
 
   return (
     <div className="flex h-screen">
@@ -78,15 +79,16 @@ const Detail: React.FC = () => {
         <nav className="w-full">
           <a
             href="#"
-            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center"
-          >
+            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center">
             คลังยา
           </a>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-grow p-8" style={{ fontFamily: "Arial, sans-serif" }}>
+      <div
+        className="flex-grow p-8"
+        style={{ fontFamily: "Arial, sans-serif" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <h1>ค้นหาชื่อยา</h1>
           {/* Search Form */}
@@ -113,9 +115,39 @@ const Detail: React.FC = () => {
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
-              }}
-            >
+                marginRight: "10px",
+              }}>
               ค้นหา
+            </button>
+            <button
+              type="submit"
+              style={{
+                padding: "10px 15px",
+                backgroundColor: "#00CDFF",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                marginRight: "10px",
+                // display: "flex",
+                alignItems: "center",
+                gap: "5px",
+              }}>
+              แก้ไข
+              <i className="fas fa-edit"></i>
+            </button>
+            <button
+              type="submit"
+              style={{
+                padding: "10px 15px",
+                backgroundColor: "#FF0000",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}>
+              ลบ
             </button>
           </form>
 
@@ -130,8 +162,7 @@ const Detail: React.FC = () => {
                 borderRadius: "8px",
                 overflow: "hidden",
                 backgroundColor: "#fff",
-              }}
-            >
+              }}>
               {data.map((row, index) => (
                 <div
                   key={index}
@@ -140,11 +171,8 @@ const Detail: React.FC = () => {
                     justifyContent: "space-between",
                     padding: "15px",
                     borderBottom:
-                      index === data.length - 1
-                        ? "none"
-                        : "1px solid #e0e0e0",
-                  }}
-                >
+                      index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+                  }}>
                   <span style={{ fontWeight: 500 }}>{row.label}</span>
                   <span>{row.value}</span>
                 </div>
@@ -158,5 +186,3 @@ const Detail: React.FC = () => {
 };
 
 export default Detail;
-
-
