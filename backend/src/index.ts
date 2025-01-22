@@ -107,6 +107,7 @@ app.get("/drugs/:id", async (req, res, next) => {
 // {
 //   "name": "Paracetamol",
 //   "code": "PARACET",
+//   "drug_type": "drug",
 //   "detail": "Pain reliever and fever reducer",
 //   "usage": "Take 1-2 tablets every 4-6 hours",
 //   "slang_food": "Alcohol",
@@ -121,6 +122,7 @@ app.post("/drugs", async (req, res, next) => {
   const {
     name,
     code,
+    drug_type,
     detail,
     usage,
     slang_food,
@@ -146,7 +148,7 @@ app.post("/drugs", async (req, res, next) => {
     // เพิ่มข้อมูลยาใหม่
     const [newDrug] = await dbClient
       .insert(drugTable)
-      .values({ name, code, detail, usage, slang_food, side_effect, unit_price })
+      .values({ name, code, drug_type, detail, usage, slang_food, side_effect, unit_price })
       .returning();
 
     if (!newDrug) {
