@@ -11,7 +11,11 @@ const Detail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [searchTerm, setSearchTerm] = useState<string>(""); // Search term state
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const handleDelete = () => {
+    console.log("Deleted!");
+    setIsModalOpen(false);
+  };
   // Fetch data from API
   const fetchData = async (name: string) => {
     setLoading(true);
@@ -119,8 +123,12 @@ const Detail: React.FC = () => {
               }}>
               ค้นหา
             </button>
+            {/* Edit Button Route this to Edit page */}
             <button
               type="submit"
+              onClick={() => {
+                console.log("Edit!");
+              }} // Route this to Edit page
               style={{
                 padding: "10px 15px",
                 backgroundColor: "#00CDFF",
@@ -136,8 +144,19 @@ const Detail: React.FC = () => {
               แก้ไข
               <i className="fas fa-edit"></i>
             </button>
-            <button
+            {/* <button
               type="submit"
+              onClick={() => {
+                const confirmDelete = window.confirm(
+                  "คุณต้องการลบข้อมูลนี้หรือไม่?"
+                );
+                if (confirmDelete) {
+                  // Perform delete action here
+                  console.log("Deleted!");
+                } else {
+                  console.log("Cancelled!");
+                }
+              }}
               style={{
                 padding: "10px 15px",
                 backgroundColor: "#FF0000",
@@ -148,8 +167,84 @@ const Detail: React.FC = () => {
                 marginRight: "10px",
               }}>
               ลบ
+              <i className="fas fa-trash-alt" style={{ marginLeft: "5px" }}></i>
+            </button> */}
+            <button
+              type="submit"
+              onClick={() => setIsModalOpen(true)}
+              style={{
+                padding: "10px 15px",
+                backgroundColor: "#FF0000",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}>
+              ลบ
+              <i className="fas fa-trash-alt" style={{ marginLeft: "5px" }}></i>
             </button>
           </form>
+
+          {isModalOpen && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+              <div
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  textAlign: "center",
+                }}>
+                <h2>ยืนยันการลบข้อมูล</h2>
+                <hr style={{ margin: "10px 0" }} />
+                <p>ต้องการลบข้อมูลใช่หรือไม่</p>
+                <div
+                  style={{
+                    marginTop: "15px",
+                    display: "flex",
+                    justifyContent: "flex-end", // Align buttons to the right
+                    gap: "10px", // Space between buttons
+                  }}>
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    style={{
+                      padding: "10px 15px",
+                      backgroundColor: "#cccccc",
+                      color: "#000",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}>
+                    ยกเลิก
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    style={{
+                      padding: "10px 15px",
+                      backgroundColor: "#FF0000",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}>
+                    ลบ
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {loading && <div>กำลังโหลดข้อมูล...</div>}
           {error && <div style={{ color: "red" }}>Error: {error}</div>}
