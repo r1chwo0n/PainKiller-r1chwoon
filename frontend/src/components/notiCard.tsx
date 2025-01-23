@@ -5,34 +5,35 @@ type DrugCardProps = {
     name: string;
     drug_type: string;
     amount: number;
+    unit_type: string;
     expired: string;
     warning: boolean;
     warningMessage: string; // เพิ่มข้อความแจ้งเตือน
   };
 
-const DrugCard: React.FC<DrugCardProps> = ({ name, drug_type, amount, expired, warningMessage }) => {
+const DrugCard: React.FC<DrugCardProps> = ({ name, drug_type, amount, unit_type, expired, warningMessage }) => {
   return (
     <div
-      className={"flex items-center p-4 rounded-lg shadow border mb-4" }
+      className="flex items-center p-4 border-b-2 border-gray-300 mb-5"
     >
-      {/* Icon */}
+      {/* Icon /} */}
       <div
         className={clsx(
           "w-10 h-10 rounded-full flex items-center justify-center mr-4",
-          drug_type == "drug" ? "bg-yellow-400" : "bg-green-200"
+          drug_type == "drug" ? "bg-[#ffc673]" : "bg-[#98c99f]"
         )}
       >
       </div>
-      {/* Content */}
+      {/* {/ Content /} */}
       <div className="flex-1">
-        <h2 className="text-lg font-semibold">{name}</h2>
-        <p className="text-sm text-gray-600">{warningMessage}</p>
+        <h2 className="text-base text-[#444444] font-semibold">{name}</h2>
+        <p className="text-sm text-[#444444]]">{warningMessage}</p>
       </div>
 
-      {/* Additional Info */}
-      <div className="text-right text-sm">
+      {/* {/ Additional Info */}
+      <div className="text-right text-sm text-[#444444]">
         <p>วันหมดอายุ: {expired}</p>
-        <p>จำนวนคงเหลือ: {amount} หน่วย</p>
+        <p>จำนวนคงเหลือ: {amount} {unit_type}</p>
       </div>
     </div>
   );

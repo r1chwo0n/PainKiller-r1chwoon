@@ -7,6 +7,7 @@ type Drug = {
     drug_type: string;
     stock: {
       amount: number;
+      unit_type: string;
       expired: string;
     }[];
   };
@@ -18,8 +19,8 @@ const NotificationPage: React.FC = () => {
           name: "Paracetamol",
           drug_type: "drug",
           stock: [
-            { stock_id: "s1", amount: 10, expired: "2025-01-25" }, // หมดอายุในอีก 4 วัน
-            { stock_id: "s2", amount: 200, expired: "2026-12-31" }, // ไม่แจ้งเตือน
+            { stock_id: "s1", amount: 10, unit_type: "แผง", expired: "2025-01-25" }, // หมดอายุในอีก 4 วัน
+            { stock_id: "s2", amount: 200, unit_type: "แผง", expired: "2026-12-31" }, // ไม่แจ้งเตือน
           ],
         },
         {
@@ -27,8 +28,8 @@ const NotificationPage: React.FC = () => {
           name: "ขมิ้น",
           drug_type: "herb",
           stock: [
-            { stock_id: "s3", amount: 30, expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
-            { stock_id: "s4", amount: 100, expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
+            { stock_id: "s3", amount: 30, unit_type: "ซอง", expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
+            { stock_id: "s4", amount: 100, unit_type: "ซอง", expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
           ],
         },        
       ];
@@ -60,27 +61,44 @@ const NotificationPage: React.FC = () => {
         }
         return null; // ไม่ต้องแจ้งเตือน
       };
+
+    const sumOfStock = (drugs: Drug[]) => {
+      let totalAmount = 0;
+      drugs.forEach(drug => {
+        drug.stock.forEach((stock: { amount: number; }) => {
+          totalAmount += stock.amount;
+        });
+      });
+      return totalAmount;
+    }
       
     return (
-        <div className="flex h-screen w-screen bg-gray-700">
+        <div className="flex h-screen w-screen bg-[#f4f4f4]">
         {/* Sidebar */}
-        <div className="w-1/6 bg-white p-4 flex flex-col items-center">
+        <div className="w-1/6 ml-4 bg-white p-4 flex flex-col items-center">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-md">
             <img src="https://m.media-amazon.com/images/S/pv-target-images/b35ee2e64161c3b02194239c70b8fa1a83bd7552d4e52c927c47308659fbe005.jpg" alt="Logo" className="w-full h-full object-cover rounded-full" />
             </div>
-            <a href="#" className="mt-4 text-blue-600 underline">คลังยา</a>
+            <div className="flex items-center mt-4 text-base text-[#fb6f92]">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <g>
+                <path d="M0 0H24V24H0z" fill="none"/>
+                <path d="M19.778 4.222c2.343 2.343 2.343 6.142 0 8.485l-2.122 2.12-4.949 4.951c-2.343 2.343-6.142 2.343-8.485 0-2.343-2.343-2.343-6.142 0-8.485l7.07-7.071c2.344-2.343 6.143-2.343 8.486 0zm-4.95 10.606L9.172 9.172l-3.536 3.535c-1.562 1.562-1.562 4.095 0 5.657 1.562 1.562 4.095 1.562 5.657 0l3.535-3.536z"/>
+              </g>
+            </svg>
+            <a href="#" className="text-[#fb6f92] ">คลังยา</a>
+            </div>
         </div>
 
         {/* Main Content */}
         <div className="flex-1 bg-[#f4f4f4] p-4">
             {/* Header */}
-            <div className="bg-white text-lg font-semibold p-6 rounded-md"
-            style={{fontFamily: 'Noto Looped Thai, sans-serif', fontSize: '36px', color: '#444444',}}>
+            <div className="bg-white rounded-[12px] font-semibold p-6 text-4xl text-[#444444]">
             แจ้งเตือน
             </div>
 
             {/* Content Box */}
-            <div className="bg-white h-[785px] mt-4 p-6 pl-4 pb-5 rounded-md overflow-y-auto">
+            <div className="bg-white h-[785px] rounded-[12px] mt-4 p-6 pl-4 pb-5 overflow-y-auto">
                 {/* {drugs.flatMap((drug) =>
                     drug.stock
                     .map((stock) => ({
@@ -112,7 +130,8 @@ const NotificationPage: React.FC = () => {
                         key={stock.stock_id}
                         name={drug.name}
                         drug_type={drug.drug_type}
-                        amount={stock.amount}
+                        amount={stock.amount} 
+                        unit_type={stock.unit_type}
                         expired={stock.expired}
                         warning={true}
                         warningMessage={stock.warningMessage!}
