@@ -297,6 +297,30 @@ app.delete("/stocks/:stock_id", async (req, res, next) => {
   }
 });
 
+// 10. edit stock
+app.patch("/stocks", async (req, res, next) => {
+  try {
+    const { stock_id, stockData} = req.body;
+    if (!stock_id) throw new Error("Stock ID is required");
+    const stockExists = await dbClient.query.stockTable.findMany({
+      where: eq(drugTable.drug_id, stock_id),
+    });
+    if (!stockExists) throw new Error("Invalid Stock ID");
+
+    if (stockData) {
+      await dbClient
+        .update(stockTable)
+        .set(stockData)
+        .where(eq(stockTable.stock_id, stock_id));
+    }
+
+    res.json({
+      msg: "Update successful",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 // JSON Error Middleware
 const jsonErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let serializedError = JSON.stringify(err, Object.getOwnPropertyNames(err));
