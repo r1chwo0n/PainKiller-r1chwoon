@@ -1,7 +1,7 @@
 import express, { Request, Response, ErrorRequestHandler } from "express";
 import bodyParser from "body-parser";
 import { dbClient } from "../db/client"; // นำเข้า dbClient ที่สร้างไว้ใน client.ts
-import { drugTable, stockTable } from "../db/schema";
+import { drugTable, stockTable, drugRelations } from "../db/schema";
 import { and, eq } from "drizzle-orm";
 import cors from "cors";
 import helmet from "helmet";
@@ -296,6 +296,62 @@ app.delete("/stocks/:stock_id", async (req, res, next) => {
     next(err);
   }
 });
+
+// 10. edit stock
+app.patch("/stocks", async (req, res, next) => {
+  try {
+    const { stock_id, stockData} = req.body;
+    if (!stock_id) throw new Error("Stock ID is required");
+    const stockExists = await dbClient.query.stockTable.findMany({
+      where: eq(drugTable.drug_id, stock_id),
+    });
+    if (!stockExists) throw new Error("Invalid Stock ID");
+
+    if (stockData) {
+      await dbClient
+        .update(stockTable)
+        .set(stockData)
+        .where(eq(stockTable.stock_id, stock_id));
+    }
+
+    res.json({
+      msg: "Update successful",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/stocks", async (req, res) => {
+  try {
+    // Fetch all drugs with their related stock
+    const drugsWithStock = await dbClient.query.drugTable.findMany({
+      with: {
+        stock: true, // Fetch stock related to each drug
+      },
+    });
+
+    // Map the result to match the desired format
+    const result = drugsWithStock.map((drug) => ({
+      drug_id: drug.drug_id,
+      name: drug.name,
+      drug_type: drug.drug_type,
+      stock: drug.stock.map((stockItem) => ({
+        stock_id: stockItem.stock_id,
+        amount: stockItem.amount,
+        unit_type: stockItem.unit_type,
+        expired: stockItem.expired,
+      })),
+    }));
+
+    // Send the response
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error fetching drug and stock data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 // JSON Error Middleware
 const jsonErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
