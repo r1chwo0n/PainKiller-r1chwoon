@@ -32,11 +32,25 @@ const DrugCard: React.FC<DrugCardProps> = ({ name, drug_type, amount, unit_type,
 
       {/* {/ Additional Info */}
       <div className="text-right text-sm text-[#444444]">
-        <p>วันหมดอายุ: {expired}</p>
+        <p>วันหมดอายุ: {formatThaiDate(expired)}</p>
         <p>จำนวนคงเหลือ: {amount} {unit_type}</p>
       </div>
     </div>
   );
 };
+
+function formatThaiDate(dateString: string): string {
+  const monthsThai = [
+    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = monthsThai[date.getMonth()];
+  const year = date.getFullYear() + 543; // แปลง ค.ศ. เป็น พ.ศ.
+
+  return `${day} ${month} ${year}`;
+}
 
 export default DrugCard;
