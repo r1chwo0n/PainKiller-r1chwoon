@@ -13,8 +13,8 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: false, // Disable CORS
-    // origin: "*", // Allow all origins
+    // origin: false, // Disable CORS
+    origin: "*", // Allow all origins
   })
 );
 app.use(bodyParser.json());
@@ -52,7 +52,7 @@ app.get("/drugs/search", async (req, res, next) => {
 
     // ดึงข้อมูลยาพร้อมกับข้อมูล stock ที่เกี่ยวข้อง
     const drugsWithStock = await dbClient.query.drugTable.findMany({
-      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`), 
+      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`),
       with: {
         stock: true, // รวมข้อมูล stock
       },
@@ -68,12 +68,11 @@ app.get("/drugs/search", async (req, res, next) => {
   }
 });
 
-
 // Get a single drug by ID
 // http://localhost:3000/drugs/uuid
 app.get("/drugs/:id", async (req, res, next) => {
   try {
-    const drugId = req.params.id; 
+    const drugId = req.params.id;
     if (!drugId) {
       res.status(400).json({ msg: "Missing 'id' parameter" });
       return;
@@ -101,7 +100,6 @@ app.get("/drugs/:id", async (req, res, next) => {
     next(err);
   }
 });
-
 
 // 3. Add a new drug
 // {
@@ -132,7 +130,7 @@ app.post("/drugs", async (req, res, next) => {
   try {
     // ตรวจสอบว่ามียาในระบบอยู่แล้วหรือไม่ (Case-insensitive)
     const existingDrug = await dbClient.query.drugTable.findFirst({
-      where: (drugs, { ilike }) => ilike(drugs.name, name), 
+      where: (drugs, { ilike }) => ilike(drugs.name, name),
     });
 
     if (existingDrug) {
@@ -146,7 +144,15 @@ app.post("/drugs", async (req, res, next) => {
     // เพิ่มข้อมูลยาใหม่
     const [newDrug] = await dbClient
       .insert(drugTable)
-      .values({ name, code, detail, usage, slang_food, side_effect, unit_price })
+      .values({
+        name,
+        code,
+        detail,
+        usage,
+        slang_food,
+        side_effect,
+        unit_price,
+      })
       .returning();
 
     if (!newDrug) {
@@ -168,7 +174,6 @@ app.post("/drugs", async (req, res, next) => {
     next(err);
   }
 });
-
 
 // 4. Update a drug
 // {
@@ -220,23 +225,23 @@ app.patch("/update", async (req, res, next) => {
   }
 });
 
-// 5. Delete a drug
-// {
-//   "id": "uuid"
-// }
-app.delete("/drugs", async (req, res, next) => {
+
+// 5. Delete a drug by id
+app.delete("/drugs/:id", async (req, res, next) => {
   try {
-    const id = req.body.id ?? "";
+    const id = req.params.id; // Get `id` from URL params
     if (!id) throw new Error("Empty id");
 
     const results = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, id),
     });
-    if (results.length === 0) throw new Error("Invalid id");
 
-    // ลบข้อมูลยา
+    if (results.length === 0) {
+      res.status(404).json({ msg: "Drug not found" });
+      return;
+    }
     await dbClient.delete(drugTable).where(eq(drugTable.drug_id, id));
-    // ส่งข้อความยืนยันการลบกลับไป
+
     res.json({
       msg: "Delete successfully",
       data: { id },

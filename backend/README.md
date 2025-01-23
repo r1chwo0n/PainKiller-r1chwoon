@@ -35,7 +35,7 @@ docker exec -it painkiller-db bash
 Once inside the container, connect to the PostgreSQL database using the following command:
 
 ```bash
-psql -U painkiller -d mydb
+psql -U painkiller -d pkdb
 ```
 
 ### 5. Configure Database Permissions
@@ -43,13 +43,13 @@ psql -U painkiller -d mydb
 Run the following SQL commands to configure permissions for the `painkiller` user:
 
 ```sql
-REVOKE CONNECT ON DATABASE mydb FROM public;
+REVOKE CONNECT ON DATABASE pkdb FROM public;
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 CREATE USER painkiller WITH PASSWORD '1234';
-GRANT CONNECT ON DATABASE mydb TO painkiller;
+GRANT CONNECT ON DATABASE pkdb TO painkiller;
 GRANT USAGE ON SCHEMA public TO painkiller;
 GRANT CREATE ON SCHEMA public TO painkiller;
-GRANT ALL ON DATABASE mydb TO painkiller;
+GRANT ALL ON DATABASE pkdb TO painkiller;
 GRANT ALL ON SCHEMA public TO painkiller;
 ALTER USER painkiller CREATEDB;
 ```
