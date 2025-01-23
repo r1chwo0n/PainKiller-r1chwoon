@@ -8,6 +8,13 @@
       "when": 1735369629306,
       "tag": "0000_amusing_jubilee",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1737535531181,
+      "tag": "0001_bizarre_vanisher",
+      "breakpoints": true
     }
   ]
 }
