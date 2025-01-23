@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NotiCard from "../components/notiCard";
+import LowStockCard from "../components/lowStockCard";
 
 type Drug = {
     drug_id: string;
@@ -31,7 +32,16 @@ const NotificationPage: React.FC = () => {
             { stock_id: "s3", amount: 30, unit_type: "ซอง", expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
             { stock_id: "s4", amount: 100, unit_type: "ซอง", expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
           ],
-        },        
+        },  
+        {
+          drug_id: "3",
+          name: "มะข้ามป้อม",
+          drug_type: "herb",
+          stock: [
+            { stock_id: "s5", amount: 10, unit_type: "ขวด", expired: "2025-03-05" }, 
+            { stock_id: "s6", amount: 5, unit_type: "ขวด", expired: "2025-04-20" }, 
+          ],
+        }      
       ];
     const [drugs, setDrugs] = useState<Drug[]>([]);
     useEffect(() => {
@@ -47,31 +57,35 @@ const NotificationPage: React.FC = () => {
     
         fetchDrugs();
     }, []);
-    const getWarning = (amount: number, expiredDate: string) => {
-        const thresholdAmount = 20;
-        const today = new Date();
-        const expired = new Date(expiredDate);
+
+    const getTotalStockAmount = (drug: Drug) => {
+      return drug.stock.reduce((total, stock) => total + stock.amount, 0);
+    };
+    const getExpiryWarnings = (drug: Drug) => {
+      const today = new Date();
+      const expiryWarnings = drug.stock.map((stock) => {
+        const expired = new Date(stock.expired);
         const daysLeft = Math.ceil((expired.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
-        if (amount < thresholdAmount) {
-            return "จำนวนคงเหลือน้อยกว่ากำหนด"; // กรณีสต็อกใกล้หมด
-          }
+  
         if (daysLeft <= 10) {
-            return `หมดอายุในอีก ${daysLeft} วัน`; // กรณีใกล้หมดอายุ
+          return `หมดอายุในอีก ${daysLeft} วัน`; // กรณีใกล้หมดอายุ
         }
         return null; // ไม่ต้องแจ้งเตือน
-      };
-
-    const sumOfStock = (drugs: Drug[]) => {
-      let totalAmount = 0;
-      drugs.forEach(drug => {
-        drug.stock.forEach((stock: { amount: number; }) => {
-          totalAmount += stock.amount;
-        });
-      });
-      return totalAmount;
-    }
-      
+      }).filter(message => message !== null);
+  
+      return expiryWarnings;
+    };
+  
+    const getLowStockWarning = (drug: Drug) => {
+      const thresholdAmount = 20;
+      const totalAmount = getTotalStockAmount(drug);
+  
+      if (totalAmount < thresholdAmount) {
+        return "จำนวนคงเหลือน้อยกว่ากำหนด";
+      }
+      return null;
+    };
+    
     return (
         <div className="flex h-screen w-screen bg-[#f4f4f4]">
         {/* Sidebar */}
@@ -118,26 +132,37 @@ const NotificationPage: React.FC = () => {
                     ))
                 )} */}
                 {/* กรองและแสดงเฉพาะรายการที่ต้องแจ้งเตือน */}
-                {mockDrugs.flatMap((drug) =>
-                    drug.stock
-                    .map((stock) => ({
-                        ...stock,
-                        warningMessage: getWarning(stock.amount, stock.expired),
-                    }))
-                    .filter((stock) => stock.warningMessage)
-                    .map((stock) => (
-                        <NotiCard
-                        key={stock.stock_id}
+                {mockDrugs.flatMap((drug) => {
+                  const lowStockWarning = getLowStockWarning(drug);
+                  const expiryWarnings = getExpiryWarnings(drug);
+
+                  if (lowStockWarning) {
+                    return (
+                      <LowStockCard
+                        key={drug.drug_id}
                         name={drug.name}
                         drug_type={drug.drug_type}
-                        amount={stock.amount} 
-                        unit_type={stock.unit_type}
-                        expired={stock.expired}
+                        amount={getTotalStockAmount(drug)}
+                        unit_type={drug.stock[0].unit_type}
                         warning={true}
-                        warningMessage={stock.warningMessage!}
-                        />
-                    ))
-                )}
+                        warningMessage={lowStockWarning}
+                      />
+                    );
+                  }
+
+                  return expiryWarnings.map((message, index) => (
+                    <NotiCard
+                      key={`${drug.drug_id}-${index}`}
+                      name={drug.name}
+                      drug_type={drug.drug_type}
+                      amount={drug.stock[index].amount}
+                      unit_type={drug.stock[index].unit_type}
+                      expired={drug.stock[index].expired}
+                      warning={true}
+                      warningMessage={message!}
+                    />
+                  ));
+                })}
             </div>
         </div>
     </div>
