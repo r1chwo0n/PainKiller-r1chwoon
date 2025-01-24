@@ -13,7 +13,7 @@ type LowStockCardProps = {
 const LowStockCard: React.FC<LowStockCardProps> = ({ name, drug_type, amount, unit_type, warningMessage }) => {
   return (
     <div
-      className="flex items-center p-4 border-b-2 border-gray-300 mb-5"
+      className="flex items-center p-4 border-b-2 border-gray-300"
     >
       {/* Icon /} */}
       <div

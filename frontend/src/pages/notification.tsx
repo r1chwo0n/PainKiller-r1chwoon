@@ -76,12 +76,14 @@ const NotificationPage: React.FC = () => {
 
       <div className="flex-1 p-4">
         {/* Header */}
-        <div className="bg-white rounded-[12px] font-semibold p-6 text-4xl text-[#444444]">
-          แจ้งเตือน
-        </div>
+        <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-4xl text-[#444444] font-bold">แจ้งเตือน</h1>
+          </div>
+        </header>
 
         {/* Content Box */}
-        <div className="bg-white h-[785px] rounded-[12px] mt-4 p-6 pl-4 pb-5 overflow-y-auto">
+        <div className="bg-white h-[785px] rounded-[12px] mt-4 pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
           {/* กรองและแสดงเฉพาะรายการที่ต้องแจ้งเตือน */}
             {drugs.flatMap((drug) => {
             const lowStockWarning = getLowStockWarning(drug);

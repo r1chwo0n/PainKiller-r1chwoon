@@ -28,8 +28,9 @@ const Homepage: React.FC = () => {
   const [deleteDrugId, setDeleteDrugId] = useState<string | null>(null);
 
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<string[]>([]);
   const [hasNewNotification, setHasNewNotification] = useState(false);
+
+  const [showAddPopup, setShowAddPopup] = useState(false);
 
   const { showSnackbar, Snackbar } = useSnackbar();
 
@@ -41,9 +42,15 @@ const Homepage: React.FC = () => {
   };
 
   const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
-    triggerNewNotification();
+    setShowAddPopup(false); // ปิด Pop-up ของปุ่มบวก ถ้ามันเปิดอยู่
+    setShowNotifications((prev) => !prev); // สลับสถานะ Pop-up แจ้งเตือน
   };
+  
+  const toggleAddPopup = () => {
+    setShowNotifications(false); // ปิด Pop-up ของปุ่มแจ้งเตือน ถ้ามันเปิดอยู่
+    setShowAddPopup((prev) => !prev); // สลับสถานะ Pop-up ของปุ่มบวก
+  };
+  
 
   useEffect(() => {
     // Fetch drugs from API
@@ -87,8 +94,8 @@ const Homepage: React.FC = () => {
             {isLowStock && isExpired ? " และ " : ""}
             {isExpired ? "ใกล้หมดอายุ" : ""}
           </>
-        );
-      });
+        );                
+      })
   };
 
   const handleDelete = async () => {
@@ -119,9 +126,9 @@ const Homepage: React.FC = () => {
       <Sidebar />
       <main className="flex-1 p-4">
         {/* Header */}
-        <header className="bg-white p-6 rounded-[12px] shadow-md mb-6">
+        <header className="bg-white  h-[86px] p-6 rounded-[12px] shadow-md mb-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-4xl text-[#444444] font-bold">คลังยา</h1>
+            <h1 className="mb-2 text-4xl text-[#444444] font-bold">คลังยา</h1>
             <div className="flex items-center space-x-4">
               {/* Search Input */}
               <input
@@ -156,54 +163,131 @@ const Homepage: React.FC = () => {
 
                 {/* Notifications Popup */}
                 {showNotifications && (
-                  <div className="absolute right-0 top-12 w-72 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4">
-                    <h3 className="font-bold text-lg mb-2">การแจ้งเตือน</h3>
+                  <div
+                    className="absolute right-0 top-12 w-72 bg-[#ECECEC] border border-gray-300 rounded-lg shadow-lg z-50 p-4"
+                  >
+                    <h3 className="font-bold text-lg mb-2 text-left text-gray-800">
+                      การแจ้งเตือน
+                    </h3>
                     {filterNotifications().length > 0 ? (
-                      <ul className="space-y-2">
+                      <ul className="divide-y divide-gray-300">
                         {filterNotifications().map((notification, index) => (
                           <li
                             key={index}
-                            className="text-sm text-gray-700 bg-gray-100 p-2 rounded-md"
+                            className="text-sm text-gray-700 p-2 text-left"
                           >
                             {notification}
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-gray-500">ไม่มีการแจ้งเตือน</p>
+                      <p className="text-gray-500 text-left">ไม่มีการแจ้งเตือน</p>
                     )}
                     <button
                       onClick={() => navigate("/notification")}
-                      className="w-full py-2 mt-4 bg-gray-100 text-center text-blue-600 hover:bg-gray-200"
+                      className="mt-4 py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px] w-full"
                     >
-                      See All
+                      ดูทั้งหมด
                     </button>
                   </div>
                 )}
               </button>
 
               {/* Add Drug Button*/}
-              <button
-                onClick={() => navigate("/add-drug")}
-                className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200"
-              >
-                <svg
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
+              <div className="relative">
+                <button
+                  onClick={toggleAddPopup}
+                  className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200"
                 >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 12h14m-7 7V5"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 12h14m-7 7V5"
+                    />
+                  </svg>
+                </button>
+
+                {/* Pop-up Window */}
+                {showAddPopup && (
+                  <div className="absolute right-0 mt-2 bg-[#ECECEC] border border-gray-200 rounded-lg shadow-lg z-50 w-48">
+                    <ul className="py-2">
+                      <li>
+                      <button
+                        onClick={() => {
+                          setShowAddPopup(false);
+                          navigate("/add-drug");
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"  
+                          height="20"
+                          className="mr-2"  
+
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M13 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V9M13 3L19 9M13 3V8C13 8.55228 13.4477 9 14 9H19M12 13V17M14 15H10"
+                              stroke="#000000"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            ></path>
+                          </g>
+                        </svg>
+                        เพิ่มข้อมูลยา
+                      </button>
+                      </li>
+                      <li>
+                      <button
+                        onClick={() => {
+                          setShowAddPopup(false);
+                          navigate("/update-stock");
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          width="20"  
+                          height="20" 
+                          className="mr-2"  
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              stroke="#000000"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M3 3h3M3 21h3m0 0h4a2 2 0 0 0 2-2V9M6 21V9m0-6h4a2 2 0 0 1 2 2v4M6 3v6M3 9h3m0 0h6m-9 6h9m3-3h3m0 0h3m-3 0v3m0-3V9"
+                            ></path>
+                          </g>
+                        </svg>
+                        อัปเดตสต็อก
+                      </button>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -246,11 +330,10 @@ const Homepage: React.FC = () => {
               })
               .filter((drug) => {
                 if (!searchQuery) return true; // No search query, show all
-                return drug.name
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase());
+                return drug.name.toLowerCase().includes(searchQuery.toLowerCase());
               })
               .map((drug) => (
+                
                 <div
                   key={drug.drug_id}
                   className="relative p-4 border border-[#f5f5f5]] rounded-[12px] bg-white shadow-md flex flex-col"
@@ -300,7 +383,10 @@ const Homepage: React.FC = () => {
                     จำนวนคงเหลือ:{" "}
                     {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
                   </p>
-                  <button className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]">
+                  <button
+                    onClick={() => navigate(`/edit-drug/${drug.drug_id}`)}
+                    className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
+                  >
                     แก้ไข
                   </button>
                 </div>

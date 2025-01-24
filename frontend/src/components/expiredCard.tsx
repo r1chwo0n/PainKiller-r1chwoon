@@ -14,7 +14,7 @@ type DrugCardProps = {
 const DrugCard: React.FC<DrugCardProps> = ({ name, drug_type, amount, unit_type, expired, warningMessage }) => {
   return (
     <div
-      className="flex items-center p-4 border-b-2 border-gray-300 mb-5"
+      className="flex items-center p-4 border-b-2 border-gray-300"
     >
       {/* Icon /} */}
       <div

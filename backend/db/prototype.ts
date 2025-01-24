@@ -20,7 +20,7 @@ async function insertDrugsAndStocks() {
       side_effect: "Drowsiness, nausea",
       unit_type: "Tablet", // Added for the schema
       unit_price: 10.5,
-      stockAmount: 50, // Example stock amount
+      stockAmount: 5, // Example stock amount
       expired: new Date("2025-12-31"), // Stock expiry date
     },
     {
@@ -34,7 +34,7 @@ async function insertDrugsAndStocks() {
       unit_type: "Capsule",
       unit_price: 15.0,
       stockAmount: 100,
-      expired: new Date("2026-01-15"),
+      expired: new Date("2025-01-31"),
     },
     {
       name: "Ibuprofen",
