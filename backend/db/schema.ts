@@ -21,6 +21,7 @@ export const drugTable = pgTable("drug", {
   usage: varchar("usage", { length: 255 }), 
   slang_food: text("slang_food"), 
   side_effect: text("side_effect"), 
+  unit_type: varchar("unit_type", { length: 255 }).notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(), 
   updated_at: timestamp("updated_at", { mode: "date", precision: 3 }).$onUpdate(() => new Date()), 
 });
@@ -32,7 +33,6 @@ export const stockTable = pgTable("stock", {
     .references(() => drugTable.drug_id, { onDelete: "cascade" }),
   unit_price: real("unit_price"),
   amount: integer("amount").notNull(), 
-  unit_type: varchar("unit_type", { length: 255 }).notNull(),
   expired: date("expired"), 
   created_at: timestamp("created_at").defaultNow().notNull(), 
   updated_at: timestamp("updated_at", { mode: "date", precision: 3 }).$onUpdate(() => new Date()), 

@@ -53,20 +53,22 @@ const Detail: React.FC = () => {
         { label: "อาหารแสลง", value: result?.data[0].slang_food ?? "N/A" },
       ];
 
-      const stockData: DataRow[] = result.data[0]?.stock?.map(
+      const stockData: 
+      DataRow[] = result.data[0]?.stock?.map(
         (stockItem: { expired: string; amount: number; unit_type: string; 
           unit_price: number}, index: number) => ({
           label: `ล็อตที่ ${index + 1}`,
           value: (
             <>
               จำนวน: {stockItem.amount} <br />
-              ประเภท: {stockItem.unit_type} <br />
+              ประเภท: {result.data[0].unit_type} <br />
               วันหมดอายุ: {stockItem.expired} <br />
               ราคาต่อหน่วย: {stockItem.unit_price}
             </>
           ),
         })
-      ) ?? [];
+      )
+
 
       setData([...formattedData, ...stockData]);
     } catch (err: any) {
@@ -292,3 +294,8 @@ const Detail: React.FC = () => {
 };
 
 export default Detail;
+
+
+
+
+
