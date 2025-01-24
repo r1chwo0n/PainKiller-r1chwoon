@@ -366,6 +366,7 @@ app.get("/stocks", async (req, res) => {
       drug_id: drug.drug_id,
       name: drug.name,
       drug_type: drug.drug_type,
+      unit_type: drug.unit_type,
       stock: drug.stock.map((stockItem) => ({
         stock_id: stockItem.stock_id,
         amount: stockItem.amount,

@@ -87,8 +87,8 @@ const Homepage: React.FC = () => {
             {isLowStock && isExpired ? " และ " : ""}
             {isExpired ? "ใกล้หมดอายุ" : ""}
           </>
-        );                
-      })
+        );
+      });
   };
 
   const handleDelete = async () => {
@@ -156,9 +156,7 @@ const Homepage: React.FC = () => {
 
                 {/* Notifications Popup */}
                 {showNotifications && (
-                  <div
-                    className="absolute right-0 top-12 w-72 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4"
-                  >
+                  <div className="absolute right-0 top-12 w-72 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4">
                     <h3 className="font-bold text-lg mb-2">การแจ้งเตือน</h3>
                     {filterNotifications().length > 0 ? (
                       <ul className="space-y-2">
@@ -183,7 +181,7 @@ const Homepage: React.FC = () => {
                   </div>
                 )}
               </button>
-              
+
               {/* Add Drug Button*/}
               <button
                 onClick={() => navigate("/add-drug")}
@@ -248,10 +246,11 @@ const Homepage: React.FC = () => {
               })
               .filter((drug) => {
                 if (!searchQuery) return true; // No search query, show all
-                return drug.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return drug.name
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase());
               })
               .map((drug) => (
-                
                 <div
                   key={drug.drug_id}
                   className="relative p-4 border border-[#f5f5f5]] rounded-[12px] bg-white shadow-md flex flex-col"
