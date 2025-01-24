@@ -4,7 +4,7 @@ import axios from "axios";
 import SwitchSelector from "react-switch-selector";
 import { useNavigate } from "react-router-dom";
 import useSnackbar from "./components/useSnackber";
-import styles from "./input.css"; 
+import Sidebar from "./components/slidebar";
 
 interface Drug {
   drug_id: string;
@@ -60,7 +60,6 @@ const Homepage: React.FC = () => {
 
   const filterNotifications = () => {
     const thresholdStock = 10; // เกณฑ์จำนวนยาคงเหลือ
-    const currentDate = new Date();
     const currentDatePlus7 = new Date();
     currentDatePlus7.setDate(currentDatePlus7.getDate() + 7);
 
@@ -68,34 +67,28 @@ const Homepage: React.FC = () => {
       .filter((drug) =>
         drug.stock.some(
           (s) =>
-            s.amount < thresholdStock || new Date(s.expired) > currentDatePlus7
+            s.amount < thresholdStock || new Date(s.expired) <= currentDatePlus7
         )
       )
       .map((drug) => {
         const stockInfo = drug.stock.find(
           (s) =>
-            s.amount < thresholdStock || new Date(s.expired) > currentDatePlus7
+            s.amount < thresholdStock || new Date(s.expired) <= currentDatePlus7
         );
         if (!stockInfo) return null;
 
         const isLowStock = stockInfo.amount < thresholdStock;
-        const isExpired = new Date(stockInfo.expired) <= currentDate;
-        return `${drug.name} ${isLowStock ? "ใกล้หมดสต็อก" : ""}${
-          isLowStock && isExpired ? " และ " : ""
-        }${isExpired ? "ใกล้หมดอายุ" : ""}`;
+        const isExpired = new Date(stockInfo.expired) <= currentDatePlus7;
+        return (
+          <>
+            {drug.name}
+            <br />
+            {isLowStock ? "จำนวนคงเหลือน้อยกว่ากำหนด" : ""}
+            {isLowStock && isExpired ? " และ " : ""}
+            {isExpired ? "ใกล้หมดอายุ" : ""}
+          </>
+        );                
       })
-      .filter(Boolean);
-  };
-
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/drugs/search?name=${searchQuery}`
-      );
-      setDrugs(response.data.data);
-    } catch (error) {
-      console.error("Error searching drugs:", error);
-    }
   };
 
   const handleDelete = async () => {
@@ -123,52 +116,22 @@ const Homepage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-200">
-      {/* Sidebar */}
-      <aside className="w-1/7 h-screen bg-white p-6 ml-4 shadow-md flex flex-col items-center">
-        {/* <div className="items-center"> */}
-        <img
-          src="/pic/logomk.jpg"
-          alt="Logo"
-          className="h-1/6 mb-1 rounded-full object-cover shadow-lg"
-          onClick={() => navigate("/")}
-        />
-        {/* </div> */}
-        <div className="flex items-center mt-4 text-base text-[#fb6f92] ">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-4 h-4 mr-2"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            onClick={() => navigate("/")}
-          >
-            <g>
-              <path d="M0 0H24V24H0z" fill="none" />
-              <path d="M19.778 4.222c2.343 2.343 2.343 6.142 0 8.485l-2.122 2.12-4.949 4.951c-2.343 2.343-6.142 2.343-8.485 0-2.343-2.343-2.343-6.142 0-8.485l7.07-7.071c2.344-2.343 6.143-2.343 8.486 0zm-4.95 10.606L9.172 9.172l-3.536 3.535c-1.562 1.562-1.562 4.095 0 5.657 1.562 1.562 4.095 1.562 5.657 0l3.535-3.536z" />
-            </g>
-          </svg>
-          <a href="#" className="text-[#fb6f92] text-base">
-            คลังยา
-          </a>
-        </div>
-      </aside>
-
-      {/* Main Content */}
+      <Sidebar />
       <main className="flex-1 p-4">
         {/* Header */}
         <header className="bg-white p-6 rounded-[12px] shadow-md mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-4xl text-[#444444] font-bold">คลังยา</h1>
             <div className="flex items-center space-x-4">
-              {/* ช่องค้นหา */}
+              {/* Search Input */}
               <input
                 type="text"
                 placeholder="ค้นหาชื่อยา"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-[381px] h-[45px] py-2 rounded-[12px] bg-[#f0f0f0] text-[#909090] pl-[20px]"
+                className="w-[330px] h-[45px] py-2 rounded-[12px] bg-[#f0f0f0] text-[#909090] pl-[20px] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
-
-              {/* ปุ่ม Notification */}
+              {/* Notification Button */}
               <button
                 onClick={toggleNotifications}
                 className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
@@ -180,9 +143,7 @@ const Homepage: React.FC = () => {
                   height="24"
                   fill="none"
                   viewBox="0 0 24 24"
-                  className={`${
-                    hasNewNotification ? "animate-shake" : ""
-                  }`}
+                  className={`${hasNewNotification ? "animate-shake" : ""}`}
                 >
                   <path
                     stroke="currentColor"
@@ -193,37 +154,37 @@ const Homepage: React.FC = () => {
                   />
                 </svg>
 
-                {/* Notifications Panel */}
+                {/* Notifications Popup */}
                 {showNotifications && (
-                  <div className="notification-panel absolute top-0 right-0 w-72 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4">
-                    <div className="p-4">
-                      <h3 className="font-bold text-lg mb-2">การแจ้งเตือน</h3>
-                      {filterNotifications().length > 0 ? (
-                        <ul className="space-y-2">
-                          {filterNotifications().map((notification, index) => (
-                            <li
-                              key={index}
-                              className="text-sm text-gray-700 bg-gray-100 p-2 rounded-md"
-                            >
-                              {notification}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-500">ไม่มีการแจ้งเตือน</p>
-                      )}
-                    </div>
+                  <div
+                    className="absolute right-0 top-12 w-72 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4"
+                  >
+                    <h3 className="font-bold text-lg mb-2">การแจ้งเตือน</h3>
+                    {filterNotifications().length > 0 ? (
+                      <ul className="space-y-2">
+                        {filterNotifications().map((notification, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-gray-700 bg-gray-100 p-2 rounded-md"
+                          >
+                            {notification}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-500">ไม่มีการแจ้งเตือน</p>
+                    )}
                     <button
                       onClick={() => navigate("/notification")}
-                      className="w-full py-2 bg-gray-100 text-center text-blue-600 hover:bg-gray-200"
+                      className="w-full py-2 mt-4 bg-gray-100 text-center text-blue-600 hover:bg-gray-200"
                     >
                       See All
                     </button>
                   </div>
                 )}
               </button>
-
-              {/* ปุ่ม Add Drug */}
+              
+              {/* Add Drug Button*/}
               <button
                 onClick={() => navigate("/add-drug")}
                 className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200"
@@ -285,7 +246,12 @@ const Homepage: React.FC = () => {
                 if (activeTab === "ใกล้หมด") return drug.stock[0]?.amount < 10;
                 return false;
               })
+              .filter((drug) => {
+                if (!searchQuery) return true; // No search query, show all
+                return drug.name.toLowerCase().includes(searchQuery.toLowerCase());
+              })
               .map((drug) => (
+                
                 <div
                   key={drug.drug_id}
                   className="relative p-4 border border-[#f5f5f5]] rounded-[12px] bg-white shadow-md flex flex-col"
