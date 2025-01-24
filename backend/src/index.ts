@@ -13,8 +13,8 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: false, // Disable CORS
-    // origin: "*", // Allow all origins
+    // origin: false, // Disable CORS
+    origin: "*", // Allow all origins
   })
 );
 app.use(bodyParser.json());
@@ -58,7 +58,7 @@ app.get("/drugs/search", async (req, res, next) => {
 
     // ดึงข้อมูลยาพร้อมกับข้อมูล stock ที่เกี่ยวข้อง
     const drugsWithStock = await dbClient.query.drugTable.findMany({
-      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`), 
+      where: (drugs, { like }) => like(drugs.name, `%${drugName}%`),
       with: {
         stock: {
           columns: {
@@ -81,12 +81,11 @@ app.get("/drugs/search", async (req, res, next) => {
   }
 });
 
-
 // 3. Get a single drug by ID
 // http://localhost:3000/drugs/uuid
 app.get("/drugs/:id", async (req, res, next) => {
   try {
-    const drugId = req.params.id; 
+    const drugId = req.params.id;
     if (!drugId) {
       res.status(400).json({ msg: "Missing 'id' parameter" });
       return;
@@ -121,8 +120,6 @@ app.get("/drugs/:id", async (req, res, next) => {
     next(err);
   }
 });
-
-
 
 // 4. Add a new drug
 // {
@@ -228,6 +225,7 @@ app.patch("/drugs/update", async (req, res, next) => {
   }
 });
 
+
 // 6. add stock for a drug
 app.post("/stocks", async (req, res) => {
   try {
@@ -248,11 +246,13 @@ app.delete("/drugs/:id", async (req, res, next) => {
     const results = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, id),
     });
-    if (results.length === 0) throw new Error("Invalid id");
 
-    // ลบข้อมูลยา
+    if (results.length === 0) {
+      res.status(404).json({ msg: "Drug not found" });
+      return;
+    }
     await dbClient.delete(drugTable).where(eq(drugTable.drug_id, id));
-    // ส่งข้อความยืนยันการลบกลับไป
+
     res.json({
       msg: "Delete successfully",
       data: { id },
