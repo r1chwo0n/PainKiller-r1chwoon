@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 // Define interface for drug data
 interface DataRow {
@@ -10,12 +11,15 @@ const Detail: React.FC = () => {
   const [data, setData] = useState<DataRow[]>([]); // State to store fetched data
   const [loading, setLoading] = useState<boolean>(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
-  const [searchTerm, setSearchTerm] = useState<string>(""); // Search term state
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [searchParams] = useSearchParams();
+
+  // Handle delete action
   const handleDelete = () => {
     console.log("Deleted!");
     setIsModalOpen(false);
   };
+
   // Fetch data from API
   const fetchData = async (name: string) => {
     setLoading(true);
@@ -29,16 +33,18 @@ const Detail: React.FC = () => {
       }
       const result = await response.json();
 
-      //   console.log("API Response:", result); // Debugging API Response
-      console.log("API Response:", result);
-      console.log("API Response data:", result.data[0]);
+      // Calculate the total stock amount in the frontend
+      const totalStockAmount = result.data[0]?.stock?.reduce(
+        (sum: number, stockItem: { amount: number }) => sum + (stockItem.amount || 0),
+        0
+      );
 
       const formattedData: DataRow[] = [
         { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data[0].name ?? "N/A" },
         { label: "รหัสยา", value: result.data[0].code ?? "N/A" },
         {
           label: "จำนวนคงเหลือ",
-          value: result.data[0].stock[0]?.amount?.toString() ?? "N/A",
+          value: totalStockAmount?.toString() ?? "N/A",
         },
         { label: "รายละเอียดยา", value: result?.data[0].detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data[0].usage ?? "N/A" },
@@ -58,15 +64,14 @@ const Detail: React.FC = () => {
     }
   };
 
-  // Handle search form submission
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent form reload
-    if (searchTerm.trim() === "") {
-      setError("Please enter a search term.");
-      return;
+  useEffect(() => {
+    const drugName = searchParams.get("name"); // Get "name" from query params
+    if (drugName) {
+      fetchData(drugName); // Fetch data when the component mounts
+    } else {
+      setError("No drug name provided in the URL.");
     }
-    fetchData(searchTerm); // Fetch data based on search term
-  };
+  }, [searchParams]); // Trigger when query params change
 
   return (
     <div className="flex h-screen">
@@ -78,12 +83,13 @@ const Detail: React.FC = () => {
             alt="Logo"
             className="w-20 h-20 mb-4"
           />
-          <h1 className="text-lg font-bold">มงคลสิทธิ์</h1>
+          <h1 className="text-lg font-bold">มงคลคีรี</h1>
         </div>
         <nav className="w-full">
           <a
             href="#"
-            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center">
+            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center"
+          >
             คลังยา
           </a>
         </nav>
@@ -92,100 +98,64 @@ const Detail: React.FC = () => {
       {/* Main Content */}
       <div
         className="flex-grow p-8"
-        style={{ fontFamily: "Arial, sans-serif" }}>
+        style={{ fontFamily: "Arial, sans-serif" }}
+      >
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <h1>ค้นหาชื่อยา</h1>
-          {/* Search Form */}
-          <form onSubmit={handleSearch} style={{ marginBottom: "20px" }}>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="กรอกชื่อยา..."
+          {/* Drug Name with Actions */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              border: "1px solid #e0e0e0",
+              borderRadius: "8px",
+              padding: "15px",
+              marginBottom: "20px",
+              backgroundColor: "#fff",
+              gap: "10px",
+            }}
+          >
+            <div
               style={{
-                padding: "10px",
-                width: "80%",
-                border: "1px solid #e0e0e0",
-                borderRadius: "4px",
-                marginRight: "10px",
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                padding: "10px 15px",
-                backgroundColor: "#4caf50",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}>
-              ค้นหา
-            </button>
-            {/* Edit Button Route this to Edit page */}
-            <button
-              type="submit"
-              onClick={() => {
-                console.log("Edit!");
-              }} // Route this to Edit page
-              style={{
-                padding: "10px 15px",
-                backgroundColor: "#00CDFF",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginRight: "10px",
-                // display: "flex",
+                display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                gap: "5px",
-              }}>
-              แก้ไข
-              <i className="fas fa-edit"></i>
-            </button>
-            {/* <button
-              type="submit"
-              onClick={() => {
-                const confirmDelete = window.confirm(
-                  "คุณต้องการลบข้อมูลนี้หรือไม่?"
-                );
-                if (confirmDelete) {
-                  // Perform delete action here
-                  console.log("Deleted!");
-                } else {
-                  console.log("Cancelled!");
-                }
               }}
-              style={{
-                padding: "10px 15px",
-                backgroundColor: "#FF0000",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}>
-              ลบ
-              <i className="fas fa-trash-alt" style={{ marginLeft: "5px" }}></i>
-            </button> */}
-            <button
-              type="submit"
-              onClick={() => setIsModalOpen(true)}
-              style={{
-                padding: "10px 15px",
-                backgroundColor: "#FF0000",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}>
-              ลบ
-              <i className="fas fa-trash-alt" style={{ marginLeft: "5px" }}></i>
-            </button>
-          </form>
+            >
+              <span style={{ fontSize: "20px", fontWeight: "bold" }}>
+                {searchParams.get("name")}
+              </span>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  onClick={() => console.log("Edit")}
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#00CDFF",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  แก้ไข
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#FF0000",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  ลบ
+                </button>
+              </div>
+            </div>
+          </div>
 
+          {/* Modal for Delete Confirmation */}
           {isModalOpen && (
             <div
               style={{
@@ -198,7 +168,8 @@ const Detail: React.FC = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-              }}>
+              }}
+            >
               <div
                 style={{
                   backgroundColor: "#fff",
@@ -206,17 +177,18 @@ const Detail: React.FC = () => {
                   borderRadius: "8px",
                   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                   textAlign: "center",
-                }}>
+                }}
+              >
                 <h2>ยืนยันการลบข้อมูล</h2>
-                <hr style={{ margin: "10px 0" }} />
                 <p>ต้องการลบข้อมูลใช่หรือไม่</p>
                 <div
                   style={{
-                    marginTop: "15px",
                     display: "flex",
-                    justifyContent: "flex-end", // Align buttons to the right
-                    gap: "10px", // Space between buttons
-                  }}>
+                    justifyContent: "center",
+                    gap: "10px",
+                    marginTop: "10px",
+                  }}
+                >
                   <button
                     onClick={() => setIsModalOpen(false)}
                     style={{
@@ -226,7 +198,8 @@ const Detail: React.FC = () => {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
-                    }}>
+                    }}
+                  >
                     ยกเลิก
                   </button>
                   <button
@@ -238,7 +211,8 @@ const Detail: React.FC = () => {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
-                    }}>
+                    }}
+                  >
                     ลบ
                   </button>
                 </div>
@@ -257,7 +231,8 @@ const Detail: React.FC = () => {
                 borderRadius: "8px",
                 overflow: "hidden",
                 backgroundColor: "#fff",
-              }}>
+              }}
+            >
               {data.map((row, index) => (
                 <div
                   key={index}
@@ -267,7 +242,8 @@ const Detail: React.FC = () => {
                     padding: "15px",
                     borderBottom:
                       index === data.length - 1 ? "none" : "1px solid #e0e0e0",
-                  }}>
+                  }}
+                >
                   <span style={{ fontWeight: 500 }}>{row.label}</span>
                   <span>{row.value}</span>
                 </div>
