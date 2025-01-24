@@ -142,7 +142,7 @@ const AddMedicineForm: React.FC = () => {
                 <textarea
                   className="w-full border rounded p-2 bg-gray-200"
                   placeholder="ผลข้างเคียง"
-                  rows={4}
+                  rows={3}
                 ></textarea>
               </div>
             </div>
