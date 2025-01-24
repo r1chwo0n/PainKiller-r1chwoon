@@ -34,6 +34,7 @@ const Detail: React.FC = () => {
         (sum: number, stockItem: { amount: number }) => sum + (stockItem.amount || 0),
         0
       );
+      console.log("Data:", result);
 
       const formattedData: DataRow[] = [
         { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data[0].name ?? "N/A" },
@@ -53,9 +54,17 @@ const Detail: React.FC = () => {
       ];
 
       const stockData: DataRow[] = result.data[0]?.stock?.map(
-        (stockItem: { create_date: string; amount: number; type: string }, index: number) => ({
+        (stockItem: { expired: string; amount: number; unit_type: string; 
+          unit_price: number}, index: number) => ({
           label: `ล็อตที่ ${index + 1}`,
-          value: `จำนวน: ${stockItem.amount}, ประเภท: ${stockItem.type}, สร้างเมื่อ: ${stockItem.create_date}`,
+          value: (
+            <>
+              จำนวน: {stockItem.amount} <br />
+              ประเภท: {stockItem.unit_type} <br />
+              วันหมดอายุ: {stockItem.expired} <br />
+              ราคาต่อหน่วย: {stockItem.unit_price}
+            </>
+          ),
         })
       ) ?? [];
 
