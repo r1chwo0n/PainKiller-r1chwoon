@@ -225,7 +225,6 @@ app.patch("/drugs/update", async (req, res, next) => {
   }
 });
 
-
 // 6. add stock for a drug
 app.post("/stocks", async (req, res) => {
   try {
