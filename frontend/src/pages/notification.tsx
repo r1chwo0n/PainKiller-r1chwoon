@@ -15,38 +15,6 @@ type Drug = {
 };
 
 const NotificationPage: React.FC = () => {
-  const mockDrugs = [
-    {
-      drug_id: "1",
-      name: "Paracetamol",
-      drug_type: "drug",
-      unit_type: "แผง",
-      stock: [
-        { stock_id: "s1", amount: 10, expired: "2025-01-25" }, // หมดอายุในอีก 4 วัน
-        { stock_id: "s2", amount: 200, expired: "2026-12-31" }, // ไม่แจ้งเตือน
-      ],
-    },
-    {
-      drug_id: "2",
-      name: "ขมิ้น",
-      drug_type: "herb",
-      unit_type: "ซอง",
-      stock: [
-        { stock_id: "s3", amount: 30,  expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
-        { stock_id: "s4", amount: 100, expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
-      ],
-    },
-    {
-      drug_id: "3",
-      name: "มะขามป้อม",
-      drug_type: "herb",
-      unit_type: "ขวด",
-      stock: [
-        { stock_id: "s5", amount: 10,  expired: "2025-01-25" },
-        { stock_id: "s6", amount: 5, expired: "2025-04-20" },
-      ],
-    }
-  ];
 
   const [drugs, setDrugs] = useState<Drug[]>([]);
 
@@ -128,42 +96,6 @@ const NotificationPage: React.FC = () => {
         {/* Content Box */}
         <div className="bg-white h-[785px] rounded-[12px] mt-4 p-6 pl-4 pb-5 overflow-y-auto">
           {/* กรองและแสดงเฉพาะรายการที่ต้องแจ้งเตือน */}
-          {/* {mockDrugs.flatMap((drug) => {
-            const lowStockWarning = getLowStockWarning(drug);
-            const expiryWarnings = getExpiryWarnings(drug);
-
-            const notifications = [];
-
-            if (lowStockWarning) {
-              notifications.push(
-                <LowStockCard
-                  key={drug.drug_id}
-                  name={drug.name}
-                  drug_type={drug.drug_type}
-                  amount={getTotalStockAmount(drug)}
-                  unit_type={drug.unit_type}
-                  warning={true}
-                  warningMessage={lowStockWarning}
-                />
-              );
-            }
-
-            notifications.push(
-              ...expiryWarnings.map((warning) => (
-                <ExpiredCard
-                  key={warning.stock_id}
-                  name={drug.name}
-                  drug_type={drug.drug_type}
-                  amount={warning.amount}
-                  unit_type={warning.unit_type}
-                  expired={warning.expired}
-                  warning={true}
-                  warningMessage={warning.message}
-                />
-              ))
-            );
-            return notifications;
-          })} */}
             {drugs.flatMap((drug) => {
             const lowStockWarning = getLowStockWarning(drug);
             const expiryWarnings = getExpiryWarnings(drug);
