@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import NotiCard from "../components/notiCard";
+import ExpiredCard from "../components/expiredCard";
 import LowStockCard from "../components/lowStockCard";
 
 type Drug = {
   drug_id: string;
   name: string;
   drug_type: string;
+  unit_type: string;
   stock: {
     stock_id: string;
     amount: number;
-    unit_type: string;
     expired: string;
   }[];
 };
@@ -20,27 +20,30 @@ const NotificationPage: React.FC = () => {
       drug_id: "1",
       name: "Paracetamol",
       drug_type: "drug",
+      unit_type: "แผง",
       stock: [
-        { stock_id: "s1", amount: 10, unit_type: "แผง", expired: "2025-01-25" }, // หมดอายุในอีก 4 วัน
-        { stock_id: "s2", amount: 200, unit_type: "แผง", expired: "2026-12-31" }, // ไม่แจ้งเตือน
+        { stock_id: "s1", amount: 10, expired: "2025-01-25" }, // หมดอายุในอีก 4 วัน
+        { stock_id: "s2", amount: 200, expired: "2026-12-31" }, // ไม่แจ้งเตือน
       ],
     },
     {
       drug_id: "2",
       name: "ขมิ้น",
       drug_type: "herb",
+      unit_type: "ซอง",
       stock: [
-        { stock_id: "s3", amount: 30, unit_type: "ซอง", expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
-        { stock_id: "s4", amount: 100, unit_type: "ซอง", expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
+        { stock_id: "s3", amount: 30,  expired: "2025-02-15" }, // จำนวนคงเหลือน้อยกว่ากำหนด
+        { stock_id: "s4", amount: 100, expired: "2025-01-30" }, // หมดอายุในอีก 9 วัน
       ],
     },
     {
       drug_id: "3",
       name: "มะขามป้อม",
       drug_type: "herb",
+      unit_type: "ขวด",
       stock: [
-        { stock_id: "s5", amount: 10, unit_type: "ขวด", expired: "2025-01-25" },
-        { stock_id: "s6", amount: 5, unit_type: "ขวด", expired: "2025-04-20" },
+        { stock_id: "s5", amount: 10,  expired: "2025-01-25" },
+        { stock_id: "s6", amount: 5, expired: "2025-04-20" },
       ],
     }
   ];
@@ -77,7 +80,7 @@ const NotificationPage: React.FC = () => {
           stock_id: stock.stock_id,
           message: `หมดอายุในอีก ${daysLeft} วัน`,
           amount: stock.amount,
-          unit_type: stock.unit_type,
+          unit_type: drug.unit_type,
           expired: stock.expired,
         }; // กรณีใกล้หมดอายุ
       }
@@ -138,7 +141,7 @@ const NotificationPage: React.FC = () => {
                   name={drug.name}
                   drug_type={drug.drug_type}
                   amount={getTotalStockAmount(drug)}
-                  unit_type={drug.stock[0].unit_type}
+                  unit_type={drug.unit_type}
                   warning={true}
                   warningMessage={lowStockWarning}
                 />
@@ -147,7 +150,7 @@ const NotificationPage: React.FC = () => {
 
             notifications.push(
               ...expiryWarnings.map((warning) => (
-                <NotiCard
+                <ExpiredCard
                   key={warning.stock_id}
                   name={drug.name}
                   drug_type={drug.drug_type}
@@ -159,7 +162,6 @@ const NotificationPage: React.FC = () => {
                 />
               ))
             );
-
             return notifications;
           })} */}
             {drugs.flatMap((drug) => {
@@ -175,7 +177,7 @@ const NotificationPage: React.FC = () => {
                   name={drug.name}
                   drug_type={drug.drug_type}
                   amount={getTotalStockAmount(drug)}
-                  unit_type={drug.stock[0].unit_type}
+                  unit_type={drug.unit_type}
                   warning={true}
                   warningMessage={lowStockWarning}
                 />
@@ -184,7 +186,7 @@ const NotificationPage: React.FC = () => {
 
             notifications.push(
               ...expiryWarnings.map((warning) => (
-                <NotiCard
+                <ExpiredCard
                   key={warning.stock_id}
                   name={drug.name}
                   drug_type={drug.drug_type}
