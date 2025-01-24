@@ -89,7 +89,7 @@ const Detail: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
+      {/* Sidebar
       <aside className="w-1/5 bg-gray-100 p-4 flex flex-col items-center">
         <div className="flex flex-col items-center mb-8">
           <img
@@ -107,7 +107,7 @@ const Detail: React.FC = () => {
             คลังยา
           </a>
         </nav>
-      </aside>
+      </aside> */}
 
       {/* Main Content */}
       <div className="flex-grow p-8" style={{ fontFamily: "Arial, sans-serif" }}>
@@ -229,12 +229,45 @@ const Detail: React.FC = () => {
         {/* Data Display */}
         {!loading && !error && (
           <>
+            {/* Stock Display with Side Slide */}
+            <div
+              style={{
+                display: "flex",
+                overflowX: "auto",
+                gap: "16px",
+                marginBottom: "20px",
+                paddingBottom: "10px",
+                borderBottom: "1px solid #e0e0e0",
+                backgroundColor: "#ffff",
+                transition:"transform 0.3s ease-in-out",
+              }}
+            >
+              {data
+                .filter((row) => row.label.startsWith("ล็อตที่"))
+                .map((row, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      minWidth: "200px",
+                      flex: "0 0 auto",
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "8px",
+                      padding: "15px",
+                      backgroundColor: "#d3d3d3",
+                    }}
+                  >
+                    <p style={{ fontWeight: "bold" }}>{row.label}</p>
+                    <p>{row.value}</p>
+                  </div>
+                ))}
+            </div>
+
             {/* Main Data */}
             <div
               style={{
                 border: "1px solid #e0e0e0",
                 borderRadius: "8px",
-                backgroundColor: "#fff",
+                backgroundColor: "#ffff",
                 marginBottom: "20px",
               }}
             >
@@ -256,36 +289,6 @@ const Detail: React.FC = () => {
                 ))}
             </div>
 
-            {/* Stock Display with Side Slide */}
-            <div
-              style={{
-                display: "flex",
-                overflowX: "auto",
-                gap: "16px",
-                marginBottom: "20px",
-                paddingBottom: "10px",
-                borderBottom: "1px solid #e0e0e0",
-              }}
-            >
-              {data
-                .filter((row) => row.label.startsWith("ล็อตที่"))
-                .map((row, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      minWidth: "200px",
-                      flex: "0 0 auto",
-                      border: "1px solid #e0e0e0",
-                      borderRadius: "8px",
-                      padding: "15px",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <p style={{ fontWeight: "bold" }}>{row.label}</p>
-                    <p>{row.value}</p>
-                  </div>
-                ))}
-            </div>
           </>
         )}
       </div>
