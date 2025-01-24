@@ -2,10 +2,10 @@ import React from "react";
 
 const AddMedicineForm: React.FC = () => {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-200">
       {/* Sidebar */}
-      <div className="w-1/4 container mx-auto p-4">
-        <div className="bg-white shadow-md rounded-lg p-6 min-h-screen">
+      <div className="w-1/4 bg-white shadow-md p-6">
+        <div className="flex flex-col items-center">
           <img src="/logo.png" alt="Logo" className="w-24 h-24 mb-4" />
           <nav className="w-full">
             <ul className="text-pink-500 font-medium">
@@ -20,11 +20,15 @@ const AddMedicineForm: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-3/4 container mx-auto p-4">
-        <div className="bg-white shadow-md rounded-lg p-6 min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">เพิ่มข้อมูลยา</h1>
+      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+          <h1 className="text-2xl font-bold">เพิ่มข้อมูลยา</h1>
+        </div>
+
+        <div className="bg-white shadow-md rounded-lg p-6">
           <form>
-            <div className="grid grid-cols-2 gap-4">
+            {/* Grid layout for the form */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Name */}
               <div>
                 <label className="block text-gray-700">ชื่อยา</label>
@@ -45,9 +49,9 @@ const AddMedicineForm: React.FC = () => {
                 />
               </div>
 
-              {/* Type */}
+              {/* Unit */}
               <div>
-                <label className="block text-gray-700">ยา</label>
+                <label className="block text-gray-700">หน่วย</label>
                 <select className="w-full border rounded p-2 bg-gray-200">
                   <option value="">เลือก</option>
                   <option value="type1">เม็ด</option>
@@ -60,39 +64,50 @@ const AddMedicineForm: React.FC = () => {
 
               {/* Herbal / Non-Herbal */}
               <div>
-                <label className="block text-gray-700"></label>
+                <label className="block text-gray-700">ประเภท</label>
                 <div className="flex items-center space-x-4">
                   <label>
-                    <input type="radio" name="type" value="herbal" /> ยา
+                    <input
+                      type="radio"
+                      name="type"
+                      value="herbal"
+                      className="mr-2"
+                    />{" "}
+                    ยา
                   </label>
                   <label>
-                    <input type="radio" name="type" value="non-herbal" />{" "}
+                    <input
+                      type="radio"
+                      name="type"
+                      value="non-herbal"
+                      className="mr-2"
+                    />{" "}
                     สมุนไพร
                   </label>
                 </div>
               </div>
-            </div>
 
-            {/* Price */}
-            <div className="mt-4">
-              <label className="block text-gray-700">ราคา</label>
-              <input
-                type="number"
-                className="w-full border rounded p-2 bg-gray-200"
-                placeholder="ราคา"
-              />
-            </div>
-
-            {/* Dates */}
-            <div className="grid grid-cols-2 gap-4 mt-4">
+              {/* Drug Code */}
               <div>
-                <label className="block text-gray-700">วันที่ผลิต</label>
+                <label className="block text-gray-700">รหัสยา</label>
                 <input
-                  type="date"
+                  type="text"
                   className="w-full border rounded p-2 bg-gray-200"
+                  placeholder="รหัสยา"
                 />
               </div>
 
+              {/* Price per Unit */}
+              <div>
+                <label className="block text-gray-700">ราคาต่อหน่วย</label>
+                <input
+                  type="number"
+                  className="w-full border rounded p-2 bg-gray-200"
+                  placeholder="ราคาต่อหน่วย"
+                />
+              </div>
+
+              {/* Expiry Date */}
               <div>
                 <label className="block text-gray-700">วันหมดอายุ</label>
                 <input
@@ -100,26 +115,36 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full border rounded p-2 bg-gray-200"
                 />
               </div>
-            </div>
 
-            {/* Descriptions */}
-            <div className="mt-4">
-              <label className="block text-gray-700">รายละเอียด</label>
-              <textarea
-                className="w-full border rounded p-2 bg-gray-200"
-                placeholder="รายละเอียด"
-                rows={4}
-              ></textarea>
-            </div>
+              {/* Description */}
+              <div className="md:col-span-2">
+                <label className="block text-gray-700">รายละเอียดยา</label>
+                <textarea
+                  className="w-full border rounded p-2 bg-gray-200"
+                  placeholder="รายละเอียดยา"
+                  rows={4}
+                ></textarea>
+              </div>
 
-            {/* Usage Instructions */}
-            <div className="mt-4">
-              <label className="block text-gray-700">วิธีใช้</label>
-              <textarea
-                className="w-full border rounded p-2 bg-gray-200"
-                placeholder="วิธีใช้"
-                rows={4}
-              ></textarea>
+              {/* Usage Instructions */}
+              <div className="md:col-span-2">
+                <label className="block text-gray-700">วิธีใช้</label>
+                <textarea
+                  className="w-full border rounded p-2 bg-gray-200"
+                  placeholder="วิธีใช้"
+                  rows={4}
+                ></textarea>
+              </div>
+
+              {/* Side Effects */}
+              <div className="md:col-span-2">
+                <label className="block text-gray-700">ผลข้างเคียง</label>
+                <textarea
+                  className="w-full border rounded p-2 bg-gray-200"
+                  placeholder="ผลข้างเคียง"
+                  rows={4}
+                ></textarea>
+              </div>
             </div>
 
             {/* Submit Button */}
