@@ -55,22 +55,20 @@
 //         { label: "ผลข้างเคียง", value: result?.data[0].side_effect ?? "N/A" },
 //         { label: "อาหารแสลง", value: result?.data[0].slang_food ?? "N/A" },
 //       ];
-//       // Append stock information for each stock item
+
 //       const stockData: DataRow[] = result.data[0]?.stock?.map(
 //         (stockItem: { create_date: string; amount: number; type: string }, index: number) => ({
-//           label: `Stock Created: ${stockItem.create_date}`,
-//           value: `Amount: ${stockItem.amount}, Type: ${stockItem.type}`,
-//        })
+//           label: `ล็อตที่ ${index + 1}`,
+//           value: `จำนวน: ${stockItem.amount}, ประเภท: ${stockItem.type}, สร้างเมื่อ: ${stockItem.create_date}`,
+//         })
 //       ) ?? [];
 
-//       setData(formattedData);
-//       setData(stockData);
+//       setData([...formattedData, ...stockData]); // Combine both datasets
 //     } catch (err: any) {
 //       setError(err.message);
 //     } finally {
 //       setLoading(false);
 //     }
-
 //   };
 
 //   useEffect(() => {
@@ -105,10 +103,7 @@
 //       </aside>
 
 //       {/* Main Content */}
-//       <div
-//         className="flex-grow p-8"
-//         style={{ fontFamily: "Arial, sans-serif" }}
-//       >
+//       <div className="flex-grow p-8" style={{ fontFamily: "Arial, sans-serif" }}>
 //         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 //           {/* Drug Name with Actions */}
 //           <div
@@ -232,68 +227,80 @@
 //           {loading && <div>กำลังโหลดข้อมูล...</div>}
 //           {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
-//           {/* Data Display */}
-//           {!loading && !error && data.length > 0 && (
-//             <div
-//               style={{
-//                 border: "1px solid #e0e0e0",
-//                 borderRadius: "8px",
-//                 overflow: "hidden",
-//                 backgroundColor: "#fff",
-//               }}
-//             >
-//               {data.map((row, index) => (
+//           {/* Stock Display */}
+//           <div
+//             style={{
+//               display: "grid",
+//               gridTemplateColumns: "repeat(3, 1fr)",
+//               gap: "16px",
+//               marginBottom: "20px",
+//             }}
+//           >
+//             {data
+//               .filter((row) => row.label.startsWith("ล็อตที่"))
+//               .map((row, index) => (
+//                 <div
+//                   key={index}
+//                   style={{
+//                     border: "1px solid #e0e0e0",
+//                     borderRadius: "8px",
+//                     padding: "15px",
+//                     backgroundColor: "#fff",
+//                   }}
+//                 >
+//                   <p>{row.label}</p>
+//                   <p>{row.value}</p>
+//                 </div>
+//               ))}
+//           </div>
+
+//           {/* Drug Information */}
+//           <div>
+//             {data
+//               .filter((row) => !row.label.startsWith("ล็อตที่"))
+//               .map((row, index) => (
 //                 <div
 //                   key={index}
 //                   style={{
 //                     display: "flex",
 //                     justifyContent: "space-between",
-//                     padding: "15px",
-//                     borderBottom:
-//                       index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+//                     padding: "10px 0",
+//                     borderBottom: "1px solid #e0e0e0",
 //                   }}
 //                 >
 //                   <span style={{ fontWeight: 500 }}>{row.label}</span>
 //                   <span>{row.value}</span>
 //                 </div>
 //               ))}
-//             </div>
-//           )}
+//           </div>
 //         </div>
 //       </div>
 //     </div>
 //   );
 // };
-
 // export default Detail;
-
-
-
 
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-// Define interface for drug data
 interface DataRow {
   label: string;
   value: string;
 }
 
 const Detail: React.FC = () => {
-  const [data, setData] = useState<DataRow[]>([]); // State to store fetched data
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [data, setData] = useState<DataRow[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
 
-  // Handle delete action
   const handleDelete = () => {
     console.log("Deleted!");
     setIsModalOpen(false);
   };
 
-  // Fetch data from API
   const fetchData = async (name: string) => {
     setLoading(true);
     setError(null);
@@ -306,7 +313,6 @@ const Detail: React.FC = () => {
       }
       const result = await response.json();
 
-      // Calculate the total stock amount in the frontend
       const totalStockAmount = result.data[0]?.stock?.reduce(
         (sum: number, stockItem: { amount: number }) => sum + (stockItem.amount || 0),
         0
@@ -336,7 +342,7 @@ const Detail: React.FC = () => {
         })
       ) ?? [];
 
-      setData([...formattedData, ...stockData]); // Combine both datasets
+      setData([...formattedData, ...stockData]);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -345,13 +351,13 @@ const Detail: React.FC = () => {
   };
 
   useEffect(() => {
-    const drugName = searchParams.get("name"); // Get "name" from query params
+    const drugName = searchParams.get("name");
     if (drugName) {
-      fetchData(drugName); // Fetch data when the component mounts
+      fetchData(drugName);
     } else {
       setError("No drug name provided in the URL.");
     }
-  }, [searchParams]); // Trigger when query params change
+  }, [searchParams]);
 
   return (
     <div className="flex h-screen">
@@ -359,7 +365,7 @@ const Detail: React.FC = () => {
       <aside className="w-1/5 bg-gray-100 p-4 flex flex-col items-center">
         <div className="flex flex-col items-center mb-8">
           <img
-            src="/path-to-logo" // Replace with your logo's path
+            src="/path-to-logo"
             alt="Logo"
             className="w-20 h-20 mb-4"
           />
@@ -377,48 +383,104 @@ const Detail: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-grow p-8" style={{ fontFamily: "Arial, sans-serif" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Drug Name with Actions */}
+        {/* Drug Name with Actions */}
+        <div style={{ marginBottom: "20px" }}>
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "15px",
               border: "1px solid #e0e0e0",
               borderRadius: "8px",
-              padding: "15px",
-              marginBottom: "20px",
               backgroundColor: "#fff",
-              gap: "10px",
+            }}
+          >
+            <span style={{ fontSize: "20px", fontWeight: "bold" }}>
+              {searchParams.get("name")}
+            </span>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={() => console.log("Edit")}
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "#00CDFF",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                แก้ไข
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                style={{
+                  padding: "8px 12px",
+                  backgroundColor: "#FF0000",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                ลบ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal for Delete Confirmation */}
+        {isModalOpen && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                backgroundColor: "#fff",
+                padding: "20px",
+                borderRadius: "8px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                textAlign: "center",
               }}
             >
-              <span style={{ fontSize: "20px", fontWeight: "bold" }}>
-                {searchParams.get("name")}
-              </span>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <h2>ยืนยันการลบข้อมูล</h2>
+              <p>ต้องการลบข้อมูลใช่หรือไม่</p>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "10px",
+                  marginTop: "10px",
+                }}
+              >
                 <button
-                  onClick={() => console.log("Edit")}
+                  onClick={() => setIsModalOpen(false)}
                   style={{
-                    padding: "8px 12px",
-                    backgroundColor: "#00CDFF",
-                    color: "#fff",
+                    padding: "10px 15px",
+                    backgroundColor: "#cccccc",
+                    color: "#000",
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
                   }}
                 >
-                  แก้ไข
+                  ยกเลิก
                 </button>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={handleDelete}
                   style={{
-                    padding: "8px 12px",
+                    padding: "10px 15px",
                     backgroundColor: "#FF0000",
                     color: "#fff",
                     border: "none",
@@ -431,126 +493,76 @@ const Detail: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
 
-          {/* Modal for Delete Confirmation */}
-          {isModalOpen && (
+        {loading && <div>กำลังโหลดข้อมูล...</div>}
+        {error && <div style={{ color: "red" }}>Error: {error}</div>}
+
+        {/* Data Display */}
+        {!loading && !error && (
+          <>
+            {/* Main Data */}
             <div
               style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                backgroundColor: "#fff",
+                marginBottom: "20px",
               }}
             >
-              <div
-                style={{
-                  backgroundColor: "#fff",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                  textAlign: "center",
-                }}
-              >
-                <h2>ยืนยันการลบข้อมูล</h2>
-                <p>ต้องการลบข้อมูลใช่หรือไม่</p>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "10px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <button
-                    onClick={() => setIsModalOpen(false)}
+              {data
+                .filter((row) => !row.label.startsWith("ล็อตที่"))
+                .map((row, index) => (
+                  <div
+                    key={index}
                     style={{
-                      padding: "10px 15px",
-                      backgroundColor: "#cccccc",
-                      color: "#000",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "15px",
+                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
                     }}
                   >
-                    ยกเลิก
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    style={{
-                      padding: "10px 15px",
-                      backgroundColor: "#FF0000",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    ลบ
-                  </button>
-                </div>
-              </div>
+                    <span style={{ fontWeight: 500 }}>{row.label}</span>
+                    <span>{row.value}</span>
+                  </div>
+                ))}
             </div>
-          )}
 
-          {loading && <div>กำลังโหลดข้อมูล...</div>}
-          {error && <div style={{ color: "red" }}>Error: {error}</div>}
-
-          {/* Stock Display */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "16px",
-              marginBottom: "20px",
-            }}
-          >
-            {data
-              .filter((row) => row.label.startsWith("ล็อตที่"))
-              .map((row, index) => (
-                <div
-                  key={index}
-                  style={{
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "8px",
-                    padding: "15px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <p>{row.label}</p>
-                  <p>{row.value}</p>
-                </div>
-              ))}
-          </div>
-
-          {/* Drug Information */}
-          <div>
-            {data
-              .filter((row) => !row.label.startsWith("ล็อตที่"))
-              .map((row, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "10px 0",
-                    borderBottom: "1px solid #e0e0e0",
-                  }}
-                >
-                  <span style={{ fontWeight: 500 }}>{row.label}</span>
-                  <span>{row.value}</span>
-                </div>
-              ))}
-          </div>
-        </div>
+            {/* Stock Display with Side Slide */}
+            <div
+              style={{
+                display: "flex",
+                overflowX: "auto",
+                gap: "16px",
+                marginBottom: "20px",
+                paddingBottom: "10px",
+                borderBottom: "1px solid #e0e0e0",
+              }}
+            >
+              {data
+                .filter((row) => row.label.startsWith("ล็อตที่"))
+                .map((row, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      minWidth: "200px",
+                      flex: "0 0 auto",
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "8px",
+                      padding: "15px",
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    <p style={{ fontWeight: "bold" }}>{row.label}</p>
+                    <p>{row.value}</p>
+                  </div>
+                ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default Detail;
-
