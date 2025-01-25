@@ -35,7 +35,7 @@ const Detail: React.FC = () => {
       }
       const result = await response.json();
 
-      const totalStockAmount = result.data[0]?.stock?.reduce(
+      const totalStockAmount = result.data?.stock?.reduce(
         (sum: number, stockItem: { amount: number }) => sum + (stockItem.amount || 0),
         0
       );
