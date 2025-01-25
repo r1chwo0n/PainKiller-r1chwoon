@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+// Register modules
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 interface DataRow {
   label: string;
@@ -36,7 +43,8 @@ const Detail: React.FC = () => {
       const result = await response.json();
 
       const totalStockAmount = result.data?.stock?.reduce(
-        (sum: number, stockItem: { amount: number }) => sum + (stockItem.amount || 0),
+        (sum: number, stockItem: { amount: number }) =>
+          sum + (stockItem.amount || 0),
         0
       );
 
@@ -97,7 +105,9 @@ const Detail: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="flex-grow p-8" style={{ fontFamily: "Arial, sans-serif" }}>
+      <div
+        className="flex-grow p-8"
+        style={{ fontFamily: "Arial, sans-serif" }}>
         {/* Modal for Delete Confirmation */}
         {isModalOpen && (
           <div
@@ -111,8 +121,7 @@ const Detail: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-            }}
-          >
+            }}>
             <div
               style={{
                 backgroundColor: "#fff",
@@ -120,8 +129,7 @@ const Detail: React.FC = () => {
                 borderRadius: "8px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                 textAlign: "center",
-              }}
-            >
+              }}>
               <h2>ยืนยันการลบข้อมูล</h2>
               <p>ต้องการลบข้อมูลใช่หรือไม่</p>
               <div
@@ -130,8 +138,7 @@ const Detail: React.FC = () => {
                   justifyContent: "center",
                   gap: "10px",
                   marginTop: "10px",
-                }}
-              >
+                }}>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   style={{
@@ -141,8 +148,7 @@ const Detail: React.FC = () => {
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
-                  }}
-                >
+                  }}>
                   ยกเลิก
                 </button>
                 <button
@@ -154,8 +160,7 @@ const Detail: React.FC = () => {
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
-                  }}
-                >
+                  }}>
                   ลบ
                 </button>
               </div>
@@ -176,11 +181,14 @@ const Detail: React.FC = () => {
                 border: "1px solid #e0e0e0",
                 borderRadius: "8px",
                 backgroundColor: "#fff",
-                
-              }}
-            >
-              <span style={{ fontSize: "20px", fontWeight: "bold" }}>
-                {data.find((row) => row.label === "เกี่ยวกับยา (ชื่อยา)")?.value ?? "Drug Name Not Found"}
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}>
+              {/* Drug Name */}
+              <span style={{ fontSize: "25px", fontWeight: "bold" }}>
+                {data.find((row) => row.label === "เกี่ยวกับยา (ชื่อยา)")
+                  ?.value ?? "Drug Name Not Found"}
               </span>
               <div
                 style={{
@@ -188,33 +196,42 @@ const Detail: React.FC = () => {
                   justifyContent: "flex-end",
                   gap: "10px",
                   // marginTop: "10px",
-                }}
-              >
+                }}>
+                {/* Edit Button */}
                 <button
-                  onClick={handleEdit}
+                  onClick={() => alert("Edit button clicked!")}
                   style={{
                     padding: "10px 15px",
-                    backgroundColor: "#4CAF50",
-                    color: "#fff",
+                    backgroundColor: "#E9E9E9",
+                    color: "#696969",
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
-                  }}
-                >
-                  แก้ไข
+                    display: "flex",
+                    alignItems: "center", // Align icon vertically
+                    justifyContent: "center", // Align icon horizontally
+                  }}>
+                  <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
                 </button>
+
+                {/* Delete Button */}
                 <button
                   onClick={() => setIsModalOpen(true)}
                   style={{
                     padding: "10px 15px",
-                    backgroundColor: "#FF0000",
-                    color: "#fff",
+                    backgroundColor: "#E9E9E9", // Use a red color for delete button
+                    color: "#696969",
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
-                  }}
-                >
-                  ลบ
+                    display: "flex",
+                    alignItems: "center", // Align icon vertically
+                    justifyContent: "center", // Align icon horizontally
+                  }}>
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    style={{ fontSize: "16px" }}
+                  />
                 </button>
               </div>
             </div>
@@ -224,13 +241,12 @@ const Detail: React.FC = () => {
               style={{
                 display: "flex",
                 overflowX: "auto",
-                gap: "16px",
+                gap: "30px",
                 marginBottom: "20px",
                 paddingBottom: "10px",
                 borderBottom: "1px solid #e0e0e0",
                 backgroundColor: "#ffff",
-              }}
-            >
+              }}>
               {data
                 .filter((row) => row.label.startsWith("ล็อตที่"))
                 .map((row, index) => (
@@ -241,10 +257,9 @@ const Detail: React.FC = () => {
                       flex: "0 0 auto",
                       border: "1px solid #e0e0e0",
                       borderRadius: "8px",
-                      padding: "15px",
-                      backgroundColor: "#d3d3d3",
-                    }}
-                  >
+                      padding: "20px",
+                      backgroundColor: "#E9E9E9",
+                    }}>
                     <p style={{ fontWeight: "bold" }}>{row.label}</p>
                     <p>{row.value}</p>
                   </div>
@@ -258,8 +273,7 @@ const Detail: React.FC = () => {
                 borderRadius: "8px",
                 backgroundColor: "#ffff",
                 marginBottom: "20px",
-              }}
-            >
+              }}>
               {data
                 .filter((row) => !row.label.startsWith("ล็อตที่"))
                 .map((row, index) => (
@@ -270,14 +284,22 @@ const Detail: React.FC = () => {
                       justifyContent: "space-between",
                       padding: "15px",
                       borderBottom:
-                        index === data.length - 1 ? "none" : "1px solid #e0e0e0",
-                    }}
-                  >
+                        index === data.length - 1
+                          ? "none"
+                          : "1px solid #e0e0e0",
+                    }}>
                     <span style={{ fontWeight: 500 }}>{row.label}</span>
                     <span>{row.value}</span>
                   </div>
                 ))}
             </div>
+            <div
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                backgroundColor: "#ffff",
+                marginBottom: "10px",
+              }}></div>
           </>
         )}
       </div>
