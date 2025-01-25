@@ -1,29 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 interface DataRow {
   label: string;
-  value: string;
+  value: React.ReactNode;
 }
 
 const Detail: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // Extract the `id` parameter from the URL
   const [data, setData] = useState<DataRow[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [searchParams] = useSearchParams();
 
   const handleDelete = () => {
     console.log("Deleted!");
     setIsModalOpen(false);
   };
 
-  const fetchData = async (name: string) => {
+  const handleEdit = () => {
+    console.log("Edit button clicked!");
+    // Add your edit functionality here (redirect to an edit form, for example)
+  };
+
+  const fetchData = async (drugId: string) => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:3000/drugs/search?name=${encodeURIComponent(name)}`
+        `http://localhost:3000/drugs/${encodeURIComponent(drugId)}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data from API");
@@ -34,41 +39,45 @@ const Detail: React.FC = () => {
         (sum: number, stockItem: { amount: number }) => sum + (stockItem.amount || 0),
         0
       );
-      console.log("Data:", result);
 
       const formattedData: DataRow[] = [
-        { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data[0].name ?? "N/A" },
-        { label: "รหัสยา", value: result.data[0].code ?? "N/A" },
+        { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data.name ?? "N/A" },
+        { label: "รหัสยา", value: result.data.code ?? "N/A" },
         {
           label: "จำนวนคงเหลือ",
           value: totalStockAmount?.toString() ?? "N/A",
         },
-        { label: "รายละเอียดยา", value: result?.data[0].detail ?? "N/A" },
-        { label: "วิธีใช้", value: result?.data[0].usage ?? "N/A" },
+        { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
+        { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
         {
           label: "วันหมดอายุ",
-          value: result?.data[0].stock[0]?.expired ?? "N/A",
+          value: result?.data.stock?.expired ?? "N/A",
         },
-        { label: "ผลข้างเคียง", value: result?.data[0].side_effect ?? "N/A" },
-        { label: "อาหารแสลง", value: result?.data[0].slang_food ?? "N/A" },
+        { label: "ผลข้างเคียง", value: result?.data.side_effect ?? "N/A" },
+        { label: "อาหารแสลง", value: result?.data.slang_food ?? "N/A" },
       ];
 
-      const stockData: 
-      DataRow[] = result.data[0]?.stock?.map(
-        (stockItem: { expired: string; amount: number; unit_type: string; 
-          unit_price: number}, index: number) => ({
+      const stockData: DataRow[] = result.data?.stock?.map(
+        (
+          stockItem: {
+            expired: string;
+            amount: number;
+            unit_type: string;
+            unit_price: number;
+          },
+          index: number
+        ) => ({
           label: `ล็อตที่ ${index + 1}`,
           value: (
             <>
               จำนวน: {stockItem.amount} <br />
-              ประเภท: {result.data[0].unit_type} <br />
+              ประเภท: {result.data.unit_type} <br />
               วันหมดอายุ: {stockItem.expired} <br />
               ราคาต่อหน่วย: {stockItem.unit_price}
             </>
           ),
         })
-      )
-
+      );
 
       setData([...formattedData, ...stockData]);
     } catch (err: any) {
@@ -79,85 +88,16 @@ const Detail: React.FC = () => {
   };
 
   useEffect(() => {
-    const drugName = searchParams.get("name");
-    if (drugName) {
-      fetchData(drugName);
+    if (id) {
+      fetchData(id); // Fetch data using the `id` from the URL
     } else {
-      setError("No drug name provided in the URL.");
+      setError("No drug ID provided in the URL.");
     }
-  }, [searchParams]);
+  }, [id]);
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar
-      <aside className="w-1/5 bg-gray-100 p-4 flex flex-col items-center">
-        <div className="flex flex-col items-center mb-8">
-          <img
-            src="/path-to-logo"
-            alt="Logo"
-            className="w-20 h-20 mb-4"
-          />
-          <h1 className="text-lg font-bold">มงคลคีรี</h1>
-        </div>
-        <nav className="w-full">
-          <a
-            href="#"
-            className="block p-2 mb-4 text-pink-500 font-medium bg-pink-100 rounded text-center"
-          >
-            คลังยา
-          </a>
-        </nav>
-      </aside> */}
-
-      {/* Main Content */}
       <div className="flex-grow p-8" style={{ fontFamily: "Arial, sans-serif" }}>
-        {/* Drug Name with Actions */}
-        <div style={{ marginBottom: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "15px",
-              border: "1px solid #e0e0e0",
-              borderRadius: "8px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <span style={{ fontSize: "20px", fontWeight: "bold" }}>
-              {searchParams.get("name")}
-            </span>
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button
-                onClick={() => console.log("Edit")}
-                style={{
-                  padding: "8px 12px",
-                  backgroundColor: "#00CDFF",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                แก้ไข
-              </button>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                style={{
-                  padding: "8px 12px",
-                  backgroundColor: "#FF0000",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                ลบ
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Modal for Delete Confirmation */}
         {isModalOpen && (
           <div
@@ -226,10 +166,60 @@ const Detail: React.FC = () => {
         {loading && <div>กำลังโหลดข้อมูล...</div>}
         {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
-        {/* Data Display */}
         {!loading && !error && (
           <>
-            {/* Stock Display with Side Slide */}
+            {/* Display Drug Name and Buttons */}
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "15px",
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                backgroundColor: "#fff",
+                
+              }}
+            >
+              <span style={{ fontSize: "20px", fontWeight: "bold" }}>
+                {data.find((row) => row.label === "เกี่ยวกับยา (ชื่อยา)")?.value ?? "Drug Name Not Found"}
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "10px",
+                  // marginTop: "10px",
+                }}
+              >
+                <button
+                  onClick={handleEdit}
+                  style={{
+                    padding: "10px 15px",
+                    backgroundColor: "#4CAF50",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  แก้ไข
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  style={{
+                    padding: "10px 15px",
+                    backgroundColor: "#FF0000",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  ลบ
+                </button>
+              </div>
+            </div>
+
+            {/* Stock Display */}
             <div
               style={{
                 display: "flex",
@@ -239,7 +229,6 @@ const Detail: React.FC = () => {
                 paddingBottom: "10px",
                 borderBottom: "1px solid #e0e0e0",
                 backgroundColor: "#ffff",
-                transition:"transform 0.3s ease-in-out",
               }}
             >
               {data
@@ -280,7 +269,8 @@ const Detail: React.FC = () => {
                       display: "flex",
                       justifyContent: "space-between",
                       padding: "15px",
-                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+                      borderBottom:
+                        index === data.length - 1 ? "none" : "1px solid #e0e0e0",
                     }}
                   >
                     <span style={{ fontWeight: 500 }}>{row.label}</span>
@@ -288,7 +278,6 @@ const Detail: React.FC = () => {
                   </div>
                 ))}
             </div>
-
           </>
         )}
       </div>
@@ -297,8 +286,3 @@ const Detail: React.FC = () => {
 };
 
 export default Detail;
-
-
-
-
-
