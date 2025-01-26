@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-// Register modules
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -19,7 +17,8 @@ const Detail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+  const navigate = useNavigate();
+  
   const handleDelete = () => {
     console.log("Deleted!");
     setIsModalOpen(false);
@@ -197,7 +196,7 @@ const Detail: React.FC = () => {
                 }}>
                 {/* Edit Button */}
                 <button
-                  onClick={() => alert("Edit button clicked!")}
+                  onClick={() => navigate("/notification")}
                   style={{
                     padding: "10px 15px",
                     backgroundColor: "#E9E9E9",
