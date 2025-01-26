@@ -474,10 +474,10 @@ const Homepage: React.FC = () => {
                     {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
                   </p>
                   <button
-                    onClick={() => navigate(`/edit-drug/${drug.drug_id}`)}
+                    onClick={() => navigate(`/detail/${drug.drug_id}`)}
                     className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
                   >
-                    แก้ไข
+                    ดูข้อมูล
                   </button>
                 </div>
               ))}
