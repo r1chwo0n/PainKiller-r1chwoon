@@ -1,16 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/sidebar"
 
-const AddMedicineForm: React.FC = () => {
+const EditMedicineDetail: React.FC = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleSaveClick = () => {
+    setShowPopup(true);
+  };
+
+  const handleCancel = () => {
+    setShowPopup(false);
+  };
+
+  const handleConfirm = () => {
+    setShowPopup(false);
+    alert("ข้อมูลถูกบันทึกเรียบร้อยแล้ว!"); // คุณสามารถเปลี่ยนให้เป็นการเรียก API หรือ Logic อื่น
+  };
+
   return (
     <div className="flex h-screen bg-gray-200">
-      {/* Sidebar */}
       <Sidebar/>
 
       {/* Main Content */}
       <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold">เพิ่มข้อมูลยา</h1>
+          <h1 className="text-2xl font-bold">แก้ไขรายละเอียดยา</h1>
         </div>
 
         <div className="bg-white shadow-md rounded-lg p-6">
@@ -85,15 +99,6 @@ const AddMedicineForm: React.FC = () => {
                 />
               </div>
 
-              {/* Price per Unit */}
-              <div>
-                <label className="block text-gray-700">ราคาต่อหน่วย</label>
-                <input
-                  type="number"
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="ราคาต่อหน่วย"
-                />
-              </div>
 
               {/* Expiry Date */}
               <div>
@@ -130,7 +135,7 @@ const AddMedicineForm: React.FC = () => {
                 <textarea
                   className="w-full border rounded p-2 bg-gray-200"
                   placeholder="ผลข้างเคียง"
-                  rows={3}
+                  rows={4}
                 ></textarea>
               </div>
             </div>
@@ -138,8 +143,9 @@ const AddMedicineForm: React.FC = () => {
             {/* Submit Button */}
             <div className="mt-6 text-center">
               <button
-                type="submit"
+                type="button"
                 className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
+                onClick={handleSaveClick}
               >
                 บันทึก
               </button>
@@ -147,8 +153,32 @@ const AddMedicineForm: React.FC = () => {
           </form>
         </div>
       </div>
+
+      {/* Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
+            <h2 className="text-xl font-bold mb-4">บันทึกข้อมูล</h2>
+            <p className="mb-6">ต้องการบันทึกข้อมูลใช่หรือไม่?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleCancel}
+                className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default AddMedicineForm;
+export default EditMedicineDetail;

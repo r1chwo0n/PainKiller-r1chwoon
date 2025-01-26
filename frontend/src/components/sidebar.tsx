@@ -11,7 +11,6 @@ const Sidebar: React.FC = () => {
         src="/pic/logomk.jpg"
         alt="Logo"
         className="h-1/6 mb-1 rounded-full object-cover shadow-lg cursor-pointer"
-        onClick={() => navigate("/")}
       />
 
       {/* Navigation Link */}

@@ -4,7 +4,7 @@ import axios from "axios";
 import SwitchSelector from "react-switch-selector";
 import { useNavigate } from "react-router-dom";
 import useSnackbar from "./components/useSnackber";
-import Sidebar from "./components/slidebar";
+import Sidebar from "./components/sidebar";
 import clsx from "clsx";
 
 interface Drug {
