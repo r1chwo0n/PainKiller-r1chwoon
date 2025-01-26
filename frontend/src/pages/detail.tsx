@@ -196,7 +196,7 @@ const Detail: React.FC = () => {
                 }}>
                 {/* Edit Button */}
                 <button
-                  onClick={() => navigate("/notification")}
+                  onClick={() => navigate(`/edit-drug/${id}`)}
                   style={{
                     padding: "10px 15px",
                     backgroundColor: "#E9E9E9",
