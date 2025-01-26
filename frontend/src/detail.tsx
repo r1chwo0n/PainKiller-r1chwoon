@@ -48,6 +48,7 @@ const Detail: React.FC = () => {
         0
       );
 
+      console.log("data:",result)
       const formattedData: DataRow[] = [
         { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data.name ?? "N/A" },
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
@@ -57,10 +58,6 @@ const Detail: React.FC = () => {
         },
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
-        {
-          label: "วันหมดอายุ",
-          value: result?.data.stock?.expired ?? "N/A",
-        },
         { label: "ผลข้างเคียง", value: result?.data.side_effect ?? "N/A" },
         { label: "อาหารแสลง", value: result?.data.slang_food ?? "N/A" },
       ];
