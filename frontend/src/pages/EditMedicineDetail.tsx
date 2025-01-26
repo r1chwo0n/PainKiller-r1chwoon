@@ -1,25 +1,91 @@
-import React, { useState } from "react";
-import Sidebar from "../components/sidebar"
+import React, { useEffect, useState } from "react";
 
 const EditMedicineDetail: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [drugData, setDrugData] = useState({
+    name: "",
+    code: "",
+    detail: "",
+    usage: "",
+    slang_food: "",
+    side_effect: "",
+    unit_price: 0,
+  });
+  const [stockData, setStockData] = useState({
+    amount: 0,
+    expired: "",
+  });
 
-  const handleSaveClick = () => {
+  const drugId = "32e420b5-ddbd-49ef-ade7-2a6a9c0aba41"; // ตัวอย่าง drug_id
+
+  // ดึงข้อมูลยาเมื่อโหลดหน้า
+  useEffect(() => {
+    const fetchDrugData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/drugs/${drugId}`);
+        const result = await response.json();
+        if (response.ok) {
+          setDrugData(result.data);
+          setStockData(result.data.stock);
+        } else {
+          console.error(result.msg);
+        }
+      } catch (error) {
+        console.error("Error fetching drug data:", error);
+      }
+    };
+
+    fetchDrugData();
+  }, [drugId]);
+
+  const handleSaveClick = async () => {
     setShowPopup(true);
   };
 
-  const handleCancel = () => {
-    setShowPopup(false);
-  };
+  const handleConfirm = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/update`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          drug_id: drugId,
+          drugData,
+          stockData,
+        }),
+      });
 
-  const handleConfirm = () => {
+      const result = await response.json();
+      if (response.ok) {
+        alert("ข้อมูลถูกบันทึกเรียบร้อยแล้ว!");
+      } else {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating drug data:", error);
+    }
+
     setShowPopup(false);
-    alert("ข้อมูลถูกบันทึกเรียบร้อยแล้ว!"); // คุณสามารถเปลี่ยนให้เป็นการเรียก API หรือ Logic อื่น
   };
 
   return (
     <div className="flex h-screen bg-gray-200">
-      <Sidebar/>
+      {/* Sidebar */}
+      <div className="w-1/4 bg-white shadow-md p-6">
+        <div className="flex flex-col items-center">
+          <img src="/logo.png" alt="Logo" className="w-24 h-24 mb-4" />
+          <nav className="w-full">
+            <ul className="text-pink-500 font-medium">
+              <li className="mb-2">
+                <a href="#" className="hover:text-pink-700">
+                  คลังยา
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
@@ -29,118 +95,76 @@ const EditMedicineDetail: React.FC = () => {
 
         <div className="bg-white shadow-md rounded-lg p-6">
           <form>
-            {/* Grid layout for the form */}
+            {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
               <div>
                 <label className="block text-gray-700">ชื่อยา</label>
                 <input
                   type="text"
                   className="w-full border rounded p-2 bg-gray-200"
                   placeholder="ชื่อยา"
+                  value={drugData.name}
+                  onChange={(e) =>
+                    setDrugData({ ...drugData, name: e.target.value })
+                  }
                 />
               </div>
 
-              {/* Quantity */}
               <div>
                 <label className="block text-gray-700">จำนวน</label>
                 <input
                   type="number"
                   className="w-full border rounded p-2 bg-gray-200"
                   placeholder="จำนวน"
+                  value={stockData.amount}
+                  onChange={(e) =>
+                    setStockData({ ...stockData, amount: parseInt(e.target.value) })
+                  }
                 />
               </div>
 
-              {/* Unit */}
-              <div>
-                <label className="block text-gray-700">หน่วย</label>
-                <select className="w-full border rounded p-2 bg-gray-200">
-                  <option value="">เลือก</option>
-                  <option value="type1">เม็ด</option>
-                  <option value="type2">แผง</option>
-                  <option value="type3">ซอง</option>
-                  <option value="type4">ขวด</option>
-                  <option value="type5">หลอด</option>
-                </select>
-              </div>
-
-              {/* Herbal / Non-Herbal */}
-              <div>
-                <label className="block text-gray-700">ประเภท</label>
-                <div className="flex items-center space-x-4">
-                  <label>
-                    <input
-                      type="radio"
-                      name="type"
-                      value="herbal"
-                      className="mr-2"
-                    />{" "}
-                    ยา
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="type"
-                      value="non-herbal"
-                      className="mr-2"
-                    />{" "}
-                    สมุนไพร
-                  </label>
-                </div>
-              </div>
-
-              {/* Drug Code */}
-              <div>
-                <label className="block text-gray-700">รหัสยา</label>
-                <input
-                  type="text"
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="รหัสยา"
-                />
-              </div>
-
-
-              {/* Expiry Date */}
               <div>
                 <label className="block text-gray-700">วันหมดอายุ</label>
                 <input
                   type="date"
                   className="w-full border rounded p-2 bg-gray-200"
+                  value={stockData.expired}
+                  onChange={(e) =>
+                    setStockData({ ...stockData, expired: e.target.value })
+                  }
                 />
               </div>
 
-              {/* Description */}
-              <div className="md:col-span-2">
-                <label className="block text-gray-700">รายละเอียดยา</label>
-                <textarea
+              <div>
+                <label className="block text-gray-700">ราคาต่อหน่วย</label>
+                <input
+                  type="number"
                   className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="รายละเอียดยา"
-                  rows={4}
-                ></textarea>
+                  placeholder="ราคาต่อหน่วย"
+                  value={drugData.unit_price}
+                  onChange={(e) =>
+                    setDrugData({
+                      ...drugData,
+                      unit_price: parseFloat(e.target.value),
+                    })
+                  }
+                />
               </div>
 
-              {/* Usage Instructions */}
+              {/* Other fields */}
               <div className="md:col-span-2">
-                <label className="block text-gray-700">วิธีใช้</label>
+                <label className="block text-gray-700">รายละเอียด</label>
                 <textarea
                   className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="วิธีใช้"
                   rows={4}
-                ></textarea>
-              </div>
-
-              {/* Side Effects */}
-              <div className="md:col-span-2">
-                <label className="block text-gray-700">ผลข้างเคียง</label>
-                <textarea
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="ผลข้างเคียง"
-                  rows={4}
+                  value={drugData.detail}
+                  onChange={(e) =>
+                    setDrugData({ ...drugData, detail: e.target.value })
+                  }
                 ></textarea>
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="mt-6 text-center">
               <button
                 type="button"
@@ -162,7 +186,7 @@ const EditMedicineDetail: React.FC = () => {
             <p className="mb-6">ต้องการบันทึกข้อมูลใช่หรือไม่?</p>
             <div className="flex justify-end space-x-4">
               <button
-                onClick={handleCancel}
+                onClick={() => setShowPopup(false)}
                 className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
               >
                 ยกเลิก
