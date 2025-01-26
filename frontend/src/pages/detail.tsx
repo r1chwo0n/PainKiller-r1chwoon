@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useNavigate } from "react-router-dom";
+
 // Register modules
-import Sidebar from "../components/sidebar"
+import Sidebar from "../components/sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import useSnackbar from "../components/useSnackber";
-
-
 
 interface DataRow {
   label: string;
@@ -26,20 +27,22 @@ const Detail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [deleteDrugId, setDeleteDrugId] = useState<string | null>(null);
+  const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState<boolean>(false);
+
   const { showSnackbar, Snackbar } = useSnackbar();
+  const navigate = useNavigate();
 
-
-
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     if (!deleteDrugId) return;
 
     try {
       await axios.delete(`http://localhost:3000/drugs/${deleteDrugId}`);
-      setDrugs((prevDrugs) =>
-        prevDrugs.filter((drug) => id !== deleteDrugId)
-      );
+      setDrugs((prevDrugs) => prevDrugs.filter((drug) => id !== deleteDrugId));
+      setIsModalOpen(false);
       setShowDeletePopup(false);
       setDeleteDrugId(null);
+      setIsSuccessPopupOpen(true);
+
       showSnackbar({
         message: "ลบข้อมูลยาสำเร็จ!",
         severity: "success",
@@ -76,7 +79,7 @@ const Detail: React.FC = () => {
         0
       );
 
-      console.log("data:",result)
+      console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data.name ?? "N/A" },
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
@@ -134,6 +137,35 @@ const Detail: React.FC = () => {
       <div
         className="flex-grow p-8"
         style={{ fontFamily: "Arial, sans-serif" }}>
+        {/* Deleted Successfully Popup */}
+        {isSuccessPopupOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-white rounded-[20px] p-8 shadow-xl max-w-md w-full flex flex-col items-center">
+              {/* Big Green Tick Icon */}
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                style={{
+                  fontSize: "80px",
+                  color: "#4CAF50",
+                  marginBottom: "20px",
+                }}
+              />
+
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                การลบสำเร็จ!
+              </h2>
+
+              <button
+                onClick={() =>
+                  (window.location.href = "http://localhost:5173/")
+                }
+                className="px-6 py-3 bg-[#4CAF50] text-white rounded-[12px] hover:bg-[#45a049] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
+                กลับไปยังหน้าแรก
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Modal for Delete Confirmation */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
@@ -149,15 +181,15 @@ const Detail: React.FC = () => {
                   onClick={() => {
                     setShowDeletePopup(false);
                     setDeleteDrugId(null);
+                    // window.location.reload();
+                    navigate(0);
                   }}
-                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-                >
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
                   ยกเลิก
                 </button>
                 <button
                   onClick={() => handleDelete()}
-                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-                >
+                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
                   ลบ
                 </button>
               </div>
@@ -216,8 +248,7 @@ const Detail: React.FC = () => {
                   onClick={() => {
                     setDeleteDrugId(id);
                     setIsModalOpen(true);
-                    }
-                  }
+                  }}
                   style={{
                     padding: "10px 15px",
                     backgroundColor: "#E9E9E9", // Use a red color for delete button
@@ -234,6 +265,7 @@ const Detail: React.FC = () => {
                     style={{ fontSize: "16px" }}
                   />
                 </button>
+                {Snackbar}
               </div>
             </div>
 
