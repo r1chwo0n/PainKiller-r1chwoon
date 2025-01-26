@@ -1,0 +1,54 @@
+version: "3.8"
+
+name: painkiller-project
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: painkiller-db
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - painkiller-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - painkiller-net
+
+  backend:
+    build: ./backend
+    container_name: painkiller-backend
+    ports:
+      - ${BackendPORT}:3000
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - postgres
+    networks:
+      - painkiller-net
+    env_file:
+      - ./.env
+    command: >
+      sh -c "
+      npm run db:push &&
+      npm run start
+      "
+  # frontend:
+  #   container_name: painkiller-frontend
+  #   build: ./frontend
+  #   ports:
+  #     - ${FrontendPORT}:5173
+  #   networks:
+  #     - painkiller-net
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #     - VITE_HOST=0.0.0.0 # Add this line
+
+volumes:
+  painkiller-data:
+
+networks:
+  painkiller-net:
