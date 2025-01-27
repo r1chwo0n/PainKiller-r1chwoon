@@ -335,6 +335,145 @@ const Detail: React.FC<StockDisplayProps> = ({}) => {
           {error && <div style={{ color: "red" }}>Error: {error}</div>}
         </div>
       </main>
+        {loading && <div>กำลังโหลดข้อมูล...</div>}
+        {error && <div style={{ color: "red" }}>Error: {error}</div>}
+
+        {!loading && !error && (
+          <>
+            {/* Display Drug Name and Buttons */}
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "15px",
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                backgroundColor: "#fff",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}>
+              {/* Drug Name */}
+              <span style={{ fontSize: "25px", fontWeight: "bold" }}>
+                {data.find((row) => row.label === "เกี่ยวกับยา (ชื่อยา)")
+                  ?.value ?? "Drug Name Not Found"}
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "10px",
+                  // marginTop: "10px",
+                }}>
+                {/* Edit Button */}
+                <button
+                  onClick={() => navigate(`/edit-drug/${id}`)}
+                  style={{
+                    padding: "10px 15px",
+                    backgroundColor: "#E9E9E9",
+                    color: "#696969",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center", // Align icon vertically
+                    justifyContent: "center", // Align icon horizontally
+                  }}>
+                  <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => {
+                    setDeleteDrugId(id ?? null);
+                    setIsModalOpen(true);
+                  }}
+                  style={{
+                    padding: "10px 15px",
+                    backgroundColor: "#E9E9E9", // Use a red color for delete button
+                    color: "#696969",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center", // Align icon vertically
+                    justifyContent: "center", // Align icon horizontally
+                  }}>
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    style={{ fontSize: "16px" }}
+                  />
+                </button>
+                {Snackbar}
+              </div>
+            </div>
+
+            {/* Stock Display */}
+            <div
+              style={{
+                display: "flex",
+                overflowX: "auto",
+                gap: "30px",
+                marginBottom: "20px",
+                paddingBottom: "10px",
+                borderBottom: "1px solid #e0e0e0",
+                backgroundColor: "#ffff",
+              }}>
+              {data
+                .filter((row) => row.label.startsWith("ล็อตที่"))
+                .map((row, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      minWidth: "200px",
+                      flex: "0 0 auto",
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "8px",
+                      padding: "20px",
+                      backgroundColor: "#E9E9E9",
+                    }}>
+                    <p style={{ fontWeight: "bold" }}>{row.label}</p>
+                    <p>{row.value}</p>
+                  </div>
+                ))}
+            </div>
+
+            {/* Main Data */}
+            <div
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                backgroundColor: "#ffff",
+                marginBottom: "20px",
+              }}>
+              {data
+                .filter((row) => !row.label.startsWith("ล็อตที่"))
+                .map((row, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "15px",
+                      borderBottom:
+                        index === data.length - 1
+                          ? "none"
+                          : "1px solid #e0e0e0",
+                    }}>
+                    <span style={{ fontWeight: 500 }}>{row.label}</span>
+                    <span>{row.value}</span>
+                  </div>
+                ))}
+            </div>
+            <div
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                backgroundColor: "#ffff",
+                marginBottom: "10px",
+              }}></div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
