@@ -13,7 +13,8 @@ const AddMedicineForm: React.FC = () => {
     expiryDate: "",
     description: "",
     usage: "",
-    sideEffects: "",
+    side_effect: "",
+    slang_food: "",
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -42,7 +43,8 @@ const AddMedicineForm: React.FC = () => {
       !formData.expiryDate ||
       !formData.description ||
       !formData.usage ||
-      !formData.sideEffects
+      !formData.side_effect||
+      !formData.slang_food 
     ) {
       setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน");
       setTimeout(() => setErrorMessage(null), 3000);
@@ -50,6 +52,7 @@ const AddMedicineForm: React.FC = () => {
     }
 
     try {
+      // Construct the payload as required by the backend
       const payload = {
         name: formData.name,
         code: formData.code,
@@ -57,7 +60,8 @@ const AddMedicineForm: React.FC = () => {
         unit_type: formData.unit,
         detail: formData.description,
         usage: formData.usage,
-        side_effects: formData.sideEffects,
+        side_effect: formData.side_effect,
+        slang_food: formData.slang_food,
         stock: [
           {
             amount: parseInt(formData.quantity, 10),
@@ -70,6 +74,7 @@ const AddMedicineForm: React.FC = () => {
       // Log payload for debugging
       console.log("Payload being sent:", payload);
 
+      // Send the POST request to the backend
       const response = await axios.post("http://localhost:3000/drugs", payload, {
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +96,8 @@ const AddMedicineForm: React.FC = () => {
           expiryDate: "",
           description: "",
           usage: "",
-          sideEffects: "",
+          side_effect: "",
+          slang_food: "",
         });
       }
     } catch (error: any) {
@@ -100,6 +106,12 @@ const AddMedicineForm: React.FC = () => {
         error.response?.data?.message ||
           "เกิดข้อผิดพลาดในการบันทึกข้อมูล โปรดลองอีกครั้ง"
       );
+
+      // Log validation details from the backend if available
+      if (error.response?.data?.details) {
+        console.error("Validation details:", error.response.data.details);
+      }
+
       setTimeout(() => setErrorMessage(null), 3000);
     }
   };
@@ -123,6 +135,7 @@ const AddMedicineForm: React.FC = () => {
           )}
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Name */}
               <div>
                 <label htmlFor="name">ชื่อยา</label>
                 <input
@@ -134,6 +147,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Quantity */}
               <div>
                 <label htmlFor="quantity">จำนวน</label>
                 <input
@@ -145,6 +159,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Unit */}
               <div>
                 <label htmlFor="unit">หน่วย</label>
                 <select
@@ -162,6 +177,7 @@ const AddMedicineForm: React.FC = () => {
                   <option value="หลอด">หลอด</option>
                 </select>
               </div>
+              {/* Type */}
               <div>
                 <label htmlFor="type">ประเภท</label>
                 <select
@@ -176,6 +192,7 @@ const AddMedicineForm: React.FC = () => {
                   <option value="drug">ยา</option>
                 </select>
               </div>
+              {/* Code */}
               <div>
                 <label htmlFor="code">รหัสยา</label>
                 <input
@@ -187,6 +204,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Price */}
               <div>
                 <label htmlFor="price">ราคา</label>
                 <input
@@ -198,6 +216,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Expiry Date */}
               <div>
                 <label htmlFor="expiryDate">วันหมดอายุ</label>
                 <input
@@ -209,6 +228,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Description */}
               <div>
                 <label htmlFor="description">รายละเอียด</label>
                 <textarea
@@ -219,6 +239,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Usage */}
               <div>
                 <label htmlFor="usage">วิธีการใช้</label>
                 <textarea
@@ -229,12 +250,24 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+              {/* Side Effects */}
               <div>
-                <label htmlFor="sideEffects">ผลข้างเคียง</label>
+                <label htmlFor="side_effect">ผลข้างเคียง</label>
                 <textarea
-                  id="sideEffects"
-                  name="sideEffects"
-                  value={formData.sideEffects}
+                  id="side_effect"
+                  name="side_effect"
+                  value={formData.side_effect}
+                  onChange={handleChange}
+                  className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                />
+              </div>
+              {/* Slang Food */}
+              <div>
+                <label htmlFor="slang_food">Slangfood</label>
+                <textarea
+                  id="slang_food"
+                  name="slang_food"
+                  value={formData.slang_food}
                   onChange={handleChange}
                   className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
