@@ -228,7 +228,7 @@ const Detail: React.FC = () => {
                 }}>
                 {/* Edit Button */}
                 <button
-                  onClick={() => alert("Edit button clicked!")}
+                  onClick={() => navigate(`/edit-drug/${id}`)}
                   style={{
                     padding: "10px 15px",
                     backgroundColor: "#E9E9E9",
@@ -246,7 +246,7 @@ const Detail: React.FC = () => {
                 {/* Delete Button */}
                 <button
                   onClick={() => {
-                    setDeleteDrugId(id);
+                    setDeleteDrugId(id ?? null);
                     setIsModalOpen(true);
                   }}
                   style={{
