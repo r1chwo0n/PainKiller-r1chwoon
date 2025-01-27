@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ExpiredCard from "../components/expiredCard";
 import LowStockCard from "../components/lowStockCard";
 import Sidebar from "../components/sidebar";
+import { useNavigate } from "react-router-dom";
 
 type Drug = {
   drug_id: string;
@@ -17,6 +18,7 @@ type Drug = {
 
 const NotificationPage: React.FC = () => {
   const [drugs, setDrugs] = useState<Drug[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDrugs = async () => {
@@ -72,6 +74,10 @@ const NotificationPage: React.FC = () => {
     return null;
   };
 
+  const handleCardClick = (drug_id: string) => {
+    navigate(`/detail/${drug_id}`); // ใช้ navigate เพื่อนำทางไปยัง DrugDetailPage
+  };
+
   return (
     <div className="flex h-screen bg-gray-200">
       <Sidebar />
@@ -103,6 +109,7 @@ const NotificationPage: React.FC = () => {
                   unit_type={drug.unit_type}
                   warning={true}
                   warningMessage={lowStockWarning}
+                  onClick={() => handleCardClick(drug.drug_id)}
                 />
               );
             }
@@ -118,6 +125,7 @@ const NotificationPage: React.FC = () => {
                   expired={warning.expired}
                   warning={true}
                   warningMessage={warning.message}
+                  onClick={() => handleCardClick(drug.drug_id)}
                 />
               ))
             );
