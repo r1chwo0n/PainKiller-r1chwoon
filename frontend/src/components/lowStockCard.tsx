@@ -8,12 +8,14 @@ type LowStockCardProps = {
     unit_type: string;
     warning: boolean;
     warningMessage: string; // เพิ่มข้อความแจ้งเตือน
+    onClick?: () => void;
   };
 
-const LowStockCard: React.FC<LowStockCardProps> = ({ name, drug_type, amount, unit_type, warningMessage }) => {
+const LowStockCard: React.FC<LowStockCardProps> = ({ name, drug_type, amount, unit_type, warningMessage , onClick}) => {
   return (
     <div
-      className="flex items-center p-4 border-b-2 border-gray-300"
+      className="flex items-center p-4 border-b-2 border-gray-300 cursor-pointer hover:bg-gray-100"
+      onClick={onClick}
     >
       {/* Icon /} */}
       <div
