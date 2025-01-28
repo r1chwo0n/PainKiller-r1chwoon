@@ -1,152 +1,337 @@
-import React from "react";
-import Sidebar from "../components/sidebar"
+import React, { useState } from "react";
+import axios from "axios";
+import Sidebar from "../components/sidebar";
 
 const AddMedicineForm: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    amount: "",
+    unit: "",
+    type: "",
+    code: "",
+    unit_price: "",
+    expired: "",
+    description: "",
+    usage: "",
+    side_effect: "",
+    slang_food: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Check for missing fields
+    if (
+      !formData.name ||
+      !formData.amount ||
+      !formData.unit ||
+      !formData.type ||
+      !formData.code ||
+      !formData.unit_price ||
+      !formData.expired ||
+      !formData.description ||
+      !formData.usage ||
+      !formData.side_effect ||
+      !formData.slang_food
+    ) {
+      setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+
+    // Format date to yyyy-mm-dd
+    const formatDate = (date: string): string => {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Invalid date format");
+      }
+      return parsedDate.toISOString().split("T")[0];
+    };
+
+    try {
+      // Construct payload
+      const drugPayload = {
+        name: formData.name,
+        code: formData.code,
+        drug_type: formData.type === "herb" ? "herb" : "drug",
+        unit_type: formData.unit,
+        detail: formData.description,
+        usage: formData.usage,
+        side_effect: formData.side_effect,
+        slang_food: formData.slang_food,
+        stock: {
+          amount: parseInt(formData.amount, 10) || 0,
+          unit_price: parseFloat(formData.unit_price) || 0.0,
+          expired: formatDate(formData.expired),
+        },
+      };
+
+      // Send payload to the API
+      const response = await axios.post(
+        "http://localhost:3000/drugs",
+        drugPayload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 201) {
+        setSuccessMessage("บันทึกข้อมูลสำเร็จ!");
+        setTimeout(() => setSuccessMessage(null), 3000);
+
+        // Reset form
+        setFormData({
+          name: "",
+          amount: "",
+          unit: "",
+          type: "",
+          code: "",
+          unit_price: "",
+          expired: "",
+          description: "",
+          usage: "",
+          side_effect: "",
+          slang_food: "",
+        });
+      } else {
+        throw new Error("Unexpected response from server");
+      }
+    } catch (error: any) {
+      console.error("Error adding drug:", error);
+      setErrorMessage(
+        error.response?.data?.message || "เกิดข้อผิดพลาด โปรดลองอีกครั้ง"
+      );
+      setTimeout(() => setErrorMessage(null), 3000);
+    }
+  };
+
   return (
-    <div className="flex h-screen bg-gray-200">
-      {/* Sidebar */}
-      <Sidebar/>
+    <div className="flex h-screen bg-[#f0f0f0]">
+      <Sidebar />
+      <main className="flex-1 p-2">
+        <header className="bg-white h-[70px] p-4 rounded-[8px] shadow-md mb-4">
+          <div className="flex justify-between items-center">
+            <h1 className="mb-2 text-3xl text-[#444444]">เพิ่มข้อมูลยา</h1>
+          </div>
+        </header>
 
-      {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold">เพิ่มข้อมูลยา</h1>
-        </div>
-
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <form>
-            {/* Grid layout for the form */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
-              <div>
-                <label className="block text-gray-700">ชื่อยา</label>
+        <div className="bg-white shadow-md rounded-lg p-4 max-h-full overflow-hidden">
+          {errorMessage && (
+            <p className="text-red-500 text-center mb-2">{errorMessage}</p>
+          )}
+          {successMessage && (
+            <p className="text-green-500 text-center mb-2">{successMessage}</p>
+          )}
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-4 gap-3 items-start">
+              <div className="col-span-1">
+                <label htmlFor="name" className="text-sm">
+                  ชื่อยา
+                </label>
                 <input
                   type="text"
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="ชื่อยา"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
               {/* Quantity */}
-              <div>
-                <label className="block text-gray-700">จำนวน</label>
+              <div className="col-span-1">
+                <label htmlFor="amount" className="text-sm">
+                  จำนวน
+                </label>
                 <input
                   type="number"
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="จำนวน"
+                  id="amount"
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
               {/* Unit */}
-              <div>
-                <label className="block text-gray-700">หน่วย</label>
-                <select className="w-full border rounded p-2 bg-gray-200">
+              <div className="col-span-1">
+                <label htmlFor="unit" className="text-sm">
+                  หน่วย
+                </label>
+                <select
+                  name="unit"
+                  value={formData.unit}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  required
+                >
                   <option value="">เลือก</option>
-                  <option value="type1">เม็ด</option>
-                  <option value="type2">แผง</option>
-                  <option value="type3">ซอง</option>
-                  <option value="type4">ขวด</option>
-                  <option value="type5">หลอด</option>
+                  <option value="เม็ด">เม็ด</option>
+                  <option value="แผง">แผง</option>
+                  <option value="ซอง">ซอง</option>
+                  <option value="ขวด">ขวด</option>
+                  <option value="หลอด">หลอด</option>
                 </select>
               </div>
 
-              {/* Herbal / Non-Herbal */}
-              <div>
-                <label className="block text-gray-700">ประเภท</label>
-                <div className="flex items-center space-x-4">
-                  <label>
+              {/* Type */}
+              <div className="col-span-1">
+                <label htmlFor="type" className="text-sm">
+                  ประเภท
+                </label>
+                <div className="flex gap-4 items-center mt-1">
+                  <label className="flex items-center gap-1">
                     <input
                       type="radio"
                       name="type"
-                      value="herbal"
-                      className="mr-2"
-                    />{" "}
+                      value="drug"
+                      checked={formData.type === "drug"}
+                      onChange={handleChange}
+                      className="focus:ring-2 focus:ring-[#FB6F92]"
+                    />
                     ยา
                   </label>
-                  <label>
+                  <label className="flex items-center gap-1">
                     <input
                       type="radio"
                       name="type"
-                      value="non-herbal"
-                      className="mr-2"
-                    />{" "}
+                      value="herb"
+                      checked={formData.type === "herb"}
+                      onChange={handleChange}
+                      className="focus:ring-2 focus:ring-[#FB6F92]"
+                    />
                     สมุนไพร
                   </label>
                 </div>
               </div>
+            </div>
 
-              {/* Drug Code */}
-              <div>
-                <label className="block text-gray-700">รหัสยา</label>
+            <div className="grid grid-cols-3 gap-5 items-start">
+              {/* Code */}
+              <div className="col-span-1">
+                <label htmlFor="code" className="text-sm">
+                  รหัสยา
+                </label>
                 <input
                   type="text"
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="รหัสยา"
+                  id="code"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
-              {/* Price per Unit */}
-              <div>
-                <label className="block text-gray-700">ราคาต่อหน่วย</label>
+              {/* Price */}
+              <div className="col-span-1">
+                <label htmlFor="unit_price" className="text-sm">
+                  ราคาต่อหน่วย
+                </label>
                 <input
                   type="number"
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="ราคาต่อหน่วย"
+                  id="unit_price"
+                  name="unit_price"
+                  value={formData.unit_price}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
               {/* Expiry Date */}
-              <div>
-                <label className="block text-gray-700">วันหมดอายุ</label>
+              <div className="col-span-1">
+                <label htmlFor="expired" className="text-sm">
+                  วันหมดอายุ
+                </label>
                 <input
                   type="date"
-                  className="w-full border rounded p-2 bg-gray-200"
+                  id="expired"
+                  name="expired"
+                  value={formData.expired}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
-              </div>
-
-              {/* Description */}
-              <div className="md:col-span-2">
-                <label className="block text-gray-700">รายละเอียดยา</label>
-                <textarea
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="รายละเอียดยา"
-                  rows={4}
-                ></textarea>
-              </div>
-
-              {/* Usage Instructions */}
-              <div className="md:col-span-2">
-                <label className="block text-gray-700">วิธีใช้</label>
-                <textarea
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="วิธีใช้"
-                  rows={4}
-                ></textarea>
-              </div>
-
-              {/* Side Effects */}
-              <div className="md:col-span-2">
-                <label className="block text-gray-700">ผลข้างเคียง</label>
-                <textarea
-                  className="w-full border rounded p-2 bg-gray-200"
-                  placeholder="ผลข้างเคียง"
-                  rows={3}
-                ></textarea>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="mt-6 text-center">
-              <button
-                type="submit"
-                className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
-              >
-                บันทึก
-              </button>
+            {/* Description */}
+            <div className="col-span-2">
+              <label htmlFor="description" className="text-sm">
+                รายละเอียดยา
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+            </div>
+
+            {/* Usage */}
+            <div className="col-span-2">
+              <label htmlFor="usage" className="text-sm">
+                วิธีใช้
+              </label>
+              <textarea
+                id="usage"
+                name="usage"
+                value={formData.usage}
+                onChange={handleChange}
+                className="w-full h-[180px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+            </div>
+
+            {/* Side Effects */}
+            <div className="col-span-2">
+              <label htmlFor="side_effects" className="text-sm">
+                ผลข้างเคียง
+              </label>
+              <textarea
+                id="side_effects"
+                name="side_effects"
+                value={formData.side_effect}
+                onChange={handleChange}
+                className="w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+            </div>
+
+            {/* Slang Food */}
+            <div className="col-span-2">
+              <label htmlFor="slang_food" className="text-sm">
+                อาหารที่ห้ามทานร่วมกับยา
+              </label>
+              <textarea
+                id="slang_food"
+                name="slang_food"
+                value={formData.slang_food}
+                onChange={handleChange}
+                className="w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+
+              <div className="mt-4 text-center">
+                <button
+                  type="submit"
+                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
+                >
+                  บันทึก
+                </button>
+              </div>
             </div>
           </form>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

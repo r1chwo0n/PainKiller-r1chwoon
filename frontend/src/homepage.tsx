@@ -133,13 +133,13 @@ const Homepage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-200">
+    <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
       <main className="flex-1 p-4">
         {/* Header */}
         <header className="bg-white  h-[86px] p-6 rounded-[12px] shadow-md mb-6">
           <div className="flex justify-between items-center">
-            <h1 className="mb-2 text-4xl text-[#444444] font-bold">คลังยา</h1>
+            <h1 className="mb-2 text-3xl text-[#444444] ">คลังยา</h1>
             <div className="flex items-center space-x-4">
               {/* Search Input */}
               <div className="relative w-[330px]">
