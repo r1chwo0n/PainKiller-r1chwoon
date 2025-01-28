@@ -79,7 +79,7 @@ const NotificationPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-200">
+    <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
 
       <div className="flex-1 flex flex-col h-screen p-4">
