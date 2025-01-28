@@ -24,3 +24,21 @@
     animation: shake 0.6s ease-in-out;
   }
   
+  /* แต่ง scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* ความกว้างของ scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #D9D9D9; /* สีของ thumb */
+  border-radius: 4px; /* ขอบมนของ thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a1a1a1; /* สีของ thumb เมื่อ hover */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #ffffff; /* สีของ track */
+  border-radius: 4px; /* ขอบมนของ track */
+}

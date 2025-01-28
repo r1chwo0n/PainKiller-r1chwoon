@@ -135,7 +135,7 @@ const AddMedicineForm: React.FC = () => {
             <p className="text-green-500 text-center mb-2">{successMessage}</p>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-4 gap-3 items-start">
+            <div className="grid grid-cols-4 gap-6 items-start">
               <div className="col-span-1">
                 <label htmlFor="name" className="text-sm">
                   ชื่อยา
@@ -218,7 +218,7 @@ const AddMedicineForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-5 items-start">
+            <div className="grid grid-cols-3 gap-5 items-start mt-4">
               {/* Code */}
               <div className="col-span-1">
                 <label htmlFor="code" className="text-sm">
@@ -266,7 +266,7 @@ const AddMedicineForm: React.FC = () => {
             </div>
 
             {/* Description */}
-            <div className="col-span-2">
+            <div className="col-span-2 mt-4">
               <label htmlFor="description" className="text-sm">
                 รายละเอียดยา
               </label>
@@ -275,12 +275,12 @@ const AddMedicineForm: React.FC = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
             {/* Usage */}
-            <div className="col-span-2">
+            <div className="col-span-2 mt-4">
               <label htmlFor="usage" className="text-sm">
                 วิธีใช้
               </label>
@@ -289,26 +289,26 @@ const AddMedicineForm: React.FC = () => {
                 name="usage"
                 value={formData.usage}
                 onChange={handleChange}
-                className="w-full h-[180px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[180px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
             {/* Side Effects */}
-            <div className="col-span-2">
+            <div className="col-span-2 mt-4">
               <label htmlFor="side_effects" className="text-sm">
                 ผลข้างเคียง
               </label>
               <textarea
-                id="side_effects"
-                name="side_effects"
+                id="side_effect"
+                name="side_effect"
                 value={formData.side_effect}
                 onChange={handleChange}
-                className="w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
             {/* Slang Food */}
-            <div className="col-span-2">
+            <div className="col-span-2 mt-4">
               <label htmlFor="slang_food" className="text-sm">
                 อาหารที่ห้ามทานร่วมกับยา
               </label>
@@ -317,7 +317,7 @@ const AddMedicineForm: React.FC = () => {
                 name="slang_food"
                 value={formData.slang_food}
                 onChange={handleChange}
-                className="w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
 
               <div className="mt-4 text-center">

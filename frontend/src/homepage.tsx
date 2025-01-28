@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// @ts-ignore
-import SwitchSelector from "react-switch-selector";
 import { useNavigate } from "react-router-dom";
 import useSnackbar from "./components/useSnackber";
 import Sidebar from "./components/sidebar";
@@ -354,7 +352,11 @@ const Homepage: React.FC = () => {
           </div>
           <div
             className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 150px)", marginTop: "4px" }}
+            style={{
+              maxHeight: "calc(100vh - 220px)",
+              marginTop: "4px",
+              overflowY: "auto",
+            }}
           >
             {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
