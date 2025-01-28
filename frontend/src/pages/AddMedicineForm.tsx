@@ -31,7 +31,7 @@ const AddMedicineForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Check for missing fields
     if (
       !formData.name ||
@@ -50,7 +50,7 @@ const AddMedicineForm: React.FC = () => {
       setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
-  
+
     // Format date to yyyy-mm-dd
     const formatDate = (date: string): string => {
       const parsedDate = new Date(date);
@@ -59,7 +59,7 @@ const AddMedicineForm: React.FC = () => {
       }
       return parsedDate.toISOString().split("T")[0];
     };
-  
+
     try {
       // Construct payload
       const drugPayload = {
@@ -77,16 +77,20 @@ const AddMedicineForm: React.FC = () => {
           expired: formatDate(formData.expired),
         },
       };
-  
+
       // Send payload to the API
-      const response = await axios.post("http://localhost:3000/drugs", drugPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-  
+      const response = await axios.post(
+        "http://localhost:3000/drugs",
+        drugPayload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
       if (response.status === 201) {
         setSuccessMessage("บันทึกข้อมูลสำเร็จ!");
         setTimeout(() => setSuccessMessage(null), 3000);
-  
+
         // Reset form
         setFormData({
           name: "",
@@ -112,61 +116,65 @@ const AddMedicineForm: React.FC = () => {
       setTimeout(() => setErrorMessage(null), 3000);
     }
   };
-  
 
   return (
-    <div className="flex h-screen bg-gray-200">
+    <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
-      <main className="flex-1 p-4">
-        <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
+      <main className="flex-1 p-2">
+        <header className="bg-white h-[70px] p-4 rounded-[8px] shadow-md mb-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-4xl text-[#444444] font-bold">เพิ่มข้อมูลยา</h1>
+            <h1 className="mb-2 text-3xl text-[#444444]">เพิ่มข้อมูลยา</h1>
           </div>
         </header>
 
-        <div className="bg-white shadow-md rounded-lg p-6 max-h-[90vh] overflow-y-auto">
+        <div className="bg-white shadow-md rounded-lg p-4 max-h-full overflow-hidden">
           {errorMessage && (
-            <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+            <p className="text-red-500 text-center mb-2">{errorMessage}</p>
           )}
           {successMessage && (
-            <p className="text-green-500 text-center mb-4">{successMessage}</p>
+            <p className="text-green-500 text-center mb-2">{successMessage}</p>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
-              <div>
-                <label htmlFor="name">ชื่อยา</label>
+            <div className="grid grid-cols-4 gap-3 items-start">
+              <div className="col-span-1">
+                <label htmlFor="name" className="text-sm">
+                  ชื่อยา
+                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+
               {/* Quantity */}
-              <div>
-                <label htmlFor="amount">จำนวน</label>
+              <div className="col-span-1">
+                <label htmlFor="amount" className="text-sm">
+                  จำนวน
+                </label>
                 <input
                   type="number"
                   id="amount"
                   name="amount"
                   value={formData.amount}
-
                   onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
-
               </div>
+
               {/* Unit */}
-              <div>
-                <label htmlFor="unit">หน่วย</label>
+              <div className="col-span-1">
+                <label htmlFor="unit" className="text-sm">
+                  หน่วย
+                </label>
                 <select
                   name="unit"
                   value={formData.unit}
                   onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   required
                 >
                   <option value="">เลือก</option>
@@ -177,110 +185,149 @@ const AddMedicineForm: React.FC = () => {
                   <option value="หลอด">หลอด</option>
                 </select>
               </div>
+
               {/* Type */}
-              <div>
-                <label htmlFor="type">ประเภท</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                >
-                  <option value="">เลือกประเภท</option>
-                  <option value="herb">สมุนไพร</option>
-                  <option value="drug">ยา</option>
-                </select>
+              <div className="col-span-1">
+                <label htmlFor="type" className="text-sm">
+                  ประเภท
+                </label>
+                <div className="flex gap-4 items-center mt-1">
+                  <label className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="type"
+                      value="drug"
+                      checked={formData.type === "drug"}
+                      onChange={handleChange}
+                      className="focus:ring-2 focus:ring-[#FB6F92]"
+                    />
+                    ยา
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="type"
+                      value="herb"
+                      checked={formData.type === "herb"}
+                      onChange={handleChange}
+                      className="focus:ring-2 focus:ring-[#FB6F92]"
+                    />
+                    สมุนไพร
+                  </label>
+                </div>
               </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-5 items-start">
               {/* Code */}
-              <div>
-                <label htmlFor="code">รหัสยา</label>
+              <div className="col-span-1">
+                <label htmlFor="code" className="text-sm">
+                  รหัสยา
+                </label>
                 <input
                   type="text"
                   id="code"
                   name="code"
                   value={formData.code}
                   onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+
               {/* Price */}
-              <div>
-                <label htmlFor="unit_price">ราคา</label>
+              <div className="col-span-1">
+                <label htmlFor="unit_price" className="text-sm">
+                  ราคาต่อหน่วย
+                </label>
                 <input
                   type="number"
                   id="unit_price"
                   name="unit_price"
                   value={formData.unit_price}
                   onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+
               {/* Expiry Date */}
-              <div>
-                <label htmlFor="expired">วันหมดอายุ</label>
+              <div className="col-span-1">
+                <label htmlFor="expired" className="text-sm">
+                  วันหมดอายุ
+                </label>
                 <input
                   type="date"
                   id="expired"
                   name="expired"
                   value={formData.expired}
                   onChange={handleChange}
-                  className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
-              {/* Description */}
-              <div>
-                <label htmlFor="description">รายละเอียด</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
-              {/* Usage */}
-              <div>
-                <label htmlFor="usage">วิธีการใช้</label>
-                <textarea
-                  id="usage"
-                  name="usage"
-                  value={formData.usage}
-                  onChange={handleChange}
-                  className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
-              {/* Side Effects */}
-              <div>
-                <label htmlFor="side_effect">ผลข้างเคียง</label>
-                <textarea
-                  id="side_effect"
-                  name="side_effect"
-                  value={formData.side_effect}
-                  onChange={handleChange}
-                  className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
-              {/* Slang Food */}
-              <div>
-                <label htmlFor="slang_food">Slangfood</label>
-                <textarea
-                  id="slang_food"
-                  name="slang_food"
-                  value={formData.slang_food}
-                  onChange={handleChange}
-                  className="w-full h-[90px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
             </div>
 
-            <div className="mt-6 text-center">
-              <button
-                type="submit"
-                className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
-              >
-                บันทึก
-              </button>
+            {/* Description */}
+            <div className="col-span-2">
+              <label htmlFor="description" className="text-sm">
+                รายละเอียดยา
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+            </div>
+
+            {/* Usage */}
+            <div className="col-span-2">
+              <label htmlFor="usage" className="text-sm">
+                วิธีใช้
+              </label>
+              <textarea
+                id="usage"
+                name="usage"
+                value={formData.usage}
+                onChange={handleChange}
+                className="w-full h-[180px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+            </div>
+
+            {/* Side Effects */}
+            <div className="col-span-2">
+              <label htmlFor="side_effects" className="text-sm">
+                ผลข้างเคียง
+              </label>
+              <textarea
+                id="side_effects"
+                name="side_effects"
+                value={formData.side_effect}
+                onChange={handleChange}
+                className="w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+            </div>
+
+            {/* Slang Food */}
+            <div className="col-span-2">
+              <label htmlFor="slang_food" className="text-sm">
+                อาหารที่ห้ามทานร่วมกับยา
+              </label>
+              <textarea
+                id="slang_food"
+                name="slang_food"
+                value={formData.slang_food}
+                onChange={handleChange}
+                className="w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+              />
+
+              <div className="mt-4 text-center">
+                <button
+                  type="submit"
+                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
+                >
+                  บันทึก
+                </button>
+              </div>
             </div>
           </form>
         </div>
