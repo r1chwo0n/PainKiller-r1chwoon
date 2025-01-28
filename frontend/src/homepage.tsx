@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// @ts-ignore
-import SwitchSelector from "react-switch-selector";
 import { useNavigate } from "react-router-dom";
 import useSnackbar from "./components/useSnackber";
 import Sidebar from "./components/sidebar";
@@ -133,13 +131,13 @@ const Homepage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-200">
+    <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
       <main className="flex-1 p-4">
         {/* Header */}
         <header className="bg-white  h-[86px] p-6 rounded-[12px] shadow-md mb-6">
           <div className="flex justify-between items-center">
-            <h1 className="mb-2 text-4xl text-[#444444] font-bold">คลังยา</h1>
+            <h1 className="mb-2 text-3xl text-[#444444] ">คลังยา</h1>
             <div className="flex items-center space-x-4">
               {/* Search Input */}
               <div className="relative w-[330px]">
@@ -198,14 +196,17 @@ const Homepage: React.FC = () => {
                     </h3>
                     {filterNotifications().length > 0 ? (
                       <ul className="divide-y divide-gray-300">
-                        {filterNotifications().map((notification, index) => (
-                          <li
-                            key={index}
-                            className="text-base text-gray-700 p-2 text-left"
-                          >
-                            {notification}
-                          </li>
-                        ))}
+                        {/* จำกัดการแสดงผลแค่ 3 รายการ */}
+                        {filterNotifications()
+                          .slice(0, 3) // แสดงรายการที่ 0 ถึง 2 (รวม 3 รายการ)
+                          .map((notification, index) => (
+                            <li
+                              key={index}
+                              className="text-base text-gray-700 p-2 text-left"
+                            >
+                              {notification}
+                            </li>
+                          ))}
                       </ul>
                     ) : (
                       <p className="text-gray-500 text-left">
@@ -354,7 +355,11 @@ const Homepage: React.FC = () => {
           </div>
           <div
             className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 150px)", marginTop: "4px" }}
+            style={{
+              maxHeight: "calc(100vh - 220px)",
+              marginTop: "4px",
+              overflowY: "auto",
+            }}
           >
             {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
