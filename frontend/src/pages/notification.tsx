@@ -26,7 +26,7 @@ const NotificationPage: React.FC = () => {
         const response = await fetch("http://localhost:3000/stocks");
         const data = await response.json();
         console.log(data);
-        setDrugs(data); // ตั้งค่าข้อมูล drugs ที่ได้จาก API
+        setDrugs(data);
       } catch (error) {
         console.error("Error fetching drugs:", error);
       }
@@ -55,9 +55,9 @@ const NotificationPage: React.FC = () => {
             amount: stock.amount,
             unit_type: drug.unit_type,
             expired: stock.expired,
-          }; // กรณีใกล้หมดอายุ
+          };
         }
-        return null; // ไม่ต้องแจ้งเตือน
+        return null;
       })
       .filter((warning) => warning !== null);
 
@@ -75,14 +75,14 @@ const NotificationPage: React.FC = () => {
   };
 
   const handleCardClick = (drug_id: string) => {
-    navigate(`/detail/${drug_id}`); // ใช้ navigate เพื่อนำทางไปยัง DrugDetailPage
+    navigate(`/detail/${drug_id}`);
   };
 
   return (
     <div className="flex h-screen bg-gray-200">
       <Sidebar />
 
-      <div className="flex-1 p-4">
+      <div className="flex-1 flex flex-col h-screen p-4">
         {/* Header */}
         <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
           <div className="flex justify-between items-center">
@@ -91,8 +91,8 @@ const NotificationPage: React.FC = () => {
         </header>
 
         {/* Content Box */}
-        <div className="bg-white h-[785px] rounded-[12px] mt-4 pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
-          {/* กรองและแสดงเฉพาะรายการที่ต้องแจ้งเตือน */}
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
+          {/* Display notifications */}
           {drugs.flatMap((drug) => {
             const lowStockWarning = getLowStockWarning(drug);
             const expiryWarnings = getExpiryWarnings(drug);

@@ -328,7 +328,7 @@ const Homepage: React.FC = () => {
           </div>
         </header>
 
-        <div className="bg-white p-6 rounded-[12px] shadow-md">
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
           {/* Slider Indicator */}
           <div className="relative flex bg-gray-100 rounded-md mb-6 max-w-xl">
             <div
@@ -352,135 +352,142 @@ const Homepage: React.FC = () => {
               </button>
             ))}
           </div>
-
-          {/* Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {drugs
-              .filter((drug) => {
-                if (activeTab === "ทั้งหมด") return true;
-                if (activeTab === "ยา") return drug.drug_type === "drug";
-                if (activeTab === "สมุนไพร") return drug.drug_type === "herb";
-                if (activeTab === "ใกล้หมด") return drug.stock[0]?.amount < 10;
-                return false;
-              })
-              .filter((drug) => {
-                if (!searchQuery) return true; // No search query, show all
-                return drug.name
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase());
-              })
-              .map((drug) => (
-                <div
-                  key={drug.drug_id}
-                  className="relative p-4 border border-[#f5f5f5]] rounded-[12px] bg-white shadow-md flex flex-col"
-                >
-                  {/* Trash Icon */}
-                  <button
-                    onClick={() => {
-                      setDeleteDrugId(drug.drug_id);
-                      setShowDeletePopup(true);
-                    }}
-                    className="absolute top-4 right-4 text-[#FB6F92] hover:text-[#E15873]"
+          <div
+            className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto"
+            style={{ maxHeight: "calc(100vh - 150px)", marginTop: "4px" }}
+          >
+            {/* Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {drugs
+                .filter((drug) => {
+                  if (activeTab === "ทั้งหมด") return true;
+                  if (activeTab === "ยา") return drug.drug_type === "drug";
+                  if (activeTab === "สมุนไพร") return drug.drug_type === "herb";
+                  if (activeTab === "ใกล้หมด")
+                    return drug.stock[0]?.amount < 10;
+                  return false;
+                })
+                .filter((drug) => {
+                  if (!searchQuery) return true; // No search query, show all
+                  return drug.name
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase());
+                })
+                .map((drug) => (
+                  <div
+                    key={drug.drug_id}
+                    className="relative p-4 border border-[#f5f5f5]] rounded-[12px] bg-white shadow-md flex flex-col"
                   >
-                    <svg
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
+                    {/* Trash Icon */}
+                    <button
+                      onClick={() => {
+                        setDeleteDrugId(drug.drug_id);
+                        setShowDeletePopup(true);
+                      }}
+                      className="absolute top-4 right-4 text-[#FB6F92] hover:text-[#E15873]"
                     >
-                      <path
-                        fill-rule="evenodd"
-                        d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                  {Snackbar}
+                      <svg
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                    {Snackbar}
 
-                  <div className="flex items-center mb-4">
-                    <h2 className="font-bold text-2xl">{drug.name}</h2>
-                    <p className="ml-2 mt-1 text-gray-800">
-                      {" "}
-                      ( {drug.unit_type} ){" "}
-                    </p>
-                    {/* Conditional SVG */}
-                    <div className="ml-2">
-                      {drug.drug_type === "herb" ? (
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          style={{ width: "24px", height: "40px" }}
-                        >
-                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                          <g
-                            id="SVGRepo_tracerCarrier"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          ></g>
-                          <g id="SVGRepo_iconCarrier">
-                            {" "}
-                            <path
-                              d="M14 10L4 20M20 7C20 12.5228 15.5228 17 10 17C9.08396 17 8.19669 16.8768 7.35385 16.6462C7.12317 15.8033 7 14.916 7 14C7 8.47715 11.4772 4 17 4C17.916 4 18.8033 4.12317 19.6462 4.35385C19.8768 5.19669 20 6.08396 20 7Z"
-                              stroke="#98c99f"
-                              stroke-width="2"
+                    <div className="flex items-center mb-4">
+                      <h2 className="font-bold text-2xl">{drug.name}</h2>
+                      <p className="ml-2 mt-1 text-gray-800">
+                        {" "}
+                        ( {drug.unit_type} ){" "}
+                      </p>
+                      {/* Conditional SVG */}
+                      <div className="ml-2">
+                        {drug.drug_type === "herb" ? (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{ width: "24px", height: "40px" }}
+                          >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                              id="SVGRepo_tracerCarrier"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                            ></path>{" "}
-                          </g>
-                        </svg>
-                      ) : (
-                        <svg
-                          viewBox="0 -0.5 17 17"
-                          version="1.1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="si-glyph si-glyph-pill"
-                          fill="#000000"
-                          style={{ width: "24px", height: "24px" }}
-                        >
-                          <g
-                            stroke="none"
-                            stroke-width="1"
-                            fill="none"
-                            fill-rule="evenodd"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                              {" "}
+                              <path
+                                d="M14 10L4 20M20 7C20 12.5228 15.5228 17 10 17C9.08396 17 8.19669 16.8768 7.35385 16.6462C7.12317 15.8033 7 14.916 7 14C7 8.47715 11.4772 4 17 4C17.916 4 18.8033 4.12317 19.6462 4.35385C19.8768 5.19669 20 6.08396 20 7Z"
+                                stroke="#98c99f"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              ></path>{" "}
+                            </g>
+                          </svg>
+                        ) : (
+                          <svg
+                            viewBox="0 -0.5 17 17"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="si-glyph si-glyph-pill"
+                            fill="#000000"
+                            style={{ width: "24px", height: "24px" }}
                           >
-                            <path
-                              d="M15.897,1.731 L15.241,1.074 C13.887,-0.281 11.745,-0.341 10.46,0.944 L1.957,9.446 C0.673,10.731 0.733,12.871 2.09,14.228 L2.744,14.882 C4.101,16.239 6.242,16.3 7.527,15.016 L16.03,6.511 C17.314,5.229 17.254,3.088 15.897,1.731 L15.897,1.731 Z M11.086,10.164 L6.841,5.917 L11.049,1.709 C11.994,0.765 13.581,0.811 14.584,1.816 L15.188,2.417 C15.678,2.91 15.959,3.552 15.975,4.226 C15.991,4.888 15.75,5.502 15.295,5.955 L11.086,10.164 L11.086,10.164 Z"
-                              fill="#ffc673" // This is the blue sky color
-                              className="si-glyph-fill"
-                            />
-                          </g>
-                        </svg>
-                      )}
+                            <g
+                              stroke="none"
+                              stroke-width="1"
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M15.897,1.731 L15.241,1.074 C13.887,-0.281 11.745,-0.341 10.46,0.944 L1.957,9.446 C0.673,10.731 0.733,12.871 2.09,14.228 L2.744,14.882 C4.101,16.239 6.242,16.3 7.527,15.016 L16.03,6.511 C17.314,5.229 17.254,3.088 15.897,1.731 L15.897,1.731 Z M11.086,10.164 L6.841,5.917 L11.049,1.709 C11.994,0.765 13.581,0.811 14.584,1.816 L15.188,2.417 C15.678,2.91 15.959,3.552 15.975,4.226 C15.991,4.888 15.75,5.502 15.295,5.955 L11.086,10.164 L11.086,10.164 Z"
+                                fill="#ffc673" // This is the blue sky color
+                                className="si-glyph-fill"
+                              />
+                            </g>
+                          </svg>
+                        )}
+                      </div>
                     </div>
+                    <p className="text-base mb-2">รหัสยา: {drug.code}</p>
+                    <p className="text-base mb-2">รายละเอียด: {drug.detail}</p>
+                    <p className="text-base mb-2">
+                      ขนาดและวิธีใช้: {drug.usage}
+                    </p>
+                    <p className="text-base mb-2">
+                      วันหมดอายุ:{" "}
+                      {drug.stock.length > 0
+                        ? new Intl.DateTimeFormat("th-TH", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          }).format(new Date(drug.stock[0].expired))
+                        : "ไม่พบวันหมดอายุ"}
+                    </p>
+                    <p className="text-base mb-4">
+                      จำนวนคงเหลือ:{" "}
+                      {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
+                    </p>
+                    <button
+                      onClick={() => navigate(`/detail/${drug.drug_id}`)}
+                      className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
+                    >
+                      ดูข้อมูล
+                    </button>
                   </div>
-                  <p className="text-base mb-2">รหัสยา: {drug.code}</p>
-                  <p className="text-base mb-2">รายละเอียด: {drug.detail}</p>
-                  <p className="text-base mb-2">ขนาดและวิธีใช้: {drug.usage}</p>
-                  <p className="text-base mb-2">
-                    วันหมดอายุ:{" "}
-                    {drug.stock.length > 0
-                      ? new Intl.DateTimeFormat("th-TH", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }).format(new Date(drug.stock[0].expired))
-                      : "ไม่พบวันหมดอายุ"}
-                  </p>
-                  <p className="text-base mb-4">
-                    จำนวนคงเหลือ:{" "}
-                    {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
-                  </p>
-                  <button
-                    onClick={() => navigate(`/detail/${drug.drug_id}`)}
-                    className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
-                  >
-                    ดูข้อมูล
-                  </button>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         </div>
 
