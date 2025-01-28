@@ -5,12 +5,12 @@ import Sidebar from "../components/sidebar";
 const AddMedicineForm: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
-    quantity: "",
+    amount: "",
     unit: "",
     type: "",
     code: "",
-    price: "",
-    expiryDate: "",
+    unit_price: "",
+    expired: "",
     description: "",
     usage: "",
     side_effect: "",
@@ -31,90 +31,88 @@ const AddMedicineForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validate form data
+  
+    // Check for missing fields
     if (
       !formData.name ||
-      !formData.quantity ||
+      !formData.amount ||
       !formData.unit ||
       !formData.type ||
       !formData.code ||
-      !formData.price ||
-      !formData.expiryDate ||
+      !formData.unit_price ||
+      !formData.expired ||
       !formData.description ||
       !formData.usage ||
-      !formData.side_effect||
-      !formData.slang_food 
+      !formData.side_effect ||
+      !formData.slang_food
     ) {
       setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน");
       setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
-
+  
+    // Format date to yyyy-mm-dd
+    const formatDate = (date: string): string => {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Invalid date format");
+      }
+      return parsedDate.toISOString().split("T")[0];
+    };
+  
     try {
-      // Construct the payload as required by the backend
-      const payload = {
+      // Construct payload
+      const drugPayload = {
         name: formData.name,
         code: formData.code,
-        drug_type: formData.type === "herbal" ? "herbal" : "drug",
+        drug_type: formData.type === "herb" ? "herb" : "drug",
         unit_type: formData.unit,
         detail: formData.description,
         usage: formData.usage,
         side_effect: formData.side_effect,
         slang_food: formData.slang_food,
-        stock: [
-          {
-            amount: parseInt(formData.quantity, 10),
-            unit_price: parseFloat(formData.price),
-            expired: formData.expiryDate,
-          },
-        ],
-      };
-
-      // Log payload for debugging
-      console.log("Payload being sent:", payload);
-
-      // Send the POST request to the backend
-      const response = await axios.post("http://localhost:3000/drugs", payload, {
-        headers: {
-          "Content-Type": "application/json",
+        stock: {
+          amount: parseInt(formData.amount, 10) || 0,
+          unit_price: parseFloat(formData.unit_price) || 0.0,
+          expired: formatDate(formData.expired),
         },
+      };
+  
+      // Send payload to the API
+      const response = await axios.post("http://localhost:3000/drugs", drugPayload, {
+        headers: { "Content-Type": "application/json" },
       });
-
-      if (response.status === 200 || response.status === 201) {
+  
+      if (response.status === 201) {
         setSuccessMessage("บันทึกข้อมูลสำเร็จ!");
         setTimeout(() => setSuccessMessage(null), 3000);
-
-        // Reset form data
+  
+        // Reset form
         setFormData({
           name: "",
-          quantity: "",
+          amount: "",
           unit: "",
           type: "",
           code: "",
-          price: "",
-          expiryDate: "",
+          unit_price: "",
+          expired: "",
           description: "",
           usage: "",
           side_effect: "",
           slang_food: "",
         });
+      } else {
+        throw new Error("Unexpected response from server");
       }
     } catch (error: any) {
-      console.error("Error adding medicine:", error.response?.data || error.message);
+      console.error("Error adding drug:", error);
       setErrorMessage(
-        error.response?.data?.message ||
-          "เกิดข้อผิดพลาดในการบันทึกข้อมูล โปรดลองอีกครั้ง"
+        error.response?.data?.message || "เกิดข้อผิดพลาด โปรดลองอีกครั้ง"
       );
-
-      // Log validation details from the backend if available
-      if (error.response?.data?.details) {
-        console.error("Validation details:", error.response.data.details);
-      }
-
       setTimeout(() => setErrorMessage(null), 3000);
     }
   };
+  
 
   return (
     <div className="flex h-screen bg-gray-200">
@@ -149,15 +147,17 @@ const AddMedicineForm: React.FC = () => {
               </div>
               {/* Quantity */}
               <div>
-                <label htmlFor="quantity">จำนวน</label>
+                <label htmlFor="amount">จำนวน</label>
                 <input
                   type="number"
-                  id="quantity"
-                  name="quantity"
-                  value={formData.quantity}
+                  id="amount"
+                  name="amount"
+                  value={formData.amount}
+
                   onChange={handleChange}
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
+
               </div>
               {/* Unit */}
               <div>
@@ -188,7 +188,7 @@ const AddMedicineForm: React.FC = () => {
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 >
                   <option value="">เลือกประเภท</option>
-                  <option value="herbal">สมุนไพร</option>
+                  <option value="herb">สมุนไพร</option>
                   <option value="drug">ยา</option>
                 </select>
               </div>
@@ -206,24 +206,24 @@ const AddMedicineForm: React.FC = () => {
               </div>
               {/* Price */}
               <div>
-                <label htmlFor="price">ราคา</label>
+                <label htmlFor="unit_price">ราคา</label>
                 <input
                   type="number"
-                  id="price"
-                  name="price"
-                  value={formData.price}
+                  id="unit_price"
+                  name="unit_price"
+                  value={formData.unit_price}
                   onChange={handleChange}
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
               {/* Expiry Date */}
               <div>
-                <label htmlFor="expiryDate">วันหมดอายุ</label>
+                <label htmlFor="expired">วันหมดอายุ</label>
                 <input
                   type="date"
-                  id="expiryDate"
-                  name="expiryDate"
-                  value={formData.expiryDate}
+                  id="expired"
+                  name="expired"
+                  value={formData.expired}
                   onChange={handleChange}
                   className="w-full h-[45px] py-2 px-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
