@@ -26,7 +26,6 @@ const Detail: React.FC = () => {
 
   const handleEdit = () => {
     console.log("Edit button clicked!");
-    // Add your edit functionality here (redirect to an edit form, for example)
   };
 
   const fetchData = async (drugId: string) => {
