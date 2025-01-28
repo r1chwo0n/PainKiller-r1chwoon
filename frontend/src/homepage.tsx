@@ -196,14 +196,17 @@ const Homepage: React.FC = () => {
                     </h3>
                     {filterNotifications().length > 0 ? (
                       <ul className="divide-y divide-gray-300">
-                        {filterNotifications().map((notification, index) => (
-                          <li
-                            key={index}
-                            className="text-base text-gray-700 p-2 text-left"
-                          >
-                            {notification}
-                          </li>
-                        ))}
+                        {/* จำกัดการแสดงผลแค่ 3 รายการ */}
+                        {filterNotifications()
+                          .slice(0, 3) // แสดงรายการที่ 0 ถึง 2 (รวม 3 รายการ)
+                          .map((notification, index) => (
+                            <li
+                              key={index}
+                              className="text-base text-gray-700 p-2 text-left"
+                            >
+                              {notification}
+                            </li>
+                          ))}
                       </ul>
                     ) : (
                       <p className="text-gray-500 text-left">
