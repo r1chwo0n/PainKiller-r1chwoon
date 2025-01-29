@@ -85,6 +85,25 @@ const Detail: React.FC<StockDisplayProps> = ({}) => {
     // Add your edit functionality here (redirect to an edit form, for example)
   };
 
+  {
+    /* Compare Date Function */
+  }
+  function compareWithToday(dateString: string): number {
+    // Get today's date
+    const today = new Date();
+
+    // Parse the provided date string into a Date object
+    const givenDate = new Date(dateString);
+
+    // Get the difference in time (in milliseconds)
+    const timeDifference = Math.abs(givenDate.getTime() - today.getTime());
+
+    // Convert time difference from milliseconds to days
+    const dayDifference = timeDifference / (1000 * 3600 * 24);
+
+    return dayDifference;
+  }
+
   const fetchData = async (drugId: string) => {
     setLoading(true);
     setError(null);
@@ -335,8 +354,6 @@ const Detail: React.FC<StockDisplayProps> = ({}) => {
           {error && <div style={{ color: "red" }}>Error: {error}</div>}
         </div>
       </main>
-      {loading && <div>กำลังโหลดข้อมูล...</div>}
-      {error && <div style={{ color: "red" }}>Error: {error}</div>}
     </div>
   );
 };
