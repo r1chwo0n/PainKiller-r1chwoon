@@ -136,11 +136,11 @@ const EditMedicineDetail: React.FC = () => {
                       className="w-full border border-gray-300 rounded-md p-1 bg-white appearance-none text-sm"
                     >
                       <option value="">เลือก</option>
-                      <option value="เม็ด">เม็ด</option>
-                      <option value="แผง">แผง</option>
-                      <option value="ซอง">ซอง</option>
+                      <option value="กิโลกรัม">กิโลกรัม</option>
+                      <option value="กระปุก">กระปุก</option>
                       <option value="ขวด">ขวด</option>
-                      <option value="หลอด">หลอด</option>
+                      <option value="ตลับ">ตลับ</option>
+                      <option value="ซอง">ซอง</option>
                     </select>
                     <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                       ▼
