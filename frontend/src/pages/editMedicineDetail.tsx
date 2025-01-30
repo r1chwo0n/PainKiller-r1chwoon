@@ -237,19 +237,19 @@ const EditMedicineDetail: React.FC = () => {
       </div>
 
       {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
-            <h2 className="text-xl font-bold mb-4">บันทึกข้อมูล</h2>
-            <p className="mb-6">คุณต้องการบันทึกข้อมูลหรือไม่?</p>
-            <div className="flex justify-between">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-white rounded-[20px] p-8 rounded-lg shadow-xl max-w-md w-full">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">บันทึกข้อมูล</h2>
+            <p className="text-lg text-[#444444] mb-6">คุณต้องการบันทึกข้อมูลหรือไม่?</p>
+            <div className="flex justify-end space-x-6">
               <button
-                className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
                 onClick={handleCancel}
               >
                 ยกเลิก
               </button>
               <button
-                className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
+                className="px-6 py-3 bg-pink-500 text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
                 onClick={handleConfirm}
               >
                 ยืนยัน
