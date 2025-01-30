@@ -11,6 +11,7 @@ const EditMedicineDetail: React.FC = () => {
     detail: "",
     usage: "",
     side_effect: "",
+    food_warning: "",
   });
   const { id } = useParams<{ id: string }>();
   const [showPopup, setShowPopup] = useState(false);
@@ -31,6 +32,7 @@ const EditMedicineDetail: React.FC = () => {
           detail: data.data.detail || "",
           usage: data.data.usage || "",
           side_effect: data.data.side_effect || "",
+          food_warning: data.data.food_warning || "",
         });
       }
     } catch (error) {
@@ -101,16 +103,16 @@ const EditMedicineDetail: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-200">
+    <div className="flex h-screen overflow-hidden bg-gray-200">
       <Sidebar />
-      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden p-6">
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <h1 className="text-2xl font-bold">แก้ไขรายละเอียดยา</h1>
         </div>
 
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 flex-1 overflow-auto">
           <form>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-auto">
               <div>
                 <label className="block text-gray-700">ชื่อยา</label>
                 <input
@@ -118,55 +120,60 @@ const EditMedicineDetail: React.FC = () => {
                   name="name"
                   value={medicineData.name}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-200"
+                  className="w-full border rounded p-2 bg-gray-100"
                   placeholder="ชื่อยา"
                 />
               </div>
 
-              <div>
-                <label className="block text-gray-700">ประเภท</label>
+              <div className="flex items-center space-x-20">
+                <div className="relative w-24">
+                  <label className="block text-gray-700 text-sm">หน่วย</label>
+                  <div className="relative">
+                    <select
+                      name="unit_type"
+                      value={medicineData.unit_type}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-md p-1 bg-white appearance-none text-sm"
+                    >
+                      <option value="">เลือก</option>
+                      <option value="กิโลกรัม">กิโลกรัม</option>
+                      <option value="กระปุก">กระปุก</option>
+                      <option value="ขวด">ขวด</option>
+                      <option value="ตลับ">ตลับ</option>
+                      <option value="ซอง">ซอง</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                      ▼
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex items-center space-x-4">
-                  <label>
+                  <div className="flex flex-col items-center">
+                    <label className="text-gray-700 text-sm mb-1">ยา</label>
                     <input
                       type="radio"
                       name="drug_type"
                       value="drug"
                       checked={medicineData.drug_type === "drug"}
                       onChange={handleInputChange}
-                      className="mr-2"
                     />
-                    ยา
-                  </label>
-                  <label>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <label className="text-gray-700 text-sm mb-1">
+                      สมุนไพร
+                    </label>
                     <input
                       type="radio"
                       name="drug_type"
                       value="herbal"
-                      checked={medicineData.drug_type === "herb"}
+                      checked={medicineData.drug_type === "herbal"}
                       onChange={handleInputChange}
-                      className="mr-2"
                     />
-                    สมุนไพร
-                  </label>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-gray-700">หน่วย</label>
-                <select
-                  name="unit_type"
-                  value={medicineData.unit_type}
-                  onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-200"
-                >
-                  <option value="">เลือก</option>
-                  <option value="เม็ด">เม็ด</option>
-                  <option value="แผง">แผง</option>
-                  <option value="ซอง">ซอง</option>
-                  <option value="ขวด">ขวด</option>
-                  <option value="หลอด">หลอด</option>
-                </select>
-              </div>
               <div>
                 <label className="block text-gray-700">รหัสยา</label>
                 <input
@@ -174,7 +181,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="code"
                   value={medicineData.code}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-200"
+                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
                   placeholder="รหัสยา"
                 />
               </div>
@@ -185,7 +192,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="detail"
                   value={medicineData.detail}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-200"
+                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
                   placeholder="รายละเอียดยา"
                   rows={4}
                 />
@@ -197,7 +204,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="usage"
                   value={medicineData.usage}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-200"
+                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
                   placeholder="วิธีใช้"
                   rows={4}
                 />
@@ -209,11 +216,11 @@ const EditMedicineDetail: React.FC = () => {
                   name="side_effect"
                   value={medicineData.side_effect}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-200"
+                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
                   placeholder="ผลข้างเคียง"
                   rows={4}
                 />
-              </div>
+              </div>     
             </div>
 
             <div className="mt-6 text-center">
