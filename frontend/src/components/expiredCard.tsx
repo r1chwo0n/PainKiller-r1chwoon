@@ -54,3 +54,4 @@ const ExpiredCard: React.FC<ExpiredCardProps> = ({ name, drug_id, drug_type, amo
 };
 
 export default ExpiredCard;
+

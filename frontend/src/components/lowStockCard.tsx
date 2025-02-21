@@ -52,3 +52,4 @@ const LowStockCard: React.FC<LowStockCardProps> = ({ name, drug_id, drug_type, a
 };
 
 export default LowStockCard;
+
