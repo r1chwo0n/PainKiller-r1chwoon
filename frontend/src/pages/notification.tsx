@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import ExpiredCard from "../components/expiredCard";
 import LowStockCard from "../components/lowStockCard";
 import Sidebar from "../components/sidebar";
-import { useNavigate } from "react-router-dom";
 
 type Drug = {
   drug_id: string;
@@ -18,7 +17,6 @@ type Drug = {
 
 const NotificationPage: React.FC = () => {
   const [drugs, setDrugs] = useState<Drug[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDrugs = async () => {
@@ -47,23 +45,44 @@ const NotificationPage: React.FC = () => {
           (expired.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
         );
 
-        if (daysLeft <= 10) {
-          return {
-            stock_id: stock.stock_id,
-            message: `หมดอายุในอีก ${daysLeft} วัน`,
-            amount: stock.amount,
-            unit_type: drug.unit_type,
-            expired: stock.expired,
-          };
+        let message = '';
+        
+        if (daysLeft < 0) {
+          message = 'หมดอายุแล้ว';
+        } else if (daysLeft === 0) {
+          message = 'หมดอายุวันนี้';
+        } else if (daysLeft <= 10) {
+          message = `หมดอายุในอีก ${daysLeft} วัน`;
         }
-        return null;
+
+        return message ? {
+          stock_id: stock.stock_id,
+          message: message,
+          amount: stock.amount,
+          unit_type: drug.unit_type,
+          expired: stock.expired,
+        } : null;
       })
       .filter(Boolean);
-  };
+};
+
 
   const getLowStockWarning = (drug: Drug) => {
-    return getTotalStockAmount(drug) < 20 ? "จำนวนคงเหลือน้อยกว่ากำหนด" : null;
+    if (drug.stock.length === 0) {
+      return null; // ถ้าไม่มีล็อตใดๆ ในสต็อกเลย แสดงว่ายังไม่ได้จัดซื้อ ไม่ต้องแจ้งเตือน
+    }
+
+    const totalStock = getTotalStockAmount(drug);
+    
+    if (totalStock === 0) {
+      return "หมดสต็อกแล้ว";
+    } else if (totalStock < 8) {
+      return "จำนวนคงเหลือน้อยกว่ากำหนด";
+    }
+
+    return null;
   };
+
 
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
@@ -74,7 +93,16 @@ const NotificationPage: React.FC = () => {
           <h1 className="text-4xl text-[#444444] font-bold">แจ้งเตือน</h1>
         </header>
 
-        <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 pb-5 overflow-y-auto">
+        <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-sch">
+
+        <div
+            className="flex-1 bg-white rounded-[12px] pr-4 pl-4 overflow-y-auto"
+            style={{
+              maxHeight: "calc(100vh - 180px)",
+              marginTop: "4px",
+              overflowY: "auto",
+            }}
+          >
           {drugs.flatMap((drug) => {
             const lowStockWarning = getLowStockWarning(drug);
             const expiryWarnings = getExpiryWarnings(drug);
@@ -106,6 +134,7 @@ const NotificationPage: React.FC = () => {
             ];
           })}
         </div>
+      </div>
       </div>
     </div>
   );
