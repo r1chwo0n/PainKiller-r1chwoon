@@ -41,7 +41,7 @@ const Detail: React.FC = () => {
 
       console.log("data:",result)
       const formattedData: DataRow[] = [
-        { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data.name ?? "N/A" },
+        { label: "ชื่อยา", value: result.data.name ?? "N/A" },
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
         { label: "ผลข้างเคียง", value: result?.data.side_effect ?? "N/A" },
@@ -86,86 +86,62 @@ const Detail: React.FC = () => {
     }
   }, [id]);
 
-  return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div
-        className="flex-grow p-8"
-        style={{ fontFamily: "Arial, sans-serif" }}>
-        {/* Modal for Delete Confirmation */}
-        
+return (
+  <div className="flex h-screen bg-[#f0f0f0]">
+    <Sidebar />
+    
 
-        {loading && <div>กำลังโหลดข้อมูล...</div>}
-        {error && <div style={{ color: "red" }}>Error: {error}</div>}
+    <div
+      className="flex-1 p-4"
+      style={{ fontFamily: "Arial, sans-serif" }}>
+      
 
-        {!loading && !error && (
-          <>
-            {/* Display Drug Name and Buttons */}
-            <div
-              style={{
-                marginBottom: "20px",
-                padding: "15px",
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "#fff",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}>
-              {/* Drug Name */}
-              <span style={{ fontSize: "25px", fontWeight: "bold" }}>
-                {data.find((row) => row.label === "เกี่ยวกับยา (ชื่อยา)")
-                  ?.value ?? "Drug Name Not Found"}
-              </span>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "10px",
-                  // marginTop: "10px",
-                }}>  
-              </div>
-            </div>
+    
+      {loading && <div>กำลังโหลดข้อมูล...</div>}
+      {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
-            {/* Main Data */}
-            <div
-              style={{
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "#ffff",
-                marginBottom: "20px",
-              }}>
-              {data
-                .filter((row) => !row.label.startsWith("ล็อตที่"))
-                .map((row, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "15px",
-                      borderBottom:
-                        index === data.length - 1
-                          ? "none"
-                          : "1px solid #e0e0e0",
-                    }}>
-                    <span style={{ fontWeight: 500 }}>{row.label}</span>
-                    <span>{row.value}</span>
-                  </div>
-                ))}
-            </div>
-            <div
-              style={{
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "#ffff",
-                marginBottom: "10px",
-              }}></div>
-          </>
-        )}
-      </div>
+      {!loading && !error && (
+        <>
+          <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
+            {/* Drug Name */}
+            <span className="mb-2 text-4xl text-[#444444] font-bold">
+              {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}
+            </span>
+
+          </header>
+          
+          {/* Main Data Container */}
+          <div className="flex-1 bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
+          <b style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px", marginTop: "20px"}}>ข้อมูลยา {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}</b>
+
+            {/* Main Data Section */}
+            
+            {data
+              .filter((row) => !row.label.startsWith("ล็อตที่"))
+              .slice(1)
+              .map((row, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
+                    padding: "15px",
+                    borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+                  }}
+                >
+                  <span style={{ fontWeight: 500 }}>{row.label}</span>
+                  <span>{row.value}</span>
+                </div>
+              ))}
+          
+          </div>
+        </>
+      )}
     </div>
-  );
+   
+  </div>
+);
 };
 
 export default Detail;
