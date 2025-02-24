@@ -66,12 +66,10 @@ const NotificationPage: React.FC = () => {
       .filter(Boolean);
 };
 
-
   const getLowStockWarning = (drug: Drug) => {
     if (drug.stock.length === 0) {
       return null; // ถ้าไม่มีล็อตใดๆ ในสต็อกเลย แสดงว่ายังไม่ได้จัดซื้อ ไม่ต้องแจ้งเตือน
     }
-
     const totalStock = getTotalStockAmount(drug);
     
     if (totalStock === 0) {
@@ -119,7 +117,9 @@ const NotificationPage: React.FC = () => {
                   warningMessage={lowStockWarning}
                 />
               ),
-              ...expiryWarnings.map((warning) => (
+              ...expiryWarnings
+              .filter((warning) => warning !== null)
+              .map((warning) => (
                 <ExpiredCard
                   key={`expired-${warning.stock_id}`}
                   name={drug.name}
