@@ -41,32 +41,40 @@ const NotificationPage: React.FC = () => {
   const getExpiryWarnings = (drug: Drug) => {
     const today = new Date();
     return drug.stock
-      .map((stock) => {
-        const expired = new Date(stock.expired);
-        const daysLeft = Math.ceil(
-          (expired.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        let message = '';
-        
-        if (daysLeft < 0) {
-          message = 'หมดอายุแล้ว';
-        } else if (daysLeft === 0) {
-          message = 'หมดอายุวันนี้';
-        } else if (daysLeft <= 10) {
-          message = `หมดอายุในอีก ${daysLeft} วัน`;
-        }
-
-        return message ? {
-          stock_id: stock.stock_id,
-          message: message,
-          amount: stock.amount,
-          unit_type: drug.unit_type,
-          expired: stock.expired,
-        } : null;
-      })
-      .filter(Boolean);
-};
+        .map((stock) => {
+            const expired = new Date(stock.expired);
+            const timeDiff = expired.getTime() - today.getTime();
+            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            let message = '';
+            
+            if (daysLeft < 0) {
+                message = 'หมดอายุแล้ว';
+            } else if (daysLeft === 0) {
+                message = 'หมดอายุวันนี้';
+            } else {
+                const months = Math.floor(daysLeft / 30);
+                const days = daysLeft % 30;
+                
+                if (months > 0 && days > 0) {
+                    message = `หมดอายุในอีก ${months} เดือน ${days} วัน`;
+                } else if (months > 0) {
+                    message = `หมดอายุในอีก ${months} เดือน`;
+                } else {
+                    message = `หมดอายุในอีก ${days} วัน`;
+                }
+            }
+            
+            return message ? {
+                stock_id: stock.stock_id,
+                message: message,
+                amount: stock.amount,
+                unit_type: drug.unit_type,
+                expired: stock.expired,
+            } : null;
+        })
+        .filter(Boolean);
+  };
 
   const getLowStockWarning = (drug: Drug) => {
     if (drug.stock.length === 0) {
@@ -84,6 +92,7 @@ const NotificationPage: React.FC = () => {
   };
 
 
+
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
@@ -94,16 +103,8 @@ const NotificationPage: React.FC = () => {
         </header>
 
         <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-sch">
-
-        <div
-            className="flex-1 bg-white rounded-[12px] pr-4 pl-4 overflow-y-auto"
-            style={{
-              maxHeight: "calc(100vh - 180px)",
-              marginTop: "4px",
-              overflowY: "auto",
-            }}
-          >
-          {drugs.flatMap((drug) => {
+        {(() => {
+          const notifications = drugs.flatMap((drug) => {
             const lowStockWarning = getLowStockWarning(drug);
             const expiryWarnings = getExpiryWarnings(drug);
 
@@ -120,23 +121,41 @@ const NotificationPage: React.FC = () => {
                 />
               ),
               ...expiryWarnings
-              .filter((warning) => warning !== null)
-              .map((warning) => (
-                <ExpiredCard
-                  key={`expired-${warning.stock_id}`}
-                  name={drug.name}
-                  drug_id={drug.drug_id}
-                  drug_type={drug.drug_type}
-                  amount={warning.amount}
-                  unit_type={warning.unit_type}
-                  expired={warning.expired}
-                  warningMessage={warning.message}
-                />
-              )),
-            ];
-          })}
-        </div>
+                .filter((warning) => warning !== null)
+                .map((warning) => (
+                  <ExpiredCard
+                    key={`expired-${warning.stock_id}`}
+                    name={drug.name}
+                    drug_id={drug.drug_id}
+                    drug_type={drug.drug_type}
+                    amount={warning.amount}
+                    unit_type={warning.unit_type}
+                    expired={warning.expired}
+                    warningMessage={warning.message}
+                  />
+                )),
+            ].filter(Boolean);
+          });
+
+          if (notifications.length === 0) {
+            return <p className="text-center text-gray-500 items-center mt-80 text-xl">ไม่มีการแจ้งเตือน</p>;
+          }
+
+          return (
+            <div
+              className="flex-1 bg-white rounded-[12px] pr-4 pl-4 overflow-y-auto"
+              style={{
+                maxHeight: "calc(100vh - 180px)",
+                marginTop: "4px",
+                overflowY: "auto",
+              }}
+            >
+              {notifications}
+            </div>
+          );
+        })()}
       </div>
+
       </div>
     </div>
   );
