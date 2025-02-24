@@ -23,12 +23,14 @@ const NotificationPage: React.FC = () => {
       try {
         const response = await fetch("http://localhost:3000/stocks");
         const data = await response.json();
-        setDrugs(data);
+  
+        // ใช้ reverse() เพื่อให้ข้อมูลล่าสุดอยู่ด้านบน
+        setDrugs(data.reverse());
       } catch (error) {
         console.error("Error fetching drugs:", error);
       }
     };
-
+  
     fetchDrugs();
   }, []);
 
