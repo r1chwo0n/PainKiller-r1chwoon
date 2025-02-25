@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import ExpiredCard from "../components/expiredCard";
 import LowStockCard from "../components/lowStockCard";
 import Sidebar from "../components/sidebar";
-import { useNavigate } from "react-router-dom";
 
 type Drug = {
   drug_id: string;
@@ -18,20 +17,20 @@ type Drug = {
 
 const NotificationPage: React.FC = () => {
   const [drugs, setDrugs] = useState<Drug[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDrugs = async () => {
       try {
         const response = await fetch("http://localhost:3000/stocks");
         const data = await response.json();
-        console.log(data);
-        setDrugs(data);
+  
+        // ใช้ reverse() เพื่อให้ข้อมูลล่าสุดอยู่ด้านบน
+        setDrugs(data.reverse());
       } catch (error) {
         console.error("Error fetching drugs:", error);
       }
     };
-
+  
     fetchDrugs();
   }, []);
 
@@ -41,101 +40,126 @@ const NotificationPage: React.FC = () => {
 
   const getExpiryWarnings = (drug: Drug) => {
     const today = new Date();
-    const expiryWarnings = drug.stock
-      .map((stock) => {
-        const expired = new Date(stock.expired);
-        const daysLeft = Math.ceil(
-          (expired.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        if (daysLeft <= 10) {
-          return {
-            stock_id: stock.stock_id,
-            message: `หมดอายุในอีก ${daysLeft} วัน`,
-            amount: stock.amount,
-            unit_type: drug.unit_type,
-            expired: stock.expired,
-          };
-        }
-        return null;
-      })
-      .filter((warning) => warning !== null);
-
-    return expiryWarnings;
+    return drug.stock
+        .map((stock) => {
+            const expired = new Date(stock.expired);
+            const timeDiff = expired.getTime() - today.getTime();
+            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            let message = '';
+            
+            if (daysLeft < 0) {
+                message = 'หมดอายุแล้ว';
+            } else if (daysLeft === 0) {
+                message = 'หมดอายุวันนี้';
+            } else {
+                const months = Math.floor(daysLeft / 30);
+                const days = daysLeft % 30;
+                
+                if (months > 0 && days > 0) {
+                    message = `หมดอายุในอีก ${months} เดือน ${days} วัน`;
+                } else if (months > 0) {
+                    message = `หมดอายุในอีก ${months} เดือน`;
+                } else {
+                    message = `หมดอายุในอีก ${days} วัน`;
+                }
+            }
+            
+            return message ? {
+                stock_id: stock.stock_id,
+                message: message,
+                amount: stock.amount,
+                unit_type: drug.unit_type,
+                expired: stock.expired,
+            } : null;
+        })
+        .filter(Boolean);
   };
 
   const getLowStockWarning = (drug: Drug) => {
-    const thresholdAmount = 20;
-    const totalAmount = getTotalStockAmount(drug);
-
-    if (totalAmount < thresholdAmount) {
+    if (drug.stock.length === 0) {
+      return null; // ถ้าไม่มีล็อตใดๆ ในสต็อกเลย แสดงว่ายังไม่ได้จัดซื้อ ไม่ต้องแจ้งเตือน
+    }
+    const totalStock = getTotalStockAmount(drug);
+    
+    if (totalStock === 0) {
+      return "หมดสต็อกแล้ว";
+    } else if (totalStock < 8) {
       return "จำนวนคงเหลือน้อยกว่ากำหนด";
     }
+
     return null;
   };
 
-  const handleCardClick = (drug_id: string) => {
-    navigate(`/detail/${drug_id}`);
-  };
+
 
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
 
       <div className="flex-1 flex flex-col h-screen p-4">
-        {/* Header */}
         <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-4xl text-[#444444] font-bold">แจ้งเตือน</h1>
-          </div>
+          <h1 className="text-4xl text-[#444444] font-bold">แจ้งเตือน</h1>
         </header>
 
-        {/* Content Box */}
-        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
-          {/* Display notifications */}
-          {drugs.flatMap((drug) => {
+        <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-sch">
+        {(() => {
+          const notifications = drugs.flatMap((drug) => {
             const lowStockWarning = getLowStockWarning(drug);
             const expiryWarnings = getExpiryWarnings(drug);
 
-            const notifications = [];
-
-            if (lowStockWarning) {
-              notifications.push(
+            return [
+              lowStockWarning && (
                 <LowStockCard
-                  key={drug.drug_id}
+                  key={`lowstock-${drug.drug_id}`}
                   name={drug.name}
+                  drug_id={drug.drug_id}
                   drug_type={drug.drug_type}
                   amount={getTotalStockAmount(drug)}
                   unit_type={drug.unit_type}
-                  warning={true}
                   warningMessage={lowStockWarning}
-                  onClick={() => handleCardClick(drug.drug_id)}
                 />
-              );
-            }
+              ),
+              ...expiryWarnings
+                .filter((warning) => warning !== null)
+                .map((warning) => (
+                  <ExpiredCard
+                    key={`expired-${warning.stock_id}`}
+                    name={drug.name}
+                    drug_id={drug.drug_id}
+                    drug_type={drug.drug_type}
+                    amount={warning.amount}
+                    unit_type={warning.unit_type}
+                    expired={warning.expired}
+                    warningMessage={warning.message}
+                  />
+                )),
+            ].filter(Boolean);
+          });
 
-            notifications.push(
-              ...expiryWarnings.map((warning) => (
-                <ExpiredCard
-                  key={warning.stock_id}
-                  name={drug.name}
-                  drug_type={drug.drug_type}
-                  amount={warning.amount}
-                  unit_type={warning.unit_type}
-                  expired={warning.expired}
-                  warning={true}
-                  warningMessage={warning.message}
-                  onClick={() => handleCardClick(drug.drug_id)}
-                />
-              ))
-            );
+          if (notifications.length === 0) {
+            return <p className="text-center text-gray-500 items-center mt-80 text-xl">ไม่มีการแจ้งเตือน</p>;
+          }
 
-            return notifications;
-          })}
-        </div>
+          return (
+            <div
+              className="flex-1 bg-white rounded-[12px] pr-4 pl-4 overflow-y-auto"
+              style={{
+                maxHeight: "calc(100vh - 180px)",
+                marginTop: "4px",
+                overflowY: "auto",
+              }}
+            >
+              {notifications}
+            </div>
+          );
+        })()}
+      </div>
+
       </div>
     </div>
   );
 };
 
 export default NotificationPage;
+
