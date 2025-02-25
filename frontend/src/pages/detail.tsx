@@ -48,7 +48,7 @@ const Detail: React.FC = () => {
 
       console.log("data:",result)
       const formattedData: DataRow[] = [
-        { label: "เกี่ยวกับยา (ชื่อยา)", value: result.data.name ?? "N/A" },
+        { label: "ชื่อยา", value: result.data.name ?? "N/A" },
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
         {
           label: "จำนวนคงเหลือ",
@@ -99,64 +99,35 @@ const Detail: React.FC = () => {
   }, [id]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex  h-screen bg-[#f0f0f0]">
       <Sidebar />
+      
+
       <div
-        className="flex-grow p-8"
+        className="flex-1 p-4"
         style={{ fontFamily: "Arial, sans-serif" }}>
-        {/* Modal for Delete Confirmation */}
+          
+        {/* Delete Confirmation Popup */}
         {isModalOpen && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}>
-            <div
-              style={{
-                backgroundColor: "#fff",
-                padding: "20px",
-                borderRadius: "8px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                textAlign: "center",
-              }}>
-              <h2>ยืนยันการลบข้อมูล</h2>
-              <p>ต้องการลบข้อมูลใช่หรือไม่</p>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "10px",
-                  marginTop: "10px",
-                }}>
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-white rounded-[20px] p-8 shadow-xl max-w-md w-full">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                ยืนยันการลบข้อมูล
+              </h2>
+              <p className="text-lg text-[#444444] mb-6">
+                ต้องการลบข้อมูลใช่หรือไม่?
+              </p>
+              <div className="flex justify-end space-x-6">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  style={{
-                    padding: "10px 15px",
-                    backgroundColor: "#cccccc",
-                    color: "#000",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}>
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                >
                   ยกเลิก
                 </button>
                 <button
                   onClick={handleDelete}
-                  style={{
-                    padding: "10px 15px",
-                    backgroundColor: "#FF0000",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}>
+                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                >
                   ลบ
                 </button>
               </div>
@@ -164,141 +135,91 @@ const Detail: React.FC = () => {
           </div>
         )}
 
+      
         {loading && <div>กำลังโหลดข้อมูล...</div>}
         {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
         {!loading && !error && (
           <>
-            {/* Display Drug Name and Buttons */}
-            <div
-              style={{
-                marginBottom: "20px",
-                padding: "15px",
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "#fff",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}>
+            <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
               {/* Drug Name */}
-              <span style={{ fontSize: "25px", fontWeight: "bold" }}>
-                {data.find((row) => row.label === "เกี่ยวกับยา (ชื่อยา)")
-                  ?.value ?? "Drug Name Not Found"}
+              <span className="mb-2 text-4xl text-[#444444] font-bold">
+                {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}
               </span>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "10px",
-                  // marginTop: "10px",
-                }}>
+
+              {/* Buttons Container */}
+              <div className="flex gap-2 marginLeft">
                 {/* Edit Button */}
                 <button
                   onClick={() => navigate(`/edit-drug/${id}`)}
-                  style={{
-                    padding: "10px 15px",
-                    backgroundColor: "#E9E9E9",
-                    color: "#696969",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center", // Align icon vertically
-                    justifyContent: "center", // Align icon horizontally
-                  }}>
-                  <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
+              className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
+                >
+                  <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
                 </button>
 
                 {/* Delete Button */}
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  style={{
-                    padding: "10px 15px",
-                    backgroundColor: "#E9E9E9", // Use a red color for delete button
-                    color: "#696969",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center", // Align icon vertically
-                    justifyContent: "center", // Align icon horizontally
-                  }}>
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    style={{ fontSize: "16px" }}
-                  />
+                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
+                >
+                  <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
                 </button>
               </div>
-            </div>
+            </header>
+            
+            {/* Main Data Container */}
+            
+            <div className="flex-grow bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y: auto">
+            <b style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px", marginTop: "20px"}}>ข้อมูลยา {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}</b>
 
-            {/* Stock Display */}
-            <div
-              style={{
-                display: "flex",
-                overflowX: "auto",
-                gap: "30px",
-                marginBottom: "20px",
-                paddingBottom: "10px",
-                borderBottom: "1px solid #e0e0e0",
-                backgroundColor: "#ffff",
-              }}>
-              {data
-                .filter((row) => row.label.startsWith("ล็อตที่"))
-                .map((row, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      minWidth: "200px",
-                      flex: "0 0 auto",
-                      border: "1px solid #e0e0e0",
-                      borderRadius: "8px",
-                      padding: "20px",
-                      backgroundColor: "#E9E9E9",
-                    }}>
-                    <p style={{ fontWeight: "bold" }}>{row.label}</p>
-                    <p>{row.value}</p>
-                  </div>
-                ))}
-            </div>
+              {/* Stock Section */}
+              <div style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px" }}>
+                {data
+                  .filter((row) => row.label.startsWith("ล็อตที่"))
+                  .map((row, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        minWidth: "220px",
+                        flex: "0 0 auto",
+                        padding: "15px",
+                        borderRadius: "8px",
+                        backgroundColor: "#E9E9E9",
+                        textAlign: "left",
+                      }}
+                    >
+                      <p style={{ fontWeight: "bold" }}>{row.label}</p>
+                      <p>{row.value}</p>
+                    </div>
+                  ))}
+              </div>
 
-            {/* Main Data */}
-            <div
-              style={{
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "#ffff",
-                marginBottom: "20px",
-              }}>
+              {/* Main Data Section */}
+              
               {data
                 .filter((row) => !row.label.startsWith("ล็อตที่"))
+                .slice(1)
                 .map((row, index) => (
                   <div
                     key={index}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
+                      borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
                       padding: "15px",
-                      borderBottom:
-                        index === data.length - 1
-                          ? "none"
-                          : "1px solid #e0e0e0",
-                    }}>
+                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+                    }}
+                  >
                     <span style={{ fontWeight: 500 }}>{row.label}</span>
                     <span>{row.value}</span>
                   </div>
                 ))}
+            
             </div>
-            <div
-              style={{
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "#ffff",
-                marginBottom: "10px",
-              }}></div>
           </>
         )}
       </div>
+     
     </div>
   );
 };

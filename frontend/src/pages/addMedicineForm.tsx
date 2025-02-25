@@ -123,7 +123,9 @@ const AddMedicineForm: React.FC = () => {
       <main className="flex-1 p-2">
         <header className="bg-white h-[70px] p-4 rounded-[8px] shadow-md mb-4">
           <div className="flex justify-between items-center">
-            <h1 className="mb-2 text-3xl text-[#444444]">เพิ่มข้อมูลยา</h1>
+            <h1 className="mb-2 text-4xl text-[#444444] font-bold ">
+              เพิ่มข้อมูลยา
+            </h1>
           </div>
         </header>
 
@@ -135,9 +137,9 @@ const AddMedicineForm: React.FC = () => {
             <p className="text-green-500 text-center mb-2">{successMessage}</p>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-4 gap-6 items-start">
+            <div className="grid grid-cols-4 gap-5 items-start">
               <div className="col-span-1">
-                <label htmlFor="name" className="text-sm">
+                <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
                 </label>
                 <input
@@ -152,7 +154,7 @@ const AddMedicineForm: React.FC = () => {
 
               {/* Quantity */}
               <div className="col-span-1">
-                <label htmlFor="amount" className="text-sm">
+                <label htmlFor="amount" className="text-[16px] text-[#444444]">
                   จำนวน
                 </label>
                 <input
@@ -160,14 +162,22 @@ const AddMedicineForm: React.FC = () => {
                   id="amount"
                   name="amount"
                   value={formData.amount}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      // ตรวจสอบว่าเป็นตัวเลขเต็มบวกหรือ 0
+                      handleChange(e);
+                    }
+                  }}
+                  min="0"
+                  step="1"
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
               {/* Unit */}
               <div className="col-span-1">
-                <label htmlFor="unit" className="text-sm">
+                <label htmlFor="unit" className="text-[16px] text-[#444444]">
                   หน่วย
                 </label>
                 <select
@@ -178,20 +188,18 @@ const AddMedicineForm: React.FC = () => {
                   required
                 >
                   <option value="">เลือก</option>
-                  <option value="เม็ด">เม็ด</option>
+                  <option value="กิโลกรัม">กิโลกรัม</option>
                   <option value="แผง">แผง</option>
-                  <option value="ซอง">ซอง</option>
                   <option value="ขวด">ขวด</option>
-                  <option value="หลอด">หลอด</option>
                 </select>
               </div>
 
               {/* Type */}
               <div className="col-span-1">
-                <label htmlFor="type" className="text-sm">
+                <label htmlFor="type" className="text-[16px] text-[#444444]">
                   ประเภท
                 </label>
-                <div className="flex gap-4 items-center mt-1">
+                <div className="flex gap-2 items-center mt-1">
                   <label className="flex items-center gap-1">
                     <input
                       type="radio"
@@ -201,7 +209,7 @@ const AddMedicineForm: React.FC = () => {
                       onChange={handleChange}
                       className="focus:ring-2 focus:ring-[#FB6F92]"
                     />
-                    ยา
+                    <label className="text-[16px] text-[#444444]">ยา</label>
                   </label>
                   <label className="flex items-center gap-1">
                     <input
@@ -212,16 +220,18 @@ const AddMedicineForm: React.FC = () => {
                       onChange={handleChange}
                       className="focus:ring-2 focus:ring-[#FB6F92]"
                     />
-                    สมุนไพร
+                    <label className="text-[16px] text-[#444444]">
+                      สมุนไพร
+                    </label>
                   </label>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-5 items-start mt-4">
+            <div className="grid grid-cols-3 gap-5 items-start mt-2">
               {/* Code */}
               <div className="col-span-1">
-                <label htmlFor="code" className="text-sm">
+                <label htmlFor="code" className="text-[16px] text-[#444444]">
                   รหัสยา
                 </label>
                 <input
@@ -236,7 +246,10 @@ const AddMedicineForm: React.FC = () => {
 
               {/* Price */}
               <div className="col-span-1">
-                <label htmlFor="unit_price" className="text-sm">
+                <label
+                  htmlFor="unit_price"
+                  className="text-[16px] text-[#444444]"
+                >
                   ราคาต่อหน่วย
                 </label>
                 <input
@@ -244,14 +257,22 @@ const AddMedicineForm: React.FC = () => {
                   id="unit_price"
                   name="unit_price"
                   value={formData.unit_price}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      // ตรวจสอบว่าเป็นตัวเลขเต็มบวกหรือ 0
+                      handleChange(e);
+                    }
+                  }}
+                  min="0"
+                  step="1"
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
               {/* Expiry Date */}
               <div className="col-span-1">
-                <label htmlFor="expired" className="text-sm">
+                <label htmlFor="expired" className="text-[16px] text-[#444444]">
                   วันหมดอายุ
                 </label>
                 <input
@@ -266,8 +287,11 @@ const AddMedicineForm: React.FC = () => {
             </div>
 
             {/* Description */}
-            <div className="col-span-2 mt-4">
-              <label htmlFor="description" className="text-sm">
+            <div className="col-span-2 mt-2">
+              <label
+                htmlFor="description"
+                className="text-[16px] text-[#444444]"
+              >
                 รายละเอียดยา
               </label>
               <textarea
@@ -275,13 +299,13 @@ const AddMedicineForm: React.FC = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[50px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
             {/* Usage */}
-            <div className="col-span-2 mt-4">
-              <label htmlFor="usage" className="text-sm">
+            <div className="col-span-2 mt-2">
+              <label htmlFor="usage" className="text-[16px] text-[#444444]">
                 วิธีใช้
               </label>
               <textarea
@@ -289,13 +313,16 @@ const AddMedicineForm: React.FC = () => {
                 name="usage"
                 value={formData.usage}
                 onChange={handleChange}
-                className="resize-none w-full h-[180px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[120px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
             {/* Side Effects */}
-            <div className="col-span-2 mt-4">
-              <label htmlFor="side_effects" className="text-sm">
+            <div className="col-span-2 mt-2">
+              <label
+                htmlFor="side_effects"
+                className="text-[16px] text-[#444444]"
+              >
                 ผลข้างเคียง
               </label>
               <textarea
@@ -308,8 +335,11 @@ const AddMedicineForm: React.FC = () => {
             </div>
 
             {/* Slang Food */}
-            <div className="col-span-2 mt-4">
-              <label htmlFor="slang_food" className="text-sm">
+            <div className="col-span-2 mt-2">
+              <label
+                htmlFor="slang_food"
+                className="text-[16px] text-[#444444]"
+              >
                 อาหารที่ห้ามทานร่วมกับยา
               </label>
               <textarea
@@ -320,7 +350,7 @@ const AddMedicineForm: React.FC = () => {
                 className="resize-none w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
 
-              <div className="mt-4 text-center">
+              <div className="mt-3 text-center">
                 <button
                   type="submit"
                   className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
