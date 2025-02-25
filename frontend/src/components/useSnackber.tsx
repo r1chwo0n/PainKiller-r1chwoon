@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Snackbar as MuiSnackbar, Alert } from "@mui/material";
 
 type SnackbarSeverity = "success" | "error" | "warning" | "info";

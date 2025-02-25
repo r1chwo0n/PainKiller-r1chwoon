@@ -20,7 +20,7 @@ const EditMedicineDetail: React.FC = () => {
   const fetchData = async (drugId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/drugs/${encodeURIComponent(drugId)}`
+        `/api/drugs/${encodeURIComponent(drugId)}`
       );
       const data = await response.json();
       if (data.data) {
@@ -74,7 +74,7 @@ const EditMedicineDetail: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/drugs/update`, {
+      const response = await fetch(`/api/drugs/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -166,8 +166,8 @@ const EditMedicineDetail: React.FC = () => {
                     <input
                       type="radio"
                       name="drug_type"
-                      value="herbal"
-                      checked={medicineData.drug_type === "herbal"}
+                      value="herb"
+                      checked={medicineData.drug_type === "herb"}
                       onChange={handleInputChange}
                     />
                   </div>

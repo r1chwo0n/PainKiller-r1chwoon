@@ -23,7 +23,7 @@ const NotificationPage: React.FC = () => {
   useEffect(() => {
     const fetchDrugs = async () => {
       try {
-        const response = await fetch("http://localhost:3000/stocks");
+        const response = await fetch(`/api/stocks`);
         const data = await response.json();
         console.log(data);
         setDrugs(data);

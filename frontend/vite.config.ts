@@ -1,7 +1,15 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+export default {
+  server: {
+    proxy: {
+      // "/api": {
+      //   target: "http://painkiller-backend:3000", // Use Docker service name instead of localhost
+      //   changeOrigin: true,
+      //   rewrite: (path: any) => path.replace(/^\/api/, "")
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-})
+      // },
+    },
+    // host: "0.0.0.0",
+    // port: 5173,
+    // port: process.env.VITE_PORT || 5173, 
+  },
+};

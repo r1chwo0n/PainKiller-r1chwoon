@@ -80,7 +80,7 @@ const AddMedicineForm: React.FC = () => {
 
       // Send payload to the API
       const response = await axios.post(
-        "http://localhost:3000/drugs",
+        `/api/drugs`,
         drugPayload,
         {
           headers: { "Content-Type": "application/json" },

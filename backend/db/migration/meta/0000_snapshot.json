@@ -1,5 +1,5 @@
 {
-  "id": "91d73526-3a78-4274-9e01-34e15a81ba10",
+  "id": "1c10be29-6244-485a-a27d-a81b4f0c2922",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,12 +10,25 @@
       "columns": {
         "drug_id": {
           "name": "drug_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug_type": {
+          "name": "drug_type",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
@@ -44,11 +57,11 @@
           "primaryKey": false,
           "notNull": false
         },
-        "unit_price": {
-          "name": "unit_price",
+        "unit_type": {
+          "name": "unit_type",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -78,13 +91,20 @@
       "columns": {
         "stock_id": {
           "name": "stock_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "drug_id": {
           "name": "drug_id",
-          "type": "integer",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit_price": {
+          "name": "unit_price",
+          "type": "real",
           "primaryKey": false,
           "notNull": false
         },
@@ -126,7 +146,7 @@
           "columnsTo": [
             "drug_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

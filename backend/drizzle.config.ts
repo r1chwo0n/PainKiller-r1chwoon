@@ -8,7 +8,7 @@ export default defineConfig({
     url: connectionString,
   },
   schema: "./db/schema.ts",
-  out: "db/migration",
+  out: "./db/migration",
   verbose: true,
   strict: true,
 });

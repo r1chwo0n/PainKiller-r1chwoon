@@ -29,18 +29,10 @@ const Homepage: React.FC = () => {
   const [deleteDrugId, setDeleteDrugId] = useState<string | null>(null);
 
   const [showNotifications, setShowNotifications] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   const [showAddPopup, setShowAddPopup] = useState(false);
 
   const { showSnackbar, Snackbar } = useSnackbar();
-
-  const triggerNewNotification = () => {
-    setHasNewNotification(true);
-    setTimeout(() => {
-      setHasNewNotification(false); // Reset after animation duration
-    }, 1000); // Adjust time to match the animation duration
-  };
 
   const toggleNotifications = () => {
     setShowAddPopup(false); // ปิด Pop-up ของปุ่มบวก ถ้ามันเปิดอยู่
@@ -56,7 +48,7 @@ const Homepage: React.FC = () => {
     // Fetch drugs from API
     const fetchDrugs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/drugs");
+        const response = await axios.get("/api/drugs");
         setDrugs(response.data.data); // Assuming API returns { data: drugs }
       } catch (error) {
         console.error("Error fetching drugs:", error);
@@ -111,7 +103,7 @@ const Homepage: React.FC = () => {
     if (!deleteDrugId) return;
 
     try {
-      await axios.delete(`http://localhost:3000/drugs/${deleteDrugId}`);
+      await axios.delete(`/api/drugs/${deleteDrugId}`);
       setDrugs((prevDrugs) =>
         prevDrugs.filter((drug) => drug.drug_id !== deleteDrugId)
       );
@@ -177,7 +169,6 @@ const Homepage: React.FC = () => {
                   height="24"
                   fill="none"
                   viewBox="0 0 24 24"
-                  className={`${hasNewNotification ? "animate-shake" : ""}`}
                 >
                   <path
                     stroke="currentColor"
