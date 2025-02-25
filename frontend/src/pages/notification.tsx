@@ -21,7 +21,7 @@ const NotificationPage: React.FC = () => {
   useEffect(() => {
     const fetchDrugs = async () => {
       try {
-        const response = await fetch("http://localhost:3000/stocks");
+        const response = await fetch("http://localhost:3000/api/stocks");
         const data = await response.json();
   
         // ใช้ reverse() เพื่อให้ข้อมูลล่าสุดอยู่ด้านบน
@@ -45,18 +45,20 @@ const NotificationPage: React.FC = () => {
             const expired = new Date(stock.expired);
             const timeDiff = expired.getTime() - today.getTime();
             const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            
+
             let message = '';
+
             
             if (daysLeft < 0) {
-                message = 'หมดอายุแล้ว';
-            } else if (daysLeft === 0) {
-                message = 'หมดอายุวันนี้';
-            } else {
+              message = 'หมดอายุแล้ว';
+            }
+            else if(daysLeft >= 0 && daysLeft <= 90) {
                 const months = Math.floor(daysLeft / 30);
                 const days = daysLeft % 30;
-                
-                if (months > 0 && days > 0) {
+
+                if (daysLeft === 0) {
+                    message = 'หมดอายุวันนี้';
+                } else if (months > 0 && days > 0) {
                     message = `หมดอายุในอีก ${months} เดือน ${days} วัน`;
                 } else if (months > 0) {
                     message = `หมดอายุในอีก ${months} เดือน`;
@@ -64,7 +66,7 @@ const NotificationPage: React.FC = () => {
                     message = `หมดอายุในอีก ${days} วัน`;
                 }
             }
-            
+
             return message ? {
                 stock_id: stock.stock_id,
                 message: message,
@@ -74,7 +76,8 @@ const NotificationPage: React.FC = () => {
             } : null;
         })
         .filter(Boolean);
-  };
+};
+
 
   const getLowStockWarning = (drug: Drug) => {
     if (drug.stock.length === 0) {

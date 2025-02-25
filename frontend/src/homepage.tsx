@@ -56,7 +56,7 @@ const Homepage: React.FC = () => {
     // Fetch drugs from API
     const fetchDrugs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/drugs");
+        const response = await axios.get("http://localhost:3000/api/drugs");
         setDrugs(response.data.data); // Assuming API returns { data: drugs }
       } catch (error) {
         console.error("Error fetching drugs:", error);
@@ -111,7 +111,7 @@ const Homepage: React.FC = () => {
     if (!deleteDrugId) return;
 
     try {
-      await axios.delete(`http://localhost:3000/drugs/${deleteDrugId}`);
+      await axios.delete(`http://localhost:3000/api/drugs/${deleteDrugId}`);
       setDrugs((prevDrugs) =>
         prevDrugs.filter((drug) => drug.drug_id !== deleteDrugId)
       );
