@@ -189,8 +189,8 @@ const AddMedicineForm: React.FC = () => {
                 >
                   <option value="">เลือก</option>
                   <option value="กิโลกรัม">กิโลกรัม</option>
-                  <option value="แผง">แผง</option>
-                  <option value="ขวด">ขวด</option>
+                  <option value="แผง">กระปุก</option>
+                  <option value="ขวด">ตลับ</option>
                 </select>
               </div>
 
