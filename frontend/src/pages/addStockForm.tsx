@@ -151,6 +151,21 @@ const AddStockForm: React.FC = () => {
                 />
               </div>
 
+              {/* Expiry Date */}
+              <div className="col-span-1">
+                <label htmlFor="expired" className="text-[16px] text-[#444444]">
+                  วันหมดอายุ
+                </label>
+                <input
+                  type="date"
+                  id="expired"
+                  name="expired"
+                  value={formData.expired}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                />
+              </div>
+
               {/* Price */}
               <div className="col-span-1">
                 <label
@@ -172,21 +187,6 @@ const AddStockForm: React.FC = () => {
                   }}
                   min="0"
                   step="1"
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
-
-              {/* Expiry Date */}
-              <div className="col-span-1">
-                <label htmlFor="expired" className="text-[16px] text-[#444444]">
-                  วันหมดอายุ
-                </label>
-                <input
-                  type="date"
-                  id="expired"
-                  name="expired"
-                  value={formData.expired}
-                  onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
