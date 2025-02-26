@@ -185,8 +185,7 @@ const AddMedicineForm: React.FC = () => {
                   value={formData.unit}
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                  required
-                >
+                  required>
                   <option value="">เลือก</option>
                   <option value="กิโลกรัม">กิโลกรัม</option>
                   <option value="แผง">แผง</option>
@@ -248,8 +247,7 @@ const AddMedicineForm: React.FC = () => {
               <div className="col-span-1">
                 <label
                   htmlFor="unit_price"
-                  className="text-[16px] text-[#444444]"
-                >
+                  className="text-[16px] text-[#444444]">
                   ราคาต่อหน่วย
                 </label>
                 <input
@@ -290,8 +288,7 @@ const AddMedicineForm: React.FC = () => {
             <div className="col-span-2 mt-2">
               <label
                 htmlFor="description"
-                className="text-[16px] text-[#444444]"
-              >
+                className="text-[16px] text-[#444444]">
                 รายละเอียดยา
               </label>
               <textarea
@@ -321,8 +318,7 @@ const AddMedicineForm: React.FC = () => {
             <div className="col-span-2 mt-2">
               <label
                 htmlFor="side_effects"
-                className="text-[16px] text-[#444444]"
-              >
+                className="text-[16px] text-[#444444]">
                 ผลข้างเคียง
               </label>
               <textarea
@@ -338,8 +334,7 @@ const AddMedicineForm: React.FC = () => {
             <div className="col-span-2 mt-2">
               <label
                 htmlFor="slang_food"
-                className="text-[16px] text-[#444444]"
-              >
+                className="text-[16px] text-[#444444]">
                 อาหารที่ห้ามทานร่วมกับยา
               </label>
               <textarea
@@ -353,8 +348,7 @@ const AddMedicineForm: React.FC = () => {
               <div className="mt-3 text-center">
                 <button
                   type="submit"
-                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
-                >
+                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] ">
                   บันทึก
                 </button>
               </div>

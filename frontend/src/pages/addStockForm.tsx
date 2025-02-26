@@ -97,7 +97,7 @@ const AddStockForm: React.FC = () => {
         <header className="bg-white h-[70px] p-4 rounded-[8px] shadow-md mb-4">
           <div className="flex justify-between items-center">
             <h1 className="mb-2 text-4xl text-[#444444] font-bold ">
-              เพิ่มข้อมูลยา
+              อัพเดทสต็อก
             </h1>
           </div>
         </header>
@@ -110,7 +110,8 @@ const AddStockForm: React.FC = () => {
             <p className="text-green-500 text-center mb-2">{successMessage}</p>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-4 gap-5 items-start">
+            <div className="grid grid-cols-1 gap-5 items-start">
+              {/* Drug Name */}
               <div className="col-span-1">
                 <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
@@ -124,11 +125,13 @@ const AddStockForm: React.FC = () => {
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
+            </div>
 
+            <div className="grid grid-cols-3 gap-5 items-start mt-2">
               {/* Quantity */}
               <div className="col-span-1">
                 <label htmlFor="amount" className="text-[16px] text-[#444444]">
-                  จำนวน
+                  รหัสยา
                 </label>
                 <input
                   type="number"
@@ -148,51 +151,49 @@ const AddStockForm: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-5 items-start mt-2">
-                {/* Price */}
-                <div className="col-span-1">
-                  <label
-                    htmlFor="unit_price"
-                    className="text-[16px] text-[#444444]">
-                    ราคาต่อหน่วย
-                  </label>
-                  <input
-                    type="number"
-                    id="unit_price"
-                    name="unit_price"
-                    value={formData.unit_price}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (/^\d*$/.test(value)) {
-                        // ตรวจสอบว่าเป็นตัวเลขเต็มบวกหรือ 0
-                        handleChange(e);
-                      }
-                    }}
-                    min="0"
-                    step="1"
-                    className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                  />
-                </div>
-
-                {/* Expiry Date */}
-                <div className="col-span-1">
-                  <label
-                    htmlFor="expired"
-                    className="text-[16px] text-[#444444]">
-                    วันหมดอายุ
-                  </label>
-                  <input
-                    type="date"
-                    id="expired"
-                    name="expired"
-                    value={formData.expired}
-                    onChange={handleChange}
-                    className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                  />
-                </div>
+              {/* Price */}
+              <div className="col-span-1">
+                <label
+                  htmlFor="unit_price"
+                  className="text-[16px] text-[#444444]">
+                  ราคาต่อหน่วย
+                </label>
+                <input
+                  type="number"
+                  id="unit_price"
+                  name="unit_price"
+                  value={formData.unit_price}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      // ตรวจสอบว่าเป็นตัวเลขเต็มบวกหรือ 0
+                      handleChange(e);
+                    }
+                  }}
+                  min="0"
+                  step="1"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                />
               </div>
 
-              <div className="mt-3 text-center">
+              {/* Expiry Date */}
+              <div className="col-span-1">
+                <label htmlFor="expired" className="text-[16px] text-[#444444]">
+                  วันหมดอายุ
+                </label>
+                <input
+                  type="date"
+                  id="expired"
+                  name="expired"
+                  value={formData.expired}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                />
+              </div>
+            </div>
+
+            <div className="col-span-2 mt-2">
+              <div className="mt-5 text-left">
                 <button
                   type="submit"
                   className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] ">

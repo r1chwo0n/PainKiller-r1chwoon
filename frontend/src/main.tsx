@@ -8,7 +8,7 @@ import EditDrug from "./pages/editMedicineDetail.tsx";
 import DrugDetail from "./pages/detail.tsx";
 import UserDrugDetail from "./pages/userDetail.tsx";
 // imported
-import AddStock from "./pages/addStock.tsx";
+import AddStock from "./pages/addStockForm.tsx";
 
 import "./input.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
