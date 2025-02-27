@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/sidebar"
+import Sidebar from "../components/sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,7 @@ const Detail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  
+
   const handleDelete = () => {
     console.log("Deleted!");
     setIsModalOpen(false);
@@ -46,7 +46,7 @@ const Detail: React.FC = () => {
         0
       );
 
-      console.log("data:",result)
+      console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "ชื่อยา", value: result.data.name ?? "N/A" },
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
@@ -101,12 +101,7 @@ const Detail: React.FC = () => {
   return (
     <div className="flex  h-screen bg-[#f0f0f0]">
       <Sidebar />
-      
-
-      <div
-        className="flex-1 p-4"
-        style={{ fontFamily: "Arial, sans-serif" }}>
-          
+      <div className="flex-1 p-4" style={{ fontFamily: "Arial, sans-serif" }}>
         {/* Delete Confirmation Popup */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
@@ -120,14 +115,12 @@ const Detail: React.FC = () => {
               <div className="flex justify-end space-x-6">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-                >
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
                   ยกเลิก
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-                >
+                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
                   ลบ
                 </button>
               </div>
@@ -135,7 +128,6 @@ const Detail: React.FC = () => {
           </div>
         )}
 
-      
         {loading && <div>กำลังโหลดข้อมูล...</div>}
         {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
@@ -144,7 +136,8 @@ const Detail: React.FC = () => {
             <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
               {/* Drug Name */}
               <span className="mb-2 text-4xl text-[#444444] font-bold">
-                {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}
+                {data.find((row) => row.label === "ชื่อยา")?.value ??
+                  "Drug Name Not Found"}
               </span>
 
               {/* Buttons Container */}
@@ -152,28 +145,43 @@ const Detail: React.FC = () => {
                 {/* Edit Button */}
                 <button
                   onClick={() => navigate(`/edit-drug/${id}`)}
-              className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
-                >
+                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}>
                   <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
                 </button>
 
                 {/* Delete Button */}
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
-                >
+                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}>
                   <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
                 </button>
               </div>
             </header>
-            
+
             {/* Main Data Container */}
-            
+
             <div className="flex-grow bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y: auto">
-            <b style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px", marginTop: "20px"}}>ข้อมูลยา {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}</b>
+              <b
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                  overflowX: "auto",
+                  marginBottom: "20px",
+                  marginTop: "20px",
+                }}>
+                ข้อมูลยา{" "}
+                {data.find((row) => row.label === "ชื่อยา")?.value ??
+                  "Drug Name Not Found"}
+              </b>
 
               {/* Stock Section */}
-              <div style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                  overflowX: "auto",
+                  marginBottom: "20px",
+                }}>
                 {data
                   .filter((row) => row.label.startsWith("ล็อตที่"))
                   .map((row, index) => (
@@ -186,8 +194,7 @@ const Detail: React.FC = () => {
                         borderRadius: "8px",
                         backgroundColor: "#E9E9E9",
                         textAlign: "left",
-                      }}
-                    >
+                      }}>
                       <p style={{ fontWeight: "bold" }}>{row.label}</p>
                       <p>{row.value}</p>
                     </div>
@@ -195,7 +202,7 @@ const Detail: React.FC = () => {
               </div>
 
               {/* Main Data Section */}
-              
+
               {data
                 .filter((row) => !row.label.startsWith("ล็อตที่"))
                 .slice(1)
@@ -207,19 +214,19 @@ const Detail: React.FC = () => {
                       justifyContent: "space-between",
                       borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
                       padding: "15px",
-                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
-                    }}
-                  >
+                      borderBottom:
+                        index === data.length - 1
+                          ? "none"
+                          : "1px solid #e0e0e0",
+                    }}>
                     <span style={{ fontWeight: 500 }}>{row.label}</span>
                     <span>{row.value}</span>
                   </div>
                 ))}
-            
             </div>
           </>
         )}
       </div>
-     
     </div>
   );
 };

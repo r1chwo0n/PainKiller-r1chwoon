@@ -60,7 +60,7 @@ const AddStockForm: React.FC = () => {
       // Send payload to the API
       /* Edit This */
       const response = await axios.post(
-        "http://localhost:3000/api/drugs",
+        "http://localhost:3000/api/stocks",
         drugPayload,
         {
           headers: { "Content-Type": "application/json" },
@@ -131,7 +131,7 @@ const AddStockForm: React.FC = () => {
               {/* Quantity */}
               <div className="col-span-1">
                 <label htmlFor="amount" className="text-[16px] text-[#444444]">
-                  รหัสยา
+                  จำนวน
                 </label>
                 <input
                   type="number"
