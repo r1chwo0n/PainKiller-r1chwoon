@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Snackbar as MuiSnackbar, Alert } from "@mui/material";
 
 type SnackbarSeverity = "success" | "error" | "warning" | "info";
@@ -19,7 +19,7 @@ const useSnackbar = () => {
     open: false,
     message: "",
     severity: "info",
-    autoHideDuration: 6000, // Default duration
+    autoHideDuration: 5000, 
   });
 
   const showSnackbar = useCallback((options: SnackbarOptions) => {
@@ -27,7 +27,7 @@ const useSnackbar = () => {
       open: true,
       message: options.message,
       severity: options.severity,
-      autoHideDuration: options.autoHideDuration || 6000,
+      autoHideDuration: options.autoHideDuration || 5000,
     });
   }, []);
 
@@ -41,6 +41,7 @@ const useSnackbar = () => {
       autoHideDuration={snackbarState.autoHideDuration}
       onClose={closeSnackbar}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      sx={{ paddingLeft: "200px" }} 
     >
       <Alert
         onClose={closeSnackbar}

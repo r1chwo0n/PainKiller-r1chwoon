@@ -12,7 +12,7 @@ const EditMedicineDetail: React.FC = () => {
     detail: "",
     usage: "",
     side_effect: "",
-    food_warning: "",
+    slang_food: "",
   });
 
   const { id } = useParams<{ id: string }>();
@@ -23,7 +23,7 @@ const EditMedicineDetail: React.FC = () => {
   const fetchData = async (drugId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/drugs/${encodeURIComponent(drugId)}`
+        `/api/drugs/${encodeURIComponent(drugId)}`
       );
       const data = await response.json();
       if (data.data) {
@@ -35,7 +35,7 @@ const EditMedicineDetail: React.FC = () => {
           detail: data.data.detail || "",
           usage: data.data.usage || "",
           side_effect: data.data.side_effect || "",
-          food_warning: data.data.food_warning || "",
+          slang_food: data.data.slang_food || "",
         });
       }
     } catch (error) {
@@ -75,7 +75,7 @@ const EditMedicineDetail: React.FC = () => {
     if (!id) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/drugs/update`, {
+      const response = await fetch(`/api/drugs/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -103,18 +103,18 @@ const EditMedicineDetail: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-200">
+    <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden p-6">
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold">แก้ไขรายละเอียดยา</h1>
-        </div>
+        <div className="flex-1 flex flex-col h-screen p-4">
+        <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
+          <h1 className="text-4xl text-[#444444] font-bold">แก้ไขรายละเอียดยา</h1>
+        </header>
 
-        <div className="bg-white shadow-md rounded-lg p-6 flex-1 overflow-auto">
+        <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-sch">
           <form>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-1 overflow-auto pl-1 pr-1">
               <div>
-                <label className="block text-gray-700">ชื่อยา</label>
+                <label className="text-[16px] text-[#444444]">ชื่อยา</label>
                 <input
                   type="text"
                   name="name"
@@ -127,13 +127,13 @@ const EditMedicineDetail: React.FC = () => {
 
               <div className="flex items-center space-x-20">
                 <div className="relative w-24">
-                  <label className="block text-gray-700 text-sm">หน่วย</label>
+                  <label className="text-[16px] text-[#444444]">หน่วย</label>
                   <div className="relative">
                     <select
                       name="unit_type"
                       value={medicineData.unit_type}
                       onChange={handleInputChange}
-                      className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                      className="w-[150px] h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                     >
                       <option value="">เลือก</option>
                       <option value="กิโลกรัม">กิโลกรัม</option>
@@ -190,7 +190,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="detail"
                   value={medicineData.detail}
                   onChange={handleInputChange}
-                  className="resize-none w-full h-[95px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="รายละเอียดยา"
                   rows={4}
                 />
@@ -202,7 +202,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="usage"
                   value={medicineData.usage}
                   onChange={handleInputChange}
-                  className="resize-none w-full h-[95px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="resize-none w-full h-[120px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="วิธีใช้"
                   rows={4}
                 />
@@ -214,17 +214,29 @@ const EditMedicineDetail: React.FC = () => {
                   name="side_effect"
                   value={medicineData.side_effect}
                   onChange={handleInputChange}
-                  className="resize-none w-full h-[95px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="ผลข้างเคียง"
+                  rows={4}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-gray-700">อาหารที่ห้ามทานร่วมกับยา</label>
+                <textarea
+                  name="side_effect"
+                  value={medicineData.slang_food}
+                  onChange={handleInputChange}
+                  className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  placeholder="อาหารที่ห้ามทานร่วมกับยา"
                   rows={4}
                 />
               </div>
             </div>
 
-            <div className="mt-6 text-center">
+            <div className="mt-3 text-center">
               <button
                 type="button"
-                className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
+                className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
                 onClick={handleSaveClick}
               >
                 บันทึก
@@ -236,7 +248,7 @@ const EditMedicineDetail: React.FC = () => {
 
       {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-[20px] p-8 shadow-xl max-w-md w-full">
+          <div className="bg-white rounded-[20px] p-8 rounded-lg shadow-xl max-w-md w-full">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               ยืนยันการบันทึกข้อมูล
             </h2>
@@ -252,7 +264,7 @@ const EditMedicineDetail: React.FC = () => {
               </button>
               <button
                 onClick={handleConfirm}
-                className="px-6 py-3 bg-pink-500 text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                className="px-6 py-3 text-white rounded-[12px] bg-[#FB6F92] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
               >
                 ยืนยัน
               </button>

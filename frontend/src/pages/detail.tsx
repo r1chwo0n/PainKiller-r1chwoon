@@ -33,7 +33,7 @@ const Detail: React.FC = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/drugs/${encodeURIComponent(drugId)}`
+        `/api/drugs/${encodeURIComponent(drugId)}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data from API");
@@ -57,7 +57,7 @@ const Detail: React.FC = () => {
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
         { label: "ผลข้างเคียง", value: result?.data.side_effect ?? "N/A" },
-        { label: "อาหารแสลง", value: result?.data.slang_food ?? "N/A" },
+        { label: "อาหารที่ห้ามทานร่วมกับยา", value: result?.data.slang_food ?? "N/A" },
       ];
 
       const stockData: DataRow[] = result.data?.stock?.map(

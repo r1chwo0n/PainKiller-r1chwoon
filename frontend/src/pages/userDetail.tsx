@@ -26,7 +26,7 @@ const Detail: React.FC = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:3000/drugs/${encodeURIComponent(drugId)}`
+        `/drugs/${encodeURIComponent(drugId)}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch data from API");

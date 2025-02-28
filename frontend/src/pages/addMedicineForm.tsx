@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Sidebar from "../components/sidebar";
+import useSnackbar from "../components/useSnackber";
 
 const AddMedicineForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +18,7 @@ const AddMedicineForm: React.FC = () => {
     slang_food: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { showSnackbar, Snackbar } = useSnackbar();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -46,8 +46,10 @@ const AddMedicineForm: React.FC = () => {
       !formData.side_effect ||
       !formData.slang_food
     ) {
-      setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน");
-      setTimeout(() => setErrorMessage(null), 3000);
+      showSnackbar({
+        message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+        severity: "error",
+      });
       return;
     }
 
@@ -80,7 +82,7 @@ const AddMedicineForm: React.FC = () => {
 
       // Send payload to the API
       const response = await axios.post(
-        "http://localhost:3000/api/drugs",
+        "/api/drugs",
         drugPayload,
         {
           headers: { "Content-Type": "application/json" },
@@ -88,9 +90,10 @@ const AddMedicineForm: React.FC = () => {
       );
 
       if (response.status === 201) {
-        setSuccessMessage("บันทึกข้อมูลสำเร็จ!");
-        setTimeout(() => setSuccessMessage(null), 3000);
-
+        showSnackbar({
+          message: "บันทึกข้อมูลยาสำเร็จ!",
+          severity: "success",
+        });
         // Reset form
         setFormData({
           name: "",
@@ -110,10 +113,10 @@ const AddMedicineForm: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Error adding drug:", error);
-      setErrorMessage(
-        error.response?.data?.message || "เกิดข้อผิดพลาด โปรดลองอีกครั้ง"
-      );
-      setTimeout(() => setErrorMessage(null), 3000);
+      showSnackbar({
+        message: error.response?.data?.message || "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        severity: "error",
+      });
     }
   };
 
@@ -123,21 +126,15 @@ const AddMedicineForm: React.FC = () => {
       <main className="flex-1 p-4">
         <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
           <div className="flex justify-between items-center">
-            <h1 className="mb-2 text-4xl text-[#444444] font-bold">
+            <h1 className="text-4xl text-[#444444] font-bold">
               เพิ่มข้อมูลยา
             </h1>
           </div>
         </header>
 
-        <div className="flex-1 bg-white shadow-md rounded-lg p-4 max-h-full overflow-hidden">
-          {errorMessage && (
-            <p className="text-red-500 text-center mb-2">{errorMessage}</p>
-          )}
-          {successMessage && (
-            <p className="text-green-500 text-center mb-2">{successMessage}</p>
-          )}
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-4 gap-5 items-start">
+            <div className="grid grid-cols-4 gap-5 items-start mt-2">
               <div className="col-span-1">
                 <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
@@ -148,7 +145,7 @@ const AddMedicineForm: React.FC = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
@@ -171,7 +168,7 @@ const AddMedicineForm: React.FC = () => {
                   }}
                   min="0"
                   step="1"
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0]  focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
@@ -184,8 +181,7 @@ const AddMedicineForm: React.FC = () => {
                   name="unit"
                   value={formData.unit}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                  required
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 >
                   <option value="">เลือก</option>
                   <option value="กิโลกรัม">กิโลกรัม</option>
@@ -240,7 +236,7 @@ const AddMedicineForm: React.FC = () => {
                   name="code"
                   value={formData.code}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
@@ -266,7 +262,7 @@ const AddMedicineForm: React.FC = () => {
                   }}
                   min="0"
                   step="1"
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
 
@@ -281,7 +277,7 @@ const AddMedicineForm: React.FC = () => {
                   name="expired"
                   value={formData.expired}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
               </div>
             </div>
@@ -299,7 +295,7 @@ const AddMedicineForm: React.FC = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="resize-none w-full h-[50px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
@@ -313,7 +309,7 @@ const AddMedicineForm: React.FC = () => {
                 name="usage"
                 value={formData.usage}
                 onChange={handleChange}
-                className="resize-none w-full h-[120px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[120px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92] "
               />
             </div>
 
@@ -330,7 +326,7 @@ const AddMedicineForm: React.FC = () => {
                 name="side_effect"
                 value={formData.side_effect}
                 onChange={handleChange}
-                className="resize-none w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[80px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
             </div>
 
@@ -347,7 +343,7 @@ const AddMedicineForm: React.FC = () => {
                 name="slang_food"
                 value={formData.slang_food}
                 onChange={handleChange}
-                className="resize-none w-full h-[50px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                className="resize-none w-full h-[80px] py-1 px-2 bg-[#f0f0f0] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
               />
 
               <div className="mt-3 text-center">
@@ -358,6 +354,7 @@ const AddMedicineForm: React.FC = () => {
                   บันทึก
                 </button>
               </div>
+              {Snackbar}
             </div>
           </form>
         </div>

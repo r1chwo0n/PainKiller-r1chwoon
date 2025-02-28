@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
 
       {/* Navigation Link */}
       <div
-        className="flex items-center mt-4 text-base text-[#fb6f92] cursor-pointer"
+        className="flex items-center mt-4 mr-14 text-[#fb6f92] cursor-pointer"
         onClick={() => navigate("/")}
       >
         <svg

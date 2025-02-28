@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import useSnackbar from "./components/useSnackber";
 import Sidebar from "./components/sidebar";
+import DrugCards from "./components/homepage/drugCards";
 import clsx from "clsx";
 
 interface Drug {
@@ -22,24 +22,31 @@ interface Drug {
 const Homepage: React.FC = () => {
   const [drugs, setDrugs] = useState<Drug[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredDrugs, setFilteredDrugs] = useState<Drug[]>([]);
   const [activeTab, setActiveTab] = useState("ทั้งหมด");
-  const options = ["ทั้งหมด", "ยา", "สมุนไพร", "ใกล้หมด"];
+  const options = ["ทั้งหมด", "ยา", "สมุนไพร", "ใกล้หมดคลัง", "ใกล้หมดอายุ"];
   const navigate = useNavigate();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [deleteDrugId, setDeleteDrugId] = useState<string | null>(null);
 
   const [showNotifications, setShowNotifications] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   const [showAddPopup, setShowAddPopup] = useState(false);
 
-  const { showSnackbar, Snackbar } = useSnackbar();
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const addPopupRef = useRef<HTMLDivElement>(null);
+  // ฟังก์ชันกรองข้อมูลจาก drugs
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
 
-  const triggerNewNotification = () => {
-    setHasNewNotification(true);
-    setTimeout(() => {
-      setHasNewNotification(false); // Reset after animation duration
-    }, 1000); // Adjust time to match the animation duration
+    if (query) {
+      const filtered = drugs.filter(
+        (drug) => drug.name.toLowerCase().includes(query.toLowerCase()) // กรองชื่อยาที่ตรงกับคำค้นหา
+      );
+      setFilteredDrugs(filtered); // อัพเดตรายการยา
+    } else {
+      setFilteredDrugs([]); // หากไม่มีคำค้นหาก็ให้ซ่อน dropdown
+    }
   };
 
   const toggleNotifications = () => {
@@ -53,10 +60,40 @@ const Homepage: React.FC = () => {
   };
 
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // เช็คถ้าคลิกนอก Notification Pop-up
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+
+      // เช็คถ้าคลิกนอก Add Drug Pop-up
+      if (
+        addPopupRef.current &&
+        !addPopupRef.current.contains(event.target as Node)
+      ) {
+        setShowAddPopup(false);
+      }
+    };
+
+    // เพิ่ม Event Listener เมื่อมีการแสดง Pop-up
+    if (showNotifications || showAddPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // ลบ Event Listener เมื่อ Pop-up ปิด
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications, showAddPopup]);
+
+  useEffect(() => {
     // Fetch drugs from API
     const fetchDrugs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/drugs");
+        const response = await axios.get("/api/drugs");
         setDrugs(response.data.data); // Assuming API returns { data: drugs }
       } catch (error) {
         console.error("Error fetching drugs:", error);
@@ -97,37 +134,13 @@ const Homepage: React.FC = () => {
             <div>
               <div className="text-lg">{drug.name}</div>
               <div className="text-base">
-                {isLowStock ? "จำนวนคงเหลือน้อยกว่ากำหนด" : ""}
-                {isLowStock && isExpired ? " และ " : ""}
-                {isExpired ? "ใกล้หมดอายุ" : ""}
+                {isLowStock ? "จำนวนน้อยกว่าที่กำหนด" : ""}
+                {isExpired ? <span className="block"> ยาใกล้หมดอายุ</span> : ""}
               </div>
             </div>
           </div>
         );
       });
-  };
-
-  const handleDelete = async () => {
-    if (!deleteDrugId) return;
-
-    try {
-      await axios.delete(`http://localhost:3000/api/drugs/${deleteDrugId}`);
-      setDrugs((prevDrugs) =>
-        prevDrugs.filter((drug) => drug.drug_id !== deleteDrugId)
-      );
-      setShowDeletePopup(false);
-      setDeleteDrugId(null);
-      showSnackbar({
-        message: "ลบข้อมูลยาสำเร็จ!",
-        severity: "success",
-      });
-    } catch (error) {
-      console.error("Error deleting drug:", error);
-      showSnackbar({
-        message: "มีข้อผิดพลาดในการลบข้อมูลยา โปรดตรวจสอบอีกครั้ง",
-        severity: "error",
-      });
-    }
   };
 
   return (
@@ -161,15 +174,40 @@ const Homepage: React.FC = () => {
                   type="text"
                   placeholder="ค้นหาชื่อยา"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                   className="w-full h-[45px] py-2 pl-[50px] pr-4 rounded-[12px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
+                {/* แสดง dropdown ถ้ามีการกรองรายการ */}
+                {filteredDrugs.length > 0 && (
+                  <ul className="absolute w-full mt-1 bg-[#f0f0f0] border border-gray-300 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                    {filteredDrugs.map((drug) => (
+                      <li
+                        key={drug.drug_id} // ใช้ drug_id แทน key
+                        className="px-4 py-2 cursor-pointer hover:bg-[#D9D9D9]"
+                        onClick={() => {
+                          setSearchQuery(drug.name); // กรอกชื่อยาเมื่อคลิก
+                          setFilteredDrugs([]); // ซ่อน dropdown
+                        }}
+                      >
+                        {drug.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
+
               {/* Notification Button */}
               <button
                 onClick={toggleNotifications}
-                className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
+                className="relative px-2 py-2 bg-[#f0f0f0] text-[#8E8E8E] rounded-md hover:bg-gray-200"
               >
+                {/* Notification Badge */}
+                {filterNotifications().length > 0 && (
+                  <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-1 rounded-full">
+                    {filterNotifications().length}
+                  </span>
+                )}
+
                 <svg
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +215,6 @@ const Homepage: React.FC = () => {
                   height="24"
                   fill="none"
                   viewBox="0 0 24 24"
-                  className={`${hasNewNotification ? "animate-shake" : ""}`}
                 >
                   <path
                     stroke="currentColor"
@@ -190,7 +227,10 @@ const Homepage: React.FC = () => {
 
                 {/* Notifications Popup */}
                 {showNotifications && (
-                  <div className="absolute right-0 top-12 w-72 bg-[#ECECEC] border border-gray-300 rounded-lg shadow-lg z-50 p-4">
+                  <div
+                    ref={notificationRef}
+                    className="absolute right-0 top-12 w-72 bg-[#ECECEC] border border-gray-300 rounded-lg shadow-lg z-50 p-4"
+                  >
                     <h3 className="font-bold text-lg mb-2 text-left text-[#444444]">
                       การแจ้งเตือน
                     </h3>
@@ -249,7 +289,10 @@ const Homepage: React.FC = () => {
 
                 {/* Pop-up Window */}
                 {showAddPopup && (
-                  <div className="absolute right-0 mt-2 bg-[#ECECEC] border border-gray-200 rounded-lg shadow-lg z-50 w-48">
+                  <div
+                    ref={addPopupRef}
+                    className="absolute right-0 mt-2 bg-[#ECECEC] border border-gray-200 rounded-lg shadow-lg z-50 w-48"
+                  >
                     <ul className="py-2">
                       <li>
                         <button
@@ -257,7 +300,7 @@ const Homepage: React.FC = () => {
                             setShowAddPopup(false);
                             navigate("/add-drug");
                           }}
-                          className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center"
+                          className="w-full px-4 py-2 text-left text-gray-700 hover:bg-[#D9D9D9] flex items-center"
                         >
                           <svg
                             viewBox="0 0 24 24"
@@ -331,7 +374,7 @@ const Homepage: React.FC = () => {
 
         <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
           {/* Slider Indicator */}
-          <div className="relative flex bg-gray-100 rounded-md mb-6 mt-1 max-w-xl">
+          <div className="relative flex rounded-[12px] bg-gray-100 mb-6 mt-2 max-w-xl">
             <div
               className="absolute bg-[#FB6F92] rounded-[12px] transition-all duration-300 ease-in-out"
               style={{
@@ -345,7 +388,7 @@ const Homepage: React.FC = () => {
               <button
                 key={option}
                 onClick={() => setActiveTab(option)}
-                className={`flex-1 z-10 px-6 py-2 rounded-[12px] text-base text-center transition-colors duration-200 ${
+                className={`flex-1 z-10 px-3 py-3 rounded-[12px] text-base text-center transition-colors duration-200 ${
                   activeTab === option ? "text-white" : "text-[#444444]"
                 }`}
               >
@@ -356,176 +399,21 @@ const Homepage: React.FC = () => {
           <div
             className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto"
             style={{
-              maxHeight: "calc(100vh - 220px)",
+              maxHeight: "calc(100vh - 235px)",
               marginTop: "4px",
               overflowY: "auto",
             }}
           >
             {/* Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {drugs
-                .filter((drug) => {
-                  if (activeTab === "ทั้งหมด") return true;
-                  if (activeTab === "ยา") return drug.drug_type === "drug";
-                  if (activeTab === "สมุนไพร") return drug.drug_type === "herb";
-                  if (activeTab === "ใกล้หมด")
-                    return drug.stock[0]?.amount < 10;
-                  return false;
-                })
-                .filter((drug) => {
-                  if (!searchQuery) return true; // No search query, show all
-                  return drug.name
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase());
-                })
-                .map((drug) => (
-                  <div
-                    key={drug.drug_id}
-                    className="relative p-4 border border-[#f5f5f5]] rounded-[12px] bg-white shadow-md flex flex-col"
-                  >
-                    {/* Trash Icon */}
-                    <button
-                      onClick={() => {
-                        setDeleteDrugId(drug.drug_id);
-                        setShowDeletePopup(true);
-                      }}
-                      className="absolute top-4 right-4 text-[#FB6F92] hover:text-[#E15873]"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    {Snackbar}
-
-                    <div className="flex items-center mb-4">
-                      <h2 className="font-bold text-2xl">{drug.name}</h2>
-                      <p className="ml-2 mt-1 text-gray-800">
-                        {" "}
-                        ( {drug.unit_type} ){" "}
-                      </p>
-                      {/* Conditional SVG */}
-                      <div className="ml-2">
-                        {drug.drug_type === "herb" ? (
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            style={{ width: "24px", height: "40px" }}
-                          >
-                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                            <g
-                              id="SVGRepo_tracerCarrier"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            ></g>
-                            <g id="SVGRepo_iconCarrier">
-                              {" "}
-                              <path
-                                d="M14 10L4 20M20 7C20 12.5228 15.5228 17 10 17C9.08396 17 8.19669 16.8768 7.35385 16.6462C7.12317 15.8033 7 14.916 7 14C7 8.47715 11.4772 4 17 4C17.916 4 18.8033 4.12317 19.6462 4.35385C19.8768 5.19669 20 6.08396 20 7Z"
-                                stroke="#98c99f"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              ></path>{" "}
-                            </g>
-                          </svg>
-                        ) : (
-                          <svg
-                            viewBox="0 -0.5 17 17"
-                            version="1.1"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="si-glyph si-glyph-pill"
-                            fill="#000000"
-                            style={{ width: "24px", height: "24px" }}
-                          >
-                            <g
-                              stroke="none"
-                              stroke-width="1"
-                              fill="none"
-                              fill-rule="evenodd"
-                            >
-                              <path
-                                d="M15.897,1.731 L15.241,1.074 C13.887,-0.281 11.745,-0.341 10.46,0.944 L1.957,9.446 C0.673,10.731 0.733,12.871 2.09,14.228 L2.744,14.882 C4.101,16.239 6.242,16.3 7.527,15.016 L16.03,6.511 C17.314,5.229 17.254,3.088 15.897,1.731 L15.897,1.731 Z M11.086,10.164 L6.841,5.917 L11.049,1.709 C11.994,0.765 13.581,0.811 14.584,1.816 L15.188,2.417 C15.678,2.91 15.959,3.552 15.975,4.226 C15.991,4.888 15.75,5.502 15.295,5.955 L11.086,10.164 L11.086,10.164 Z"
-                                fill="#ffc673" // This is the blue sky color
-                                className="si-glyph-fill"
-                              />
-                            </g>
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-base mb-2">รหัสยา: {drug.code}</p>
-                    <p className="text-base mb-2">รายละเอียด: {drug.detail}</p>
-                    <p className="text-base mb-2">
-                      ขนาดและวิธีใช้: {drug.usage}
-                    </p>
-                    <p className="text-base mb-2">
-                      วันหมดอายุ:{" "}
-                      {drug.stock.length > 0
-                        ? new Intl.DateTimeFormat("th-TH", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          }).format(new Date(drug.stock[0].expired))
-                        : "ไม่พบวันหมดอายุ"}
-                    </p>
-                    <p className="text-base mb-4">
-                      จำนวนคงเหลือ:{" "}
-                      {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
-                    </p>
-                    <button
-                      onClick={() => navigate(`/detail/${drug.drug_id}`)}
-                      className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
-                    >
-                      ดูข้อมูล
-                    </button>
-                  </div>
-                ))}
-            </div>
+            <DrugCards
+              drugs={drugs}
+              activeTab={activeTab}
+              searchQuery={searchQuery}
+              setShowDeletePopup={setShowDeletePopup}
+              showDeletePopup={showDeletePopup}
+            />
           </div>
         </div>
-
-        {/* Delete Confirmation Popup */}
-        {showDeletePopup && (
-          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-            <div className="bg-white rounded-[20px] p-8 rounded-lg shadow-xl max-w-md w-full">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                ยืนยันการลบ
-              </h2>
-              <p className="text-lg text-[#444444] mb-6">
-                คุณแน่ใจว่าต้องการลบยานี้?
-              </p>
-              <div className="flex justify-end space-x-6">
-                <button
-                  onClick={() => {
-                    setShowDeletePopup(false);
-                    setDeleteDrugId(null);
-                  }}
-                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  onClick={() => handleDelete()}
-                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-                >
-                  ลบ
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

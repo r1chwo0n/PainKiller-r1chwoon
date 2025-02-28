@@ -21,7 +21,7 @@ const NotificationPage: React.FC = () => {
   useEffect(() => {
     const fetchDrugs = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/stocks");
+        const response = await fetch("/api/stocks");
         const data = await response.json();
 
         // ใช้ reverse() เพื่อให้ข้อมูลล่าสุดอยู่ด้านบน
