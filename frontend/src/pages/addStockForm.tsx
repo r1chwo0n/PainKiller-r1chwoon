@@ -4,10 +4,10 @@ import Sidebar from "../components/sidebar";
 
 const AddStockForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    drug_id: "",
+    unit_price: "",
     amount: "",
     expired: "",
-    unit_price: "",
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -27,9 +27,9 @@ const AddStockForm: React.FC = () => {
 
     // Check for missing fields
     if (
-      !formData.name ||
-      !formData.amount ||
+      !formData.drug_id ||
       !formData.unit_price ||
+      !formData.amount ||
       !formData.expired
     ) {
       setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน");
@@ -47,21 +47,18 @@ const AddStockForm: React.FC = () => {
     };
 
     try {
-      // Construct payload
-      const drugPayload = {
-        name: formData.name,
-        stock: {
-          amount: parseInt(formData.amount, 10) || 0,
-          unit_price: parseFloat(formData.unit_price) || 0.0,
-          expired: formatDate(formData.expired),
-        },
+      const stockPayload = {
+        drug_id: formData.drug_id,
+        amount: parseInt(formData.amount, 10) || 0,
+        unit_price: parseFloat(formData.unit_price) || 0.0,
+        expired: formatDate(formData.expired),
       };
 
       // Send payload to the API
       /* Edit This */
       const response = await axios.post(
         "http://localhost:3000/api/stocks",
-        drugPayload,
+        stockPayload,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -73,9 +70,11 @@ const AddStockForm: React.FC = () => {
 
         // Reset form
         setFormData({
-          name: "",
-          amount: "",
+          drug_id: "",
+          // code: "",
+          // name: "",
           unit_price: "",
+          amount: "",
           expired: "",
         });
       } else {
@@ -112,7 +111,7 @@ const AddStockForm: React.FC = () => {
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-5 items-start">
               {/* Drug Name */}
-              <div className="col-span-1">
+              {/* <div className="col-span-1">
                 <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
                 </label>
@@ -124,7 +123,37 @@ const AddStockForm: React.FC = () => {
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
+              </div> */}
+
+              {/* Drug ID */}
+              <div className="col-span-1">
+                <label htmlFor="drug_id" className="text-[16px] text-[#444444]">
+                  ID ยา
+                </label>
+                <input
+                  type="text"
+                  id="drug_id"
+                  name="drug_id"
+                  value={formData.drug_id}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                />
               </div>
+
+              {/* Code */}
+              {/* <div className="col-span-1">
+                <label htmlFor="code" className="text-[16px] text-[#444444]">
+                  รหัสยา
+                </label>
+                <input
+                  type="text"
+                  id="code"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                />
+              </div> */}
             </div>
 
             <div className="grid grid-cols-3 gap-5 items-start mt-2">
