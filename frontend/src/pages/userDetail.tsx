@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/sidebar"
-
+import Sidebar from "../components/sidebar";
 
 interface DataRow {
   label: string;
@@ -16,18 +15,11 @@ const Detail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  
- 
-
-  
-
   const fetchData = async (drugId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `/drugs/${encodeURIComponent(drugId)}`
-      );
+      const response = await fetch(`/drugs/${encodeURIComponent(drugId)}`);
       if (!response.ok) {
         throw new Error("Failed to fetch data from API");
       }
@@ -39,7 +31,7 @@ const Detail: React.FC = () => {
         0
       );
 
-      console.log("data:",result)
+      console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "ชื่อยา", value: result.data.name ?? "N/A" },
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
@@ -86,62 +78,69 @@ const Detail: React.FC = () => {
     }
   }, [id]);
 
-return (
-  <div className="flex h-screen bg-[#f0f0f0]">
-    <Sidebar />
-    
+  return (
+    <div className="flex h-screen bg-[#f0f0f0]">
+      <Sidebar />
 
-    <div
-      className="flex-1 p-4"
-      style={{ fontFamily: "Arial, sans-serif" }}>
-      
+      <div className="flex-1 p-4" style={{ fontFamily: "Arial, sans-serif" }}>
+        {loading && <div>กำลังโหลดข้อมูล...</div>}
+        {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
-    
-      {loading && <div>กำลังโหลดข้อมูล...</div>}
-      {error && <div style={{ color: "red" }}>Error: {error}</div>}
+        {!loading && !error && (
+          <>
+            <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
+              {/* Drug Name */}
+              <span className="mb-2 text-4xl text-[#444444] font-bold">
+                {data.find((row) => row.label === "ชื่อยา")?.value ??
+                  "Drug Name Not Found"}
+              </span>
+            </header>
 
-      {!loading && !error && (
-        <>
-          <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
-            {/* Drug Name */}
-            <span className="mb-2 text-4xl text-[#444444] font-bold">
-              {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}
-            </span>
+            {/* Main Data Container */}
+            <div className="flex-1 bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
+              <b
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                  overflowX: "auto",
+                  marginBottom: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                ข้อมูลยา{" "}
+                {data.find((row) => row.label === "ชื่อยา")?.value ??
+                  "Drug Name Not Found"}
+              </b>
 
-          </header>
-          
-          {/* Main Data Container */}
-          <div className="flex-1 bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
-          <b style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px", marginTop: "20px"}}>ข้อมูลยา {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}</b>
+              {/* Main Data Section */}
 
-            {/* Main Data Section */}
-            
-            {data
-              .filter((row) => !row.label.startsWith("ล็อตที่"))
-              .slice(1)
-              .map((row, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
-                    padding: "15px",
-                    borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
-                  }}
-                >
-                  <span style={{ fontWeight: 500 }}>{row.label}</span>
-                  <span>{row.value}</span>
-                </div>
-              ))}
-          
-          </div>
-        </>
-      )}
+              {data
+                .filter((row) => !row.label.startsWith("ล็อตที่"))
+                .slice(1)
+                .map((row, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
+                      padding: "15px",
+                      borderBottom:
+                        index === data.length - 1
+                          ? "none"
+                          : "1px solid #e0e0e0",
+                    }}
+                  >
+                    <span style={{ fontWeight: 500 }}>{row.label}</span>
+                    <span>{row.value}</span>
+                  </div>
+                ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
-   
-  </div>
-);
+  );
 };
 
 export default Detail;
