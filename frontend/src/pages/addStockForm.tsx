@@ -4,7 +4,9 @@ import Sidebar from "../components/sidebar";
 
 const AddStockForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    drug_id: "",
+    // drug_id: "",
+    name: "",
+    unit: "",
     unit_price: "",
     amount: "",
     expired: "",
@@ -21,13 +23,32 @@ const AddStockForm: React.FC = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  const fetchDrugId = async () => {
+    try {
+      const response = await fetch(
+        `/api/drugs/search?name=${formData.name}&unit_type=${formData.unit}`
+      );
+      const data = await response.json();
 
+      if (data.length > 0) {
+        return data[0].id; // เอา drug_id ของตัวแรกที่เจอ
+      } else {
+        setErrorMessage("ไม่พบยาในระบบ");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching drug_id:", error);
+      return null;
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Check for missing fields
     if (
-      !formData.drug_id ||
+      !formData.name ||
+      !formData.unit ||
       !formData.unit_price ||
       !formData.amount ||
       !formData.expired
@@ -36,6 +57,9 @@ const AddStockForm: React.FC = () => {
       setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
+
+    const drug_id = await fetchDrugId();
+    if (!drug_id) return; // หยุดถ้าไม่เจอ drug_id
 
     // Format date to yyyy-mm-dd
     const formatDate = (date: string): string => {
@@ -48,7 +72,8 @@ const AddStockForm: React.FC = () => {
 
     try {
       const stockPayload = {
-        drug_id: formData.drug_id,
+        // drug_id: formData.drug_id,
+        drug_id,
         amount: parseInt(formData.amount, 10) || 0,
         unit_price: parseFloat(formData.unit_price) || 0.0,
         expired: formatDate(formData.expired),
@@ -70,9 +95,8 @@ const AddStockForm: React.FC = () => {
 
         // Reset form
         setFormData({
-          drug_id: "",
-          // code: "",
-          // name: "",
+          name: "",
+          unit: "",
           unit_price: "",
           amount: "",
           expired: "",
@@ -109,9 +133,9 @@ const AddStockForm: React.FC = () => {
             <p className="text-green-500 text-center mb-2">{successMessage}</p>
           )}
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-5 items-start">
+            <div className="grid grid-cols-2 gap-5 items-start">
               {/* Drug Name */}
-              {/* <div className="col-span-1">
+              <div className="col-span-1">
                 <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
                 </label>
@@ -123,10 +147,27 @@ const AddStockForm: React.FC = () => {
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
-              </div> */}
+              </div>
+              {/* Unit */}
+              <div className="col-span-1">
+                <label htmlFor="unit" className="text-[16px] text-[#444444]">
+                  หน่วย
+                </label>
+                <select
+                  name="unit"
+                  value={formData.unit}
+                  onChange={handleChange}
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  required>
+                  <option value="">เลือก</option>
+                  <option value="กิโลกรัม">กิโลกรัม</option>
+                  <option value="แผง">แผง</option>
+                  <option value="ขวด">ขวด</option>
+                </select>
+              </div>
 
               {/* Drug ID */}
-              <div className="col-span-1">
+              {/* <div className="col-span-1">
                 <label htmlFor="drug_id" className="text-[16px] text-[#444444]">
                   ID ยา
                 </label>
@@ -138,7 +179,7 @@ const AddStockForm: React.FC = () => {
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 />
-              </div>
+              </div> */}
 
               {/* Code */}
               {/* <div className="col-span-1">
