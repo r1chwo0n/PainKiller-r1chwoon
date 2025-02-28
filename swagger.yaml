@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: Drug Inventory API
+  description: API documentation for Drug Inventory System
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local server
+paths:
+  /api/drugs:
+    get:
+      summary: Get all drugs
+      description: Fetch all drugs with their stock information
+      responses:
+        '200':
+          description: Successfully fetched all drugs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+    post:
+      summary: Add a new drug
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                drug_type:
+                  type: string
+                unit_type:
+                  type: string
+                detail:
+                  type: string
+                usage:
+                  type: string
+                slang_food:
+                  type: string
+                side_effect:
+                  type: string
+                stock:
+                  type: object
+                  properties:
+                    amount:
+                      type: integer
+                    unit_price:
+                      type: number
+                    expired:
+                      type: string
+                      format: date
+      responses:
+        '201':
+          description: Drug and stock added successfully
+  /api/drugs/search:
+    get:
+      summary: Search for a drug by name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully found the drugs
+  /api/drugs/{id}:
+    get:
+      summary: Get a single drug by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Drug found successfully
+        '404':
+          description: Drug not found
+    delete:
+      summary: Delete a drug by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Drug deleted successfully
+        '404':
+          description: Drug not found
+  /api/stocks:
+    get:
+      summary: Get all stocks
+      responses:
+        '200':
+          description: Successfully fetched all stocks
+    post:
+      summary: Add stock for a drug
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Stock added successfully
+  /api/stocks/{stock_id}:
+    delete:
+      summary: Delete stock by ID
+      parameters:
+        - name: stock_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stock deleted successfully
+        '404':
+          description: Stock not found

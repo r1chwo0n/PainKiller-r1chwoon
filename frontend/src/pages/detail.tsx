@@ -99,10 +99,8 @@ const Detail: React.FC = () => {
   }, [id]);
 
   return (
-    <div className="flex  h-screen bg-[#f0f0f0]">
+    <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
-      
-
       <div
         className="flex-1 p-4"
         style={{ fontFamily: "Arial, sans-serif" }}>
