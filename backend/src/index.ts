@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 // 1. Get all drugs
 // http://localhost:3000/drugs
-app.get("/drugs", async (req, res, next) => {
+app.get("/api/drugs", async (req, res, next) => {
   try {
     const drugsWithStock = await dbClient.query.drugTable.findMany({
       with: {

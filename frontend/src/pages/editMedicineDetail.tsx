@@ -14,7 +14,7 @@ const EditMedicineDetail: React.FC = () => {
     side_effect: "",
     food_warning: "",
   });
-  
+
   const { id } = useParams<{ id: string }>();
   const [showPopup, setShowPopup] = useState(false);
   const { showSnackbar, Snackbar } = useSnackbar();
@@ -48,11 +48,12 @@ const EditMedicineDetail: React.FC = () => {
       fetchData(id);
     }
   }, [id]);
-  
 
   // อัปเดตค่าฟอร์ม
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setMedicineData((prev) => ({ ...prev, [name]: value }));
@@ -72,18 +73,18 @@ const EditMedicineDetail: React.FC = () => {
   // บันทึกข้อมูลยา
   const handleConfirm = async () => {
     if (!id) return;
-  
+
     try {
       const response = await fetch(`http://localhost:3000/drugs/update`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                drug_id: id,
-                drugData: { ...medicineData },
-              }),
-            });   
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          drug_id: id,
+          drugData: { ...medicineData },
+        }),
+      });
       if (response.ok) {
         await fetchData(id);
         showSnackbar({
@@ -92,7 +93,6 @@ const EditMedicineDetail: React.FC = () => {
         });
         setShowPopup(false);
       }
-  
     } catch (error) {
       console.error("Error updating drug:", error);
       showSnackbar({
@@ -101,7 +101,6 @@ const EditMedicineDetail: React.FC = () => {
       });
     }
   };
-  
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-200">
@@ -121,7 +120,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="name"
                   value={medicineData.name}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-100"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="ชื่อยา"
                 />
               </div>
@@ -134,35 +133,30 @@ const EditMedicineDetail: React.FC = () => {
                       name="unit_type"
                       value={medicineData.unit_type}
                       onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-md p-1 bg-white appearance-none text-sm"
+                      className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                     >
                       <option value="">เลือก</option>
                       <option value="กิโลกรัม">กิโลกรัม</option>
                       <option value="กระปุก">กระปุก</option>
-                      <option value="ขวด">ขวด</option>
                       <option value="ตลับ">ตลับ</option>
-                      <option value="ซอง">ซอง</option>
                     </select>
-                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                      ▼
-                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4">
-                  <div className="flex flex-col items-center">
-                    <label className="text-gray-700 text-sm mb-1">ยา</label>
-                    <input
-                      type="radio"
-                      name="drug_type"
-                      value="drug"
-                      checked={medicineData.drug_type === "drug"}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <label className="text-gray-700 text-sm mb-1">
-                      สมุนไพร
+                <div className="col-span-1">
+                  <label htmlFor="type" className="text-[16px] text-[#444444]">
+                    ประเภท
+                  </label>
+                  <div className="flex gap-2 items-center mt-1">
+                    <label className="flex items-center gap-1">
+                      <input
+                        type="radio"
+                        name="drug_type"
+                        value="drug"
+                        checked={medicineData.drug_type === "drug"}
+                        onChange={handleInputChange}
+                      />
+                      <label className="text-[16px] text-[#444444]">ยา</label>
                     </label>
                     <input
                       type="radio"
@@ -171,6 +165,9 @@ const EditMedicineDetail: React.FC = () => {
                       checked={medicineData.drug_type === "herb"}
                       onChange={handleInputChange}
                     />
+                    <label className="text-[16px] text-[#444444]">
+                      สมุนไพร
+                    </label>
                   </div>
                 </div>
               </div>
@@ -182,7 +179,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="code"
                   value={medicineData.code}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="รหัสยา"
                 />
               </div>
@@ -193,7 +190,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="detail"
                   value={medicineData.detail}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
+                  className="resize-none w-full h-[95px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="รายละเอียดยา"
                   rows={4}
                 />
@@ -205,7 +202,7 @@ const EditMedicineDetail: React.FC = () => {
                   name="usage"
                   value={medicineData.usage}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
+                  className="resize-none w-full h-[95px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="วิธีใช้"
                   rows={4}
                 />
@@ -217,11 +214,11 @@ const EditMedicineDetail: React.FC = () => {
                   name="side_effect"
                   value={medicineData.side_effect}
                   onChange={handleInputChange}
-                  className="w-full border rounded p-2 bg-gray-100 overflow-auto"
+                  className="resize-none w-full h-[95px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   placeholder="ผลข้างเคียง"
                   rows={4}
                 />
-              </div>     
+              </div>
             </div>
 
             <div className="mt-6 text-center">
@@ -240,20 +237,22 @@ const EditMedicineDetail: React.FC = () => {
       {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white rounded-[20px] p-8 shadow-xl max-w-md w-full">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-            ยืนยันการบันทึกข้อมูล
-          </h2>
-            <p className="text-lg text-[#444444] mb-6">คุณต้องการบันทึกข้อมูลใช่หรือไม่?</p>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+              ยืนยันการบันทึกข้อมูล
+            </h2>
+            <p className="text-lg text-[#444444] mb-6">
+              คุณต้องการบันทึกข้อมูลใช่หรือไม่?
+            </p>
             <div className="flex justify-end space-x-6">
               <button
-              onClick={handleCancel}
-              className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                onClick={handleCancel}
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
               >
                 ยกเลิก
               </button>
               <button
-              onClick={handleConfirm}
-              className="px-6 py-3 bg-pink-500 text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                onClick={handleConfirm}
+                className="px-6 py-3 bg-pink-500 text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
               >
                 ยืนยัน
               </button>
@@ -261,7 +260,7 @@ const EditMedicineDetail: React.FC = () => {
           </div>
         </div>
       )}
-       {Snackbar}
+      {Snackbar}
     </div>
   );
 };

@@ -120,16 +120,16 @@ const AddMedicineForm: React.FC = () => {
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
-      <main className="flex-1 p-2">
-        <header className="bg-white h-[70px] p-4 rounded-[8px] shadow-md mb-4">
+      <main className="flex-1 p-4">
+        <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
           <div className="flex justify-between items-center">
-            <h1 className="mb-2 text-4xl text-[#444444] font-bold ">
+            <h1 className="mb-2 text-4xl text-[#444444] font-bold">
               เพิ่มข้อมูลยา
             </h1>
           </div>
         </header>
 
-        <div className="bg-white shadow-md rounded-lg p-4 max-h-full overflow-hidden">
+        <div className="flex-1 bg-white shadow-md rounded-lg p-4 max-h-full overflow-hidden">
           {errorMessage && (
             <p className="text-red-500 text-center mb-2">{errorMessage}</p>
           )}
@@ -189,8 +189,8 @@ const AddMedicineForm: React.FC = () => {
                 >
                   <option value="">เลือก</option>
                   <option value="กิโลกรัม">กิโลกรัม</option>
-                  <option value="แผง">แผง</option>
-                  <option value="ขวด">ขวด</option>
+                  <option value="กระปุก">กระปุก</option>
+                  <option value="ตลับ">ตลับ</option>
                 </select>
               </div>
 
@@ -363,6 +363,7 @@ const AddMedicineForm: React.FC = () => {
         </div>
       </main>
     </div>
+    
   );
 };
 

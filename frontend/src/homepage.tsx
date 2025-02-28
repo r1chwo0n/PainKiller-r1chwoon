@@ -56,7 +56,7 @@ const Homepage: React.FC = () => {
     // Fetch drugs from API
     const fetchDrugs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/drugs");
+        const response = await axios.get("http://localhost:3000/api/drugs");
         setDrugs(response.data.data); // Assuming API returns { data: drugs }
       } catch (error) {
         console.error("Error fetching drugs:", error);
@@ -331,7 +331,7 @@ const Homepage: React.FC = () => {
 
         <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
           {/* Slider Indicator */}
-          <div className="relative flex bg-gray-100 rounded-md mb-6 max-w-xl">
+          <div className="relative flex bg-gray-100 rounded-md mb-6 mt-1 max-w-xl">
             <div
               className="absolute bg-[#FB6F92] rounded-[12px] transition-all duration-300 ease-in-out"
               style={{
