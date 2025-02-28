@@ -23,7 +23,7 @@ const EditMedicineDetail: React.FC = () => {
   const fetchData = async (drugId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/drugs/${encodeURIComponent(drugId)}`
+        `http://localhost:3000/api/drugs/${encodeURIComponent(drugId)}`
       );
       const data = await response.json();
       if (data.data) {
@@ -75,7 +75,7 @@ const EditMedicineDetail: React.FC = () => {
     if (!id) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/drugs/update`, {
+      const response = await fetch(`http://localhost:3000/api/drugs/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

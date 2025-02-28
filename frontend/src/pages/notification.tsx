@@ -21,7 +21,7 @@ const NotificationPage: React.FC = () => {
   useEffect(() => {
     const fetchDrugs = async () => {
       try {
-        const response = await fetch("http://localhost:3000/stocks");
+        const response = await fetch("http://localhost:3000/api/stocks");
         const data = await response.json();
 
         // ใช้ reverse() เพื่อให้ข้อมูลล่าสุดอยู่ด้านบน
@@ -53,7 +53,7 @@ const NotificationPage: React.FC = () => {
         } else if (daysLeft >= 0 && daysLeft <= 90) {
           const months = Math.floor(daysLeft / 30);
           const days = daysLeft % 30;
-
+          
           if (daysLeft === 0) {
             message = "หมดอายุวันนี้";
           } else if (months > 0 && days > 0) {
@@ -64,7 +64,6 @@ const NotificationPage: React.FC = () => {
             message = `หมดอายุในอีก ${days} วัน`;
           }
         }
-
         return message
           ? {
               stock_id: stock.stock_id,

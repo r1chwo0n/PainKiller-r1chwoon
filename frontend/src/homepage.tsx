@@ -111,7 +111,7 @@ const Homepage: React.FC = () => {
     if (!deleteDrugId) return;
 
     try {
-      await axios.delete(`http://localhost:3000/drugs/${deleteDrugId}`);
+      await axios.delete(`http://localhost:3000/api/drugs/${deleteDrugId}`);
       setDrugs((prevDrugs) =>
         prevDrugs.filter((drug) => drug.drug_id !== deleteDrugId)
       );
