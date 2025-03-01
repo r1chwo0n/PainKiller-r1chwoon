@@ -4,9 +4,8 @@ import Sidebar from "../components/sidebar";
 
 const AddStockForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    // drug_id: "",
     name: "",
-    unit: "",
+    unit_type: "",
     unit_price: "",
     amount: "",
     expired: "",
@@ -23,32 +22,47 @@ const AddStockForm: React.FC = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  const fetchDrugId = async () => {
-    try {
-      const response = await fetch(
-        `/api/drugs/search?name=${formData.name}&unit_type=${formData.unit}`
-      );
-      const data = await response.json();
+  // const fetchDrugId = async () => {
+  //   try {
+  //     // Make sure to properly quote the URL in the fetch call
+  //     const response = await fetch(`/api/drugs/search?name=${formData.name}`);
 
-      if (data.length > 0) {
-        return data[0].id; // เอา drug_id ของตัวแรกที่เจอ
-      } else {
-        setErrorMessage("ไม่พบยาในระบบ");
-        setTimeout(() => setErrorMessage(null), 3000);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching drug_id:", error);
-      return null;
-    }
-  };
+  //     // Check if the response is successful
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     // Check if the response is JSON
+  //     const contentType = response.headers.get("content-type");
+  //     if (contentType && contentType.includes("application/json")) {
+  //       const data = await response.json();
+
+  //       if (data.length > 0) {
+  //         return data[0].drug_id; // Extract drug_id from the first result
+  //       } else {
+  //         setErrorMessage("ไม่พบยาในระบบ");
+  //         setTimeout(() => setErrorMessage(null), 3000);
+  //         return null;
+  //       }
+  //     } else {
+  //       // Handle case if response is not JSON
+  //       const text = await response.text();
+  //       console.error("Received non-JSON response:", text);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching drug_id:", error);
+  //     return null;
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Check for missing fields
     if (
       !formData.name ||
-      !formData.unit ||
+      !formData.unit_type ||
       !formData.unit_price ||
       !formData.amount ||
       !formData.expired
@@ -57,9 +71,6 @@ const AddStockForm: React.FC = () => {
       setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
-
-    const drug_id = await fetchDrugId();
-    if (!drug_id) return; // หยุดถ้าไม่เจอ drug_id
 
     // Format date to yyyy-mm-dd
     const formatDate = (date: string): string => {
@@ -72,10 +83,10 @@ const AddStockForm: React.FC = () => {
 
     try {
       const stockPayload = {
-        // drug_id: formData.drug_id,
-        drug_id,
-        amount: parseInt(formData.amount, 10) || 0,
+        name: formData.name,
+        unit_type: formData.unit_type,
         unit_price: parseFloat(formData.unit_price) || 0.0,
+        amount: parseInt(formData.amount, 10) || 0,
         expired: formatDate(formData.expired),
       };
 
@@ -96,7 +107,7 @@ const AddStockForm: React.FC = () => {
         // Reset form
         setFormData({
           name: "",
-          unit: "",
+          unit_type: "",
           unit_price: "",
           amount: "",
           expired: "",
@@ -154,8 +165,8 @@ const AddStockForm: React.FC = () => {
                   หน่วย
                 </label>
                 <select
-                  name="unit"
-                  value={formData.unit}
+                  name="unit_type"
+                  value={formData.unit_type}
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                   required>

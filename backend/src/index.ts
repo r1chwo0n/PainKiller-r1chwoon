@@ -2,7 +2,7 @@ import express, { Request, Response, ErrorRequestHandler } from "express";
 import bodyParser from "body-parser";
 import { dbClient } from "../db/client"; // นำเข้า dbClient ที่สร้างไว้ใน client.ts
 import { drugTable, stockTable } from "../db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, like } from "drizzle-orm";
 import cors from "cors";
 import helmet from "helmet";
 import "dotenv/config";
@@ -49,7 +49,7 @@ app.get("/api/drugs", async (req, res, next) => {
   }
 });
 
-// 2. Get a single drug by name
+// 2.1 Get a single drug by name
 // http://localhost:3000/api/drugs/search?name=ฟ้าทะลายโจร
 app.get("/api/drugs/search", async (req, res, next) => {
   try {
@@ -237,16 +237,64 @@ app.patch("/api/drugs/update", async (req, res, next) => {
 
 // 6. add stock for a drug
 // ?
-app.post("/api/stocks", async (req, res) => {
+// app.post("/api/stocks", async (req, res) => {
+//   try {
+//     const newStock = await dbClient
+//       .insert(stockTable)
+//       .values(req.body)
+//       .returning();
+//     res.status(201).json(newStock);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ error: "Failed to add stock" });
+//   }
+// });
+
+app.post("/api/stocks", async (req, res, next) => {
   try {
+    const { name, unit_type, unit_price, amount, expired } = req.body;
+
+    if (
+      !name ||
+      !unit_type ||
+      unit_price === undefined ||
+      !amount ||
+      !expired
+    ) {
+      res.status(400).json({
+        msg: "Missing required fields: 'name', 'unit_type', 'unit_price', 'amount', or 'expired'",
+      });
+    }
+
+    const drug = await dbClient.query.drugTable.findFirst({
+      where: (drugs, { and, eq, like }) =>
+        and(like(drugs.name, `%${name}%`), eq(drugs.unit_type, unit_type)),
+      columns: {
+        drug_id: true,
+      },
+    });
+
+    if (!drug) {
+      res.status(404).json({ msg: "Drug not found" });
+      return;
+    }
+
     const newStock = await dbClient
       .insert(stockTable)
-      .values(req.body)
-      .returning();
-    res.status(201).json(newStock);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "Failed to add stock" });
+      .values({
+        drug_id: drug.drug_id,
+        unit_price,
+        amount,
+        expired,
+      })
+      .returning({ stock_id: stockTable.stock_id });
+
+    res.status(201).json({
+      msg: "Stock added successfully",
+      stock_id: newStock[0]?.stock_id,
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
