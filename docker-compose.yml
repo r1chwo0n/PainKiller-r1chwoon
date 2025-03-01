@@ -36,24 +36,12 @@ services:
   #   container_name: painkiller-frontend
   #   build: ./frontend
   #   ports:
-  #     - ${FrontendPORT}:5173
+  #     - ${NGINX_PORT}:5173
   #   networks:
   #     - painkiller-net
-  #   depends_on:
-  #     - backend
   #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #     - VITE_HOST=0.0.0.0 # Add this line
-  frontend:
-    container_name: painkiller-frontend
-    build: ./frontend
-    ports:
-      - ${NGINX_PORT}:5173
-    networks:
-      - painkiller-net
-    environment:
-      - NGINX_PROXY=${NGINX_PROXY}
-      - NGINX_PORT=${NGINX_PORT}
+  #     - NGINX_PROXY=${NGINX_PROXY}
+  #     - NGINX_PORT=${NGINX_PORT}
 
 volumes:
   painkiller-data:

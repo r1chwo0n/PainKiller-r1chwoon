@@ -22,7 +22,7 @@ const Login = () => {
         <h2 className="text-2xl font-semibold text-center mb-4">เข้าสู่ระบบ</h2>
         <input
           type="password"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
           placeholder="กรอกรหัสผ่าน"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -30,7 +30,7 @@ const Login = () => {
         />
         <button
           onClick={handleLogin}
-          className="w-full mt-4 bg-[#FB6F92] hover:bg-[#e05c7d] text-white py-2 rounded-lg hover:bg-blue-600 transition"
+          className="w-full mt-4 bg-[#FB6F92] hover:bg-[#e05c7d] text-white py-2 rounded-lg transition"
         >
           เข้าสู่ระบบ
         </button>

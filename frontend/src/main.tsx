@@ -9,6 +9,7 @@ import AddDrug from "./pages/addMedicineForm.tsx";
 import EditDrug from "./pages/editMedicineDetail.tsx";
 import DrugDetail from "./pages/detail.tsx";
 import UserDrugDetail from "./pages/userDetail.tsx";
+import AddStock from "./pages/addStockForm.tsx";
 
 import Login from "./pages/login.tsx";
 import ProtectedRoute from "./auth/protect.tsx";
@@ -28,6 +29,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/doctor/notification" element={<Notification />} />
           <Route path="/doctor/detail/:id" element={<DrugDetail />} />
           <Route path="/patient/detail/:id" element={<UserDrugDetail />} />
+          <Route path="/doctor/add-stock" element={<AddStock />} />
 
           <Route path="/login" element={<Login />} />
           <Route

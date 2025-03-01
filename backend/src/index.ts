@@ -2,7 +2,7 @@ import express, { Request, Response, ErrorRequestHandler } from "express";
 import bodyParser from "body-parser";
 import { dbClient } from "../db/client"; // นำเข้า dbClient ที่สร้างไว้ใน client.ts
 import { drugTable, stockTable } from "../db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, like } from "drizzle-orm";
 import cors from "cors";
 import helmet from "helmet";
 import "dotenv/config";
@@ -36,7 +36,7 @@ app.get("/drugs", async (req, res, next) => {
             unit_price: true,
             amount: true,
             expired: true,
-          }, 
+          },
         },
       },
     });
@@ -49,7 +49,7 @@ app.get("/drugs", async (req, res, next) => {
   }
 });
 
-// 2. Get a single drug by name
+// 2.1 Get a single drug by name
 // http://localhost:3000/drugs/search?name=ฟ้าทะลายโจร
 app.get("/drugs/search", async (req, res, next) => {
   try {
@@ -69,7 +69,7 @@ app.get("/drugs/search", async (req, res, next) => {
             unit_price: true,
             amount: true,
             expired: true,
-          }, 
+          },
         },
       },
     });
@@ -104,7 +104,7 @@ app.get("/drugs/:id", async (req, res, next) => {
             unit_price: true,
             amount: true,
             expired: true,
-          }, 
+          },
         },
       },
     });
@@ -155,7 +155,7 @@ app.post("/drugs", async (req, res, next) => {
   try {
     // ตรวจสอบว่ามียาในระบบอยู่แล้วหรือไม่ (Case-insensitive)
     const existingDrug = await dbClient.query.drugTable.findFirst({
-      where: (drugs, { ilike }) => ilike(drugs.name, req.body.name), 
+      where: (drugs, { ilike }) => ilike(drugs.name, req.body.name),
     });
 
     if (existingDrug) {
@@ -168,7 +168,16 @@ app.post("/drugs", async (req, res, next) => {
 
     const [newDrug] = await dbClient
       .insert(drugTable)
-      .values({name, code, detail, usage, slang_food, side_effect, drug_type, unit_type})
+      .values({
+        name,
+        code,
+        detail,
+        usage,
+        slang_food,
+        side_effect,
+        drug_type,
+        unit_type,
+      })
       .returning();
 
     if (!newDrug) {
@@ -186,8 +195,6 @@ app.post("/drugs", async (req, res, next) => {
       message: "Drug and stock added successfully",
       drug: newDrug,
     });
-
-    
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Failed to add stock" });
@@ -204,7 +211,7 @@ app.post("/drugs", async (req, res, next) => {
 // }
 app.patch("/drugs/update", async (req, res, next) => {
   try {
-    const { drug_id, drugData, stockData} = req.body;
+    const { drug_id, drugData, stockData } = req.body;
     if (!drug_id) throw new Error("Drug ID is required");
     const drugExists = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, drug_id),
@@ -229,20 +236,72 @@ app.patch("/drugs/update", async (req, res, next) => {
 });
 
 // 6. add stock for a drug
-app.post("/stocks", async (req, res) => {
+// ?
+// app.post("/stocks", async (req, res) => {
+//   try {
+//     const newStock = await dbClient
+//       .insert(stockTable)
+//       .values(req.body)
+//       .returning();
+//     res.status(201).json(newStock);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ error: "Failed to add stock" });
+//   }
+// });
+
+app.post("/stocks", async (req, res, next) => {
   try {
-    const newStock = await dbClient.insert(stockTable).values(req.body).returning();
-    res.status(201).json(newStock);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "Failed to add stock" });
+    const { name, unit_type, unit_price, amount, expired } = req.body;
+
+    if (
+      !name ||
+      !unit_type ||
+      unit_price === undefined ||
+      !amount ||
+      !expired
+    ) {
+      res.status(400).json({
+        msg: "Missing required fields: 'name', 'unit_type', 'unit_price', 'amount', or 'expired'",
+      });
+    }
+
+    const drug = await dbClient.query.drugTable.findFirst({
+      where: (drugs, { and, eq, like }) =>
+        and(like(drugs.name, `%${name}%`), eq(drugs.unit_type, unit_type)),
+      columns: {
+        drug_id: true,
+      },
+    });
+
+    if (!drug) {
+      res.status(404).json({ msg: "Drug not found" });
+      return;
+    }
+
+    const newStock = await dbClient
+      .insert(stockTable)
+      .values({
+        drug_id: drug.drug_id,
+        unit_price,
+        amount,
+        expired,
+      })
+      .returning({ stock_id: stockTable.stock_id });
+
+    res.status(201).json({
+      msg: "Stock added successfully",
+      stock_id: newStock[0]?.stock_id,
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
 // 7. Delete a drug
 app.delete("/drugs/:id", async (req, res, next) => {
   try {
-    const { id } = req.params ;
+    const { id } = req.params;
     if (!id) throw new Error("Empty id");
 
     const results = await dbClient.query.drugTable.findMany({
@@ -262,7 +321,7 @@ app.delete("/drugs/:id", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-}); 
+});
 
 // 8. Update drug stock after a sale
 // {
@@ -278,10 +337,15 @@ app.patch("/stocks/update", async (req, res, next) => {
       return;
     }
     const stock = await dbClient.query.stockTable.findFirst({
-      where: (and(eq(stockTable.drug_id, drug_id), eq(stockTable.stock_id, stock_id))),
+      where: and(
+        eq(stockTable.drug_id, drug_id),
+        eq(stockTable.stock_id, stock_id)
+      ),
     });
     if (!stock) {
-      res.status(404).json({ error: "Stock not found for the given drug and stock ID" });
+      res
+        .status(404)
+        .json({ error: "Stock not found for the given drug and stock ID" });
       return;
     }
     if (stock.amount < quantity_sold) {
@@ -318,12 +382,10 @@ app.delete("/stocks/:stock_id", async (req, res, next) => {
       res.status(404).json({ error: "Stock not found" });
       return;
     }
-    await dbClient
-      .delete(stockTable)
-      .where(eq(stockTable.stock_id, stock_id));
+    await dbClient.delete(stockTable).where(eq(stockTable.stock_id, stock_id));
 
     res.json({
-      message: "Stock deleted successfully"
+      message: "Stock deleted successfully",
     });
   } catch (err) {
     console.error(err);
@@ -334,7 +396,7 @@ app.delete("/stocks/:stock_id", async (req, res, next) => {
 // 10. edit stock
 app.patch("/stocks", async (req, res, next) => {
   try {
-    const { stock_id, stockData} = req.body;
+    const { stock_id, stockData } = req.body;
     if (!stock_id) throw new Error("Stock ID is required");
     const stockExists = await dbClient.query.stockTable.findMany({
       where: eq(drugTable.drug_id, stock_id),
@@ -361,7 +423,7 @@ app.get("/stocks", async (req, res) => {
   try {
     const drugsWithStock = await dbClient.query.drugTable.findMany({
       with: {
-        stock: true, 
+        stock: true,
       },
     });
 

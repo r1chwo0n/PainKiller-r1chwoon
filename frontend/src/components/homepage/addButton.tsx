@@ -72,11 +72,11 @@ const AddDrugButton: React.FC<AddDrugButtonProps> = ({
               <button
                 onClick={() => {
                   setShowAddPopup(false);
-                  navigate("/doctor/update-stock");
+                  navigate("/doctor/add-stock");
                 }}
                 className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center"
               >
-                อัปเดตสต็อก
+                เพิ่มสต็อก
               </button>
             </li>
           </ul>

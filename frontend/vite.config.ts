@@ -7,8 +7,9 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://painkiller-backend:3000", // Use Docker service name instead of localhost
+        target: "http://localhost:3000", // Use Docker service name instead of localhost
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''), // ตัดคำว่า /api ออก
       },
     },
   },
