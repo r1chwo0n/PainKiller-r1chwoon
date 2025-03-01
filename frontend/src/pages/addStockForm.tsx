@@ -22,39 +22,6 @@ const AddStockForm: React.FC = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  // const fetchDrugId = async () => {
-  //   try {
-  //     // Make sure to properly quote the URL in the fetch call
-  //     const response = await fetch(`/api/drugs/search?name=${formData.name}`);
-
-  //     // Check if the response is successful
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     // Check if the response is JSON
-  //     const contentType = response.headers.get("content-type");
-  //     if (contentType && contentType.includes("application/json")) {
-  //       const data = await response.json();
-
-  //       if (data.length > 0) {
-  //         return data[0].drug_id; // Extract drug_id from the first result
-  //       } else {
-  //         setErrorMessage("ไม่พบยาในระบบ");
-  //         setTimeout(() => setErrorMessage(null), 3000);
-  //         return null;
-  //       }
-  //     } else {
-  //       // Handle case if response is not JSON
-  //       const text = await response.text();
-  //       console.error("Received non-JSON response:", text);
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching drug_id:", error);
-  //     return null;
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,36 +143,6 @@ const AddStockForm: React.FC = () => {
                   <option value="ขวด">ขวด</option>
                 </select>
               </div>
-
-              {/* Drug ID */}
-              {/* <div className="col-span-1">
-                <label htmlFor="drug_id" className="text-[16px] text-[#444444]">
-                  ID ยา
-                </label>
-                <input
-                  type="text"
-                  id="drug_id"
-                  name="drug_id"
-                  value={formData.drug_id}
-                  onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div> */}
-
-              {/* Code */}
-              {/* <div className="col-span-1">
-                <label htmlFor="code" className="text-[16px] text-[#444444]">
-                  รหัสยา
-                </label>
-                <input
-                  type="text"
-                  id="code"
-                  name="code"
-                  value={formData.code}
-                  onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] text-[#909090] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div> */}
             </div>
 
             <div className="grid grid-cols-3 gap-5 items-start mt-2">
