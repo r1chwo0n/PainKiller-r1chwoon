@@ -32,16 +32,16 @@ services:
       npm run db:push &&
       npm run start
       "
-  # frontend:
-  #   container_name: painkiller-frontend
-  #   build: ./frontend
-  #   ports:
-  #     - ${NGINX_PORT}:5173
-  #   networks:
-  #     - painkiller-net
-  #   environment:
-  #     - NGINX_PROXY=${NGINX_PROXY}
-  #     - NGINX_PORT=${NGINX_PORT}
+  frontend:
+    container_name: painkiller-frontend
+    build: ./frontend
+    ports:
+      - ${NGINX_PORT}:5173
+    networks:
+      - painkiller-net
+    environment:
+      - NGINX_PROXY=${NGINX_PROXY}
+      - NGINX_PORT=${NGINX_PORT}
 
 volumes:
   painkiller-data:

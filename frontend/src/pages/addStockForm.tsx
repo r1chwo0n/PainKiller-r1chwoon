@@ -139,8 +139,8 @@ const AddStockForm: React.FC = () => {
                   required>
                   <option value="">เลือก</option>
                   <option value="กิโลกรัม">กิโลกรัม</option>
-                  <option value="แผง">กระปุก</option>
-                  <option value="ขวด">ตลับ</option>
+                  <option value="กระปุก">กระปุก</option>
+                  <option value="ตลับ">ตลับ</option>
                 </select>
               </div>
             </div>
