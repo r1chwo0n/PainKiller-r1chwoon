@@ -25,8 +25,8 @@ app.use(bodyParser.json());
 // Routes
 
 // 1. Get all drugs
-// http://localhost:3000/api/drugs
-app.get("/api/drugs", async (req, res, next) => {
+// http://localhost:3000/drugs
+app.get("/drugs", async (req, res, next) => {
   try {
     const drugsWithStock = await dbClient.query.drugTable.findMany({
       with: {
@@ -50,8 +50,8 @@ app.get("/api/drugs", async (req, res, next) => {
 });
 
 // 2. Get a single drug by name
-// http://localhost:3000/api/drugs/search?name=ฟ้าทะลายโจร
-app.get("/api/drugs/search", async (req, res, next) => {
+// http://localhost:3000/drugs/search?name=ฟ้าทะลายโจร
+app.get("/drugs/search", async (req, res, next) => {
   try {
     const drugName = req.query.name; // รับค่า name จาก query string
     if (!drugName) {
@@ -85,8 +85,8 @@ app.get("/api/drugs/search", async (req, res, next) => {
 });
 
 // 3. Get a single drug by ID
-// http://localhost:3000/api/drugs/uuid
-app.get("/api/drugs/:id", async (req, res, next) => {
+// http://localhost:3000/drugs/uuid
+app.get("/drugs/:id", async (req, res, next) => {
   try {
     const drugId = req.params.id;
     if (!drugId) {
@@ -140,7 +140,7 @@ app.get("/api/drugs/:id", async (req, res, next) => {
 //     "expired" : 2025-05-25
 //    }
 // }
-app.post("/api/drugs", async (req, res, next) => {
+app.post("/drugs", async (req, res, next) => {
   const {
     name,
     code,
@@ -202,7 +202,7 @@ app.post("/api/drugs", async (req, res, next) => {
 //     "detail": "Updated pain reliever details",
 //   }
 // }
-app.patch("/api/drugs/update", async (req, res, next) => {
+app.patch("/drugs/update", async (req, res, next) => {
   try {
     const { drug_id, drugData, stockData} = req.body;
     if (!drug_id) throw new Error("Drug ID is required");
@@ -229,7 +229,7 @@ app.patch("/api/drugs/update", async (req, res, next) => {
 });
 
 // 6. add stock for a drug
-app.post("/api/stocks", async (req, res) => {
+app.post("/stocks", async (req, res) => {
   try {
     const newStock = await dbClient.insert(stockTable).values(req.body).returning();
     res.status(201).json(newStock);
@@ -240,7 +240,7 @@ app.post("/api/stocks", async (req, res) => {
 });
 
 // 7. Delete a drug
-app.delete("/api/drugs/:id", async (req, res, next) => {
+app.delete("/drugs/:id", async (req, res, next) => {
   try {
     const { id } = req.params ;
     if (!id) throw new Error("Empty id");
@@ -270,7 +270,7 @@ app.delete("/api/drugs/:id", async (req, res, next) => {
 //   "stock_id": "stock_uuid",
 //   "quantity_sold": 2
 // }
-app.patch("/api/stocks/update", async (req, res, next) => {
+app.patch("/stocks/update", async (req, res, next) => {
   try {
     const { drug_id, stock_id, quantity_sold } = req.body;
     if (!drug_id || !stock_id || !quantity_sold) {
@@ -304,7 +304,7 @@ app.patch("/api/stocks/update", async (req, res, next) => {
 });
 
 // 9. delete only that stock
-app.delete("/api/stocks/:stock_id", async (req, res, next) => {
+app.delete("/stocks/:stock_id", async (req, res, next) => {
   try {
     const { stock_id } = req.params;
     if (!stock_id) {
@@ -332,7 +332,7 @@ app.delete("/api/stocks/:stock_id", async (req, res, next) => {
 });
 
 // 10. edit stock
-app.patch("/api/stocks", async (req, res, next) => {
+app.patch("/stocks", async (req, res, next) => {
   try {
     const { stock_id, stockData} = req.body;
     if (!stock_id) throw new Error("Stock ID is required");
@@ -357,7 +357,7 @@ app.patch("/api/stocks", async (req, res, next) => {
 });
 
 // 11. Get stocks
-app.get("/api/stocks", async (req, res) => {
+app.get("/stocks", async (req, res) => {
   try {
     const drugsWithStock = await dbClient.query.drugTable.findMany({
       with: {
@@ -384,7 +384,7 @@ app.get("/api/stocks", async (req, res) => {
   }
 });
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // JSON Error Middleware
 const jsonErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
