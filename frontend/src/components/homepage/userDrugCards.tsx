@@ -87,8 +87,8 @@ const DrugCards: React.FC<DrugCardsProps> = ({
           <p className="text-base mb-2">รายละเอียด: {drug.detail}</p>
           <p className="text-base mb-2">ขนาดและวิธีใช้: {drug.usage}</p>
           <button
-            onClick={() => navigate(`/detail/${drug.drug_id}`)}
-            className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
+            onClick={() => navigate(`/patient/detail/${drug.drug_id}`)}
+            className="mt-auto py-2 bg-[#FB6F92] hover:bg-[#e05c7d] text-white text-base text-center rounded-[12px]"
           >
             ดูข้อมูล
           </button>

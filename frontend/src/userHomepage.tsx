@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "./components/sidebar";
 import DrugCards from "./components/homepage/userDrugCards";
-import clsx from "clsx";
 
 interface Drug {
   drug_id: string;
@@ -24,7 +24,7 @@ const Homepage: React.FC = () => {
   const [filteredDrugs, setFilteredDrugs] = useState<Drug[]>([]);
   const [activeTab, setActiveTab] = useState("ทั้งหมด");
   const options = ["ทั้งหมด", "ยา", "สมุนไพร", "ใกล้หมดคลัง", "ใกล้หมดอายุ"];
-
+  const navigate = useNavigate();
   // ฟังก์ชันกรองข้อมูลจาก drugs
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -51,47 +51,6 @@ const Homepage: React.FC = () => {
     };
     fetchDrugs();
   }, []);
-
-  const filterNotifications = () => {
-    const thresholdStock = 10; // เกณฑ์จำนวนยาคงเหลือ
-    const currentDatePlus7 = new Date();
-    currentDatePlus7.setDate(currentDatePlus7.getDate() + 7);
-
-    return drugs
-      .filter((drug) =>
-        drug.stock.some(
-          (s) =>
-            s.amount < thresholdStock || new Date(s.expired) <= currentDatePlus7
-        )
-      )
-      .map((drug) => {
-        const stockInfo = drug.stock.find(
-          (s) =>
-            s.amount < thresholdStock || new Date(s.expired) <= currentDatePlus7
-        );
-        if (!stockInfo) return null;
-
-        const isLowStock = stockInfo.amount < thresholdStock;
-        const isExpired = new Date(stockInfo.expired) <= currentDatePlus7;
-        return (
-          <div className="flex items-center">
-            <div
-              className={clsx(
-                "w-[35px] h-[35px] rounded-full flex items-center justify-center mr-4",
-                drug.drug_type === "drug" ? "bg-[#ffc673]" : "bg-[#98c99f]"
-              )}
-            ></div>
-            <div>
-              <div className="text-lg">{drug.name}</div>
-              <div className="text-base">
-                {isLowStock ? "จำนวนน้อยกว่าที่กำหนด" : ""}
-                {isExpired ? <span className="block"> ยาใกล้หมดอายุ</span> : ""}
-              </div>
-            </div>
-          </div>
-        );
-      });
-  };
 
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
@@ -145,6 +104,15 @@ const Homepage: React.FC = () => {
                   </ul>
                 )}
               </div>
+              <div className="flex items-center space-x-4">
+              {/* ปุ่มเข้าสู่ระบบ */}
+              <button
+                onClick={() => navigate("/login")} // ✅ กดแล้วไปที่หน้า Login
+                className="bg-[#FB6F92] hover:bg-[#e05c7d] text-white px-4 py-2 rounded-[12px] shadow-md transition duration-300"
+              >
+                เข้าสู่ระบบ
+              </button>
+            </div>
             </div>
           </div>
         </header>

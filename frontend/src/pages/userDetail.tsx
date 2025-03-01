@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 
 interface DataRow {
@@ -13,27 +12,20 @@ const Detail: React.FC = () => {
   const [data, setData] = useState<DataRow[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const navigate = useNavigate();
   const fetchData = async (drugId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/drugs/${encodeURIComponent(drugId)}`);
+      const response = await fetch(`/api/drugs/${encodeURIComponent(drugId)}`);
       if (!response.ok) {
         throw new Error("Failed to fetch data from API");
       }
       const result = await response.json();
 
-      const totalStockAmount = result.data?.stock?.reduce(
-        (sum: number, stockItem: { amount: number }) =>
-          sum + (stockItem.amount || 0),
-        0
-      );
-
       console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "ชื่อยา", value: result.data.name ?? "N/A" },
+        { label: "รหัสยา", value: result.data.code ?? "N/A" },
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
         { label: "ผลข้างเคียง", value: result?.data.side_effect ?? "N/A" },

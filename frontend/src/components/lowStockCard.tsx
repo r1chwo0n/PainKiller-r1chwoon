@@ -23,7 +23,7 @@ const LowStockCard: React.FC<LowStockCardProps> = ({ name, drug_id, drug_type, a
   const handleClick = () => {
     localStorage.setItem(`clicked-${drug_id}`, "true");
     setIsClicked(true);
-    navigate(`/detail/${drug_id}`); // ไปที่หน้ารายละเอียดของยา
+    navigate(`/doctor/detail/${drug_id}`); // ไปที่หน้ารายละเอียดของยา
   };
 
   return (

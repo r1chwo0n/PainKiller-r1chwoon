@@ -24,10 +24,6 @@ const Detail: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleEdit = () => {
-    console.log("Edit button clicked!");
-  };
-
   const fetchData = async (drugId: string) => {
     setLoading(true);
     setError(null);
@@ -149,7 +145,7 @@ const Detail: React.FC = () => {
               <div className="flex gap-2 marginLeft">
                 {/* Edit Button */}
                 <button
-                  onClick={() => navigate(`/edit-drug/${id}`)}
+                  onClick={() => navigate(`/doctor/edit-drug/${id}`)}
               className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
                 >
                   <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />

@@ -1,8 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/context";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const { role } = useAuth();
+
+  const handleNavigate = () => {
+    if (role === "doctor") {
+      navigate("/doctor"); 
+    } else {
+      navigate("/patient"); 
+    }
+  };
+
 
   return (
     <aside className="w-1/7 h-screen bg-white p-6 ml-4 shadow-md flex flex-col items-center">
@@ -16,7 +27,7 @@ const Sidebar: React.FC = () => {
       {/* Navigation Link */}
       <div
         className="flex items-center mt-4 mr-14 text-[#fb6f92] cursor-pointer"
-        onClick={() => navigate("/")}
+        onClick={handleNavigate}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

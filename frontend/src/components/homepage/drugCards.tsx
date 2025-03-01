@@ -148,8 +148,8 @@ const DrugCards: React.FC<DrugCardsProps> = ({
             จำนวนคงเหลือ: {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
           </p>
           <button
-            onClick={() => navigate(`/detail/${drug.drug_id}`)}
-            className="mt-auto py-2 bg-[#FB6F92] text-white text-base text-center rounded-[12px]"
+            onClick={() => navigate(`/doctor/detail/${drug.drug_id}`)}
+            className="mt-auto py-2 bg-[#FB6F92] hover:bg-[#e05c7d] text-white text-base text-center rounded-[12px]"
           >
             ดูข้อมูล
           </button>
