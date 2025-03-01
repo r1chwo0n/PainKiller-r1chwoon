@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import useSnackbar from "../useSnackber";
-import axios from "axios"; 
+import axios from "axios";
 
 interface Drug {
   drug_id: string;
@@ -22,7 +22,7 @@ interface DrugCardsProps {
   activeTab: string;
   searchQuery: string;
   setShowDeletePopup: (show: boolean) => void;
-  showDeletePopup: boolean; 
+  showDeletePopup: boolean;
 }
 
 const DrugCards: React.FC<DrugCardsProps> = ({
@@ -30,7 +30,7 @@ const DrugCards: React.FC<DrugCardsProps> = ({
   activeTab,
   searchQuery,
   setShowDeletePopup,
-  showDeletePopup, 
+  showDeletePopup,
 }) => {
   const navigate = useNavigate();
   const { showSnackbar, Snackbar } = useSnackbar();
@@ -118,14 +118,24 @@ const DrugCards: React.FC<DrugCardsProps> = ({
               ) : (
                 <svg
                   viewBox="0 -0.5 17 17"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="si-glyph si-glyph-pill"
                   fill="#000000"
-                  width="24"
-                  height="24"
+                  style={{ width: "24px", height: "24px" }}
                 >
-                  <path
-                    d="M15.897,1.731 L15.241,1.074 C13.887,-0.281 11.745,-0.341 10.46,0.944 L1.957,9.446 C0.673,10.731 0.733,12.871 2.09,14.228 L2.744,14.882 C4.101,16.239 6.242,16.3 7.527,15.016 L16.03,6.511 C17.314,5.229 17.254,3.088 15.897,1.731 Z"
-                    fill="#ffc673"
-                  />
+                  <g
+                    stroke="none"
+                    stroke-width="1"
+                    fill="none"
+                    fill-rule="evenodd"
+                  >
+                    <path
+                      d="M15.897,1.731 L15.241,1.074 C13.887,-0.281 11.745,-0.341 10.46,0.944 L1.957,9.446 C0.673,10.731 0.733,12.871 2.09,14.228 L2.744,14.882 C4.101,16.239 6.242,16.3 7.527,15.016 L16.03,6.511 C17.314,5.229 17.254,3.088 15.897,1.731 L15.897,1.731 Z M11.086,10.164 L6.841,5.917 L11.049,1.709 C11.994,0.765 13.581,0.811 14.584,1.816 L15.188,2.417 C15.678,2.91 15.959,3.552 15.975,4.226 C15.991,4.888 15.75,5.502 15.295,5.955 L11.086,10.164 L11.086,10.164 Z"
+                      fill="#ffc673" // This is the blue sky color
+                      className="si-glyph-fill"
+                    />
+                  </g>
                 </svg>
               )}
             </div>
@@ -170,14 +180,14 @@ const DrugCards: React.FC<DrugCardsProps> = ({
               <button
                 onClick={() => {
                   setShowDeletePopup(false);
-                  setDeleteDrugIdState(null); 
+                  setDeleteDrugIdState(null);
                 }}
                 className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
               >
                 ยกเลิก
               </button>
               <button
-                onClick={handleDelete} 
+                onClick={handleDelete}
                 className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
               >
                 ลบ
