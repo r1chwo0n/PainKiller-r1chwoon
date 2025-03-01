@@ -97,7 +97,7 @@ const AddStockForm: React.FC = () => {
     <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
       <main className="flex-1 p-4">
-        <header className="bg-white h-[86Spx] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
+        <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-4xl text-[#444444] font-bold ">เพิ่มสต็อก</h1>
           </div>
@@ -132,7 +132,7 @@ const AddStockForm: React.FC = () => {
                   value={formData.unit_type}
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                  required>
+                >
                   <option value="">เลือก</option>
                   <option value="กิโลกรัม">กิโลกรัม</option>
                   <option value="กระปุก">กระปุก</option>
@@ -184,7 +184,8 @@ const AddStockForm: React.FC = () => {
               <div className="col-span-1">
                 <label
                   htmlFor="unit_price"
-                  className="text-[16px] text-[#444444]">
+                  className="text-[16px] text-[#444444]"
+                >
                   ราคาต่อหน่วย
                 </label>
                 <input
@@ -207,10 +208,11 @@ const AddStockForm: React.FC = () => {
             </div>
 
             <div className="col-span-2 mt-2">
-              <div className="mt-5 text-left">
+              <div className="mt-5 text-center">
                 <button
                   type="submit"
-                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] ">
+                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
+                >
                   บันทึก
                 </button>
               </div>

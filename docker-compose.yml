@@ -27,11 +27,11 @@ services:
       - painkiller-net
     env_file:
       - ./.env
-    command: >
-      sh -c "
-      npm run db:push &&
-      npm run start
-      "
+    # command: >
+    #   sh -c "
+    #   npm run db:push &&
+    #   npm run start
+    #   "
   frontend:
     container_name: painkiller-frontend
     build: ./frontend
