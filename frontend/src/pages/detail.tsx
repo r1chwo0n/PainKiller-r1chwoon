@@ -9,6 +9,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 interface DataRow {
   label: string;
   value: React.ReactNode;
+  stockId?: string;
 }
 
 const Detail: React.FC = () => {
@@ -17,11 +18,26 @@ const Detail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isStockModalOpen, setIsStockModalOpen] = useState<boolean>(false);
+  const [stockId, setStockId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleDelete = () => {
-    console.log("Deleted!");
-    setIsModalOpen(false);
+  const handleDelete = async () => {
+    if (!id) return;
+
+    try {
+      const response = await fetch(`/api/drugs/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete drug");
+      }
+
+      navigate("/doctor"); 
+    } catch (error) {
+      console.error("Error deleting drug:", error);
+    }
   };
 
   const fetchData = async (drugId: string) => {
@@ -40,7 +56,7 @@ const Detail: React.FC = () => {
         0
       );
 
-      console.log("data:", result);
+      // console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "ชื่อยา", value: result.data.name ?? "N/A" },
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
@@ -60,6 +76,7 @@ const Detail: React.FC = () => {
       const stockData: DataRow[] = result.data?.stock?.map(
         (
           stockItem: {
+            stock_id: string;
             expired: string;
             amount: number;
             unit_type: string;
@@ -76,6 +93,7 @@ const Detail: React.FC = () => {
               ราคาต่อหน่วย: {stockItem.unit_price}
             </>
           ),
+          stockId: stockItem.stock_id,
         })
       );
 
@@ -87,11 +105,9 @@ const Detail: React.FC = () => {
     }
   };
 
-  const handleDeleteStock = async (stockId: string) => {
-    if (!stockId) return;
-
+  const handleDeleteStock = async (stockId: string | null) => {
     try {
-      const response = await fetch(`/api/stock/${stockId}`, {
+      const response = await fetch(`/api/stocks/${stockId}`, {
         method: "DELETE",
       });
 
@@ -99,13 +115,11 @@ const Detail: React.FC = () => {
         throw new Error("Failed to delete stock");
       }
 
-      // รีเฟรชข้อมูลใหม่หลังจากลบสำเร็จ
-      if (id) {
-        fetchData(id);
-      }
+      setData((prevData) => prevData.filter((row) => row.stockId !== stockId));
     } catch (error) {
       console.error("Error deleting stock:", error);
     }
+    setIsStockModalOpen(false);
   };
 
   useEffect(() => {
@@ -148,6 +162,34 @@ const Detail: React.FC = () => {
           </div>
         )}
 
+        {/* Delete Stock Confirmation Popup */}
+        {isStockModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-white rounded-[20px] p-8 shadow-xl max-w-md w-full">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                ยืนยันการลบข้อมูล
+              </h2>
+              <p className="text-lg text-[#444444] mb-6">
+                ต้องการลบข้อมูลใช่หรือไม่?
+              </p>
+              <div className="flex justify-end space-x-6">
+                <button
+                  onClick={() => setIsStockModalOpen(false)}
+                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  onClick={() => handleDeleteStock(stockId)}
+                  className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
+                >
+                  ลบ
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading && <div>กำลังโหลดข้อมูล...</div>}
         {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
@@ -180,9 +222,7 @@ const Detail: React.FC = () => {
               </div>
             </header>
 
-            {/* Main Data Container */}
-
-            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y-auto">
+            <div className="flex-grow bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y: auto">
               <b
                 style={{
                   display: "flex",
@@ -198,57 +238,50 @@ const Detail: React.FC = () => {
               </b>
 
               {/* Stock Section */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: "20px",
-                  overflowX: "auto",
-                  marginBottom: "20px",
-                }}
-              >
+              <div className="flex gap-4 overflow-x-auto mb-6">
                 {data
                   .filter((row) => row.label.startsWith("ล็อตที่"))
                   .map((row, index) => (
                     <div
                       key={index}
-                      style={{
-                        minWidth: "220px",
-                        flex: "0 0 auto",
-                        padding: "15px",
-                        borderRadius: "8px",
-                        backgroundColor: "#E9E9E9",
-                        textAlign: "left",
-                        position: "relative", // ให้ปุ่มอยู่มุมขวา
-                      }}
+                      className="relative min-w-[220px] flex-0 bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md"
                     >
-                      <p style={{ fontWeight: "bold" }}>{row.label}</p>
+                      <p className="font-bold">{row.label}</p>
                       <p>{row.value}</p>
 
-                      {/* ปุ่มลบสต็อก */}
-                      <button
-                        onClick={() => {
-                          const stockItem = data.find(
-                            (item) => item.label === row.label
-                          );
-                          if (stockItem && "stock_id" in stockItem) {
-                            handleDeleteStock((stockItem as any).stock_id);
-                          }
-                        }}
-                        style={{
-                          position: "absolute",
-                          top: "5px",
-                          right: "5px",
-                          background: "red",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "5px",
-                          padding: "5px",
-                          fontSize: "12px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ลบ
-                      </button>
+                      {/* ปุ่มลบ Stock */}
+                      {row.stockId && (
+                        <button
+                          onClick={() => {
+                            setStockId(row.stockId ?? null);
+                            setIsStockModalOpen(true);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: "5px",
+                            right: "5px",
+                            color: "#e57373",
+                            border: "none",
+                            borderRadius: "5px",
+                            padding: "5px",
+                            fontSize: "12px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   ))}
               </div>

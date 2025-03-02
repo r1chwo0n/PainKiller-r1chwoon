@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import useSnackbar from "../components/useSnackber";
 
@@ -18,6 +18,7 @@ const EditMedicineDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [showPopup, setShowPopup] = useState(false);
   const { showSnackbar, Snackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   // ดึงข้อมูลยา
   const fetchData = async (drugId: string) => {
@@ -93,6 +94,7 @@ const EditMedicineDetail: React.FC = () => {
         });
         setShowPopup(false);
       }
+      navigate(`/doctor/detail/${id}`); 
     } catch (error) {
       console.error("Error updating drug:", error);
       showSnackbar({

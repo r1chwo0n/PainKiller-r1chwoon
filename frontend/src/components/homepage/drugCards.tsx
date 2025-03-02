@@ -23,6 +23,7 @@ interface DrugCardsProps {
   searchQuery: string;
   setShowDeletePopup: (show: boolean) => void;
   showDeletePopup: boolean;
+  onDrugDeleted: () => void;
 }
 
 const DrugCards: React.FC<DrugCardsProps> = ({
@@ -31,6 +32,7 @@ const DrugCards: React.FC<DrugCardsProps> = ({
   searchQuery,
   setShowDeletePopup,
   showDeletePopup,
+  onDrugDeleted,
 }) => {
   const navigate = useNavigate();
   const { showSnackbar, Snackbar } = useSnackbar();
@@ -67,6 +69,8 @@ const DrugCards: React.FC<DrugCardsProps> = ({
         message: "ลบข้อมูลยาสำเร็จ!",
         severity: "success",
       });
+
+      onDrugDeleted();
     } catch (error) {
       console.error("Error deleting drug:", error);
       showSnackbar({

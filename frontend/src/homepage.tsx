@@ -28,6 +28,7 @@ const Homepage: React.FC = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   // ฟังก์ชันกรองข้อมูลจาก drugs
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +55,10 @@ const Homepage: React.FC = () => {
     setShowAddPopup((prev) => !prev); // สลับสถานะ Pop-up ของปุ่มบวก
   };
 
+  const handleDrugDeleted = () => {
+    setReloadTrigger((prev) => prev + 1); // รีโหลดข้อมูลใหม่
+  };
+
   useEffect(() => {
     // Fetch drugs from API
     const fetchDrugs = async () => {
@@ -65,7 +70,7 @@ const Homepage: React.FC = () => {
       }
     };
     fetchDrugs();
-  }, []);
+  }, [reloadTrigger]);
 
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
@@ -173,6 +178,7 @@ const Homepage: React.FC = () => {
               searchQuery={searchQuery}
               setShowDeletePopup={setShowDeletePopup}
               showDeletePopup={showDeletePopup}
+              onDrugDeleted={handleDrugDeleted}
             />
           </div>
         </div>
