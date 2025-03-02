@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useSnackbar from "./components/useSnackber";
@@ -35,6 +35,9 @@ const Homepage: React.FC = () => {
 
   const { showSnackbar, Snackbar } = useSnackbar();
 
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const addPopupRef = useRef<HTMLDivElement>(null);
+
   const triggerNewNotification = () => {
     setHasNewNotification(true);
     setTimeout(() => {
@@ -51,6 +54,36 @@ const Homepage: React.FC = () => {
     setShowNotifications(false); // ปิด Pop-up ของปุ่มแจ้งเตือน ถ้ามันเปิดอยู่
     setShowAddPopup((prev) => !prev); // สลับสถานะ Pop-up ของปุ่มบวก
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // เช็คถ้าคลิกนอก Notification Pop-up
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+
+      // เช็คถ้าคลิกนอก Add Drug Pop-up
+      if (
+        addPopupRef.current &&
+        !addPopupRef.current.contains(event.target as Node)
+      ) {
+        setShowAddPopup(false);
+      }
+    };
+
+    // เพิ่ม Event Listener เมื่อมีการแสดง Pop-up
+    if (showNotifications || showAddPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // ลบ Event Listener เมื่อ Pop-up ปิด
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications, showAddPopup]);
 
   useEffect(() => {
     // Fetch drugs from API
@@ -190,7 +223,10 @@ const Homepage: React.FC = () => {
 
                 {/* Notifications Popup */}
                 {showNotifications && (
-                  <div className="absolute right-0 top-12 w-72 bg-[#ECECEC] border border-gray-300 rounded-lg shadow-lg z-50 p-4">
+                  <div
+                    ref={notificationRef}
+                    className="absolute right-0 top-12 w-72 bg-[#ECECEC] border border-gray-300 rounded-lg shadow-lg z-50 p-4"
+                  >
                     <h3 className="font-bold text-lg mb-2 text-left text-[#444444]">
                       การแจ้งเตือน
                     </h3>
@@ -249,7 +285,10 @@ const Homepage: React.FC = () => {
 
                 {/* Pop-up Window */}
                 {showAddPopup && (
-                  <div className="absolute right-0 mt-2 bg-[#ECECEC] border border-gray-200 rounded-lg shadow-lg z-50 w-48">
+                  <div
+                    ref={addPopupRef}
+                    className="absolute right-0 mt-2 bg-[#ECECEC] border border-gray-200 rounded-lg shadow-lg z-50 w-48"
+                  >
                     <ul className="py-2">
                       <li>
                         <button
@@ -331,7 +370,7 @@ const Homepage: React.FC = () => {
 
         <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
           {/* Slider Indicator */}
-          <div className="relative flex bg-gray-100 rounded-md mb-6 max-w-xl">
+          <div className="relative flex bg-gray-100 rounded-[12px] mb-4 mt-2 max-w-xl">
             <div
               className="absolute bg-[#FB6F92] rounded-[12px] transition-all duration-300 ease-in-out"
               style={{

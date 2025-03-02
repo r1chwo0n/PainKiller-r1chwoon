@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import ExpiredCard from "../components/expiredCard";
 import LowStockCard from "../components/lowStockCard";
 import Sidebar from "../components/sidebar";
@@ -91,47 +91,50 @@ const NotificationPage: React.FC = () => {
         </header>
 
         {/* Content Box */}
-        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
-          {/* Display notifications */}
-          {drugs.flatMap((drug) => {
-            const lowStockWarning = getLowStockWarning(drug);
-            const expiryWarnings = getExpiryWarnings(drug);
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pb-5 pl-4 pr-4 overflow-y-scroll"> 
+          {/* Adjusted padding: decreased right padding to shift scrollbar left */}
+          <div className="pr-5 -mr-2"> 
+            {/* Display notifications */}
+            {drugs.flatMap((drug) => {
+              const lowStockWarning = getLowStockWarning(drug);
+              const expiryWarnings = getExpiryWarnings(drug);
 
-            const notifications = [];
+              const notifications = [];
 
-            if (lowStockWarning) {
+              if (lowStockWarning) {
+                notifications.push(
+                  <LowStockCard
+                    key={drug.drug_id}
+                    name={drug.name}
+                    drug_type={drug.drug_type}
+                    amount={getTotalStockAmount(drug)}
+                    unit_type={drug.unit_type}
+                    warning={true}
+                    warningMessage={lowStockWarning}
+                    onClick={() => handleCardClick(drug.drug_id)}
+                  />
+                );
+              }
+
               notifications.push(
-                <LowStockCard
-                  key={drug.drug_id}
-                  name={drug.name}
-                  drug_type={drug.drug_type}
-                  amount={getTotalStockAmount(drug)}
-                  unit_type={drug.unit_type}
-                  warning={true}
-                  warningMessage={lowStockWarning}
-                  onClick={() => handleCardClick(drug.drug_id)}
-                />
+                ...expiryWarnings.map((warning) => (
+                  <ExpiredCard
+                    key={warning.stock_id}
+                    name={drug.name}
+                    drug_type={drug.drug_type}
+                    amount={warning.amount}
+                    unit_type={warning.unit_type}
+                    expired={warning.expired}
+                    warning={true}
+                    warningMessage={warning.message}
+                    onClick={() => handleCardClick(drug.drug_id)}
+                  />
+                ))
               );
-            }
 
-            notifications.push(
-              ...expiryWarnings.map((warning) => (
-                <ExpiredCard
-                  key={warning.stock_id}
-                  name={drug.name}
-                  drug_type={drug.drug_type}
-                  amount={warning.amount}
-                  unit_type={warning.unit_type}
-                  expired={warning.expired}
-                  warning={true}
-                  warningMessage={warning.message}
-                  onClick={() => handleCardClick(drug.drug_id)}
-                />
-              ))
-            );
-
-            return notifications;
-          })}
+              return notifications;
+            })}
+          </div>
         </div>
       </div>
     </div>
