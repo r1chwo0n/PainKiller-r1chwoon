@@ -24,7 +24,7 @@ const Homepage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredDrugs, setFilteredDrugs] = useState<Drug[]>([]);
   const [activeTab, setActiveTab] = useState("ทั้งหมด");
-  const options = ["ทั้งหมด", "ยา", "สมุนไพร", "ใกล้หมดคลัง", "ใกล้หมดอายุ"];
+  const options = ["ทั้งหมด", "ยา", "สมุนไพร"];
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);

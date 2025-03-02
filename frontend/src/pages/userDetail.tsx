@@ -71,7 +71,7 @@ const Detail: React.FC = () => {
   }, [id]);
 
   return (
-    <div className="flex h-screen bg-[#f0f0f0]">
+    <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
       <Sidebar />
 
       <div className="flex-1 p-4" style={{ fontFamily: "Arial, sans-serif" }}>
@@ -89,7 +89,7 @@ const Detail: React.FC = () => {
             </header>
 
             {/* Main Data Container */}
-            <div className="flex-1 bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
+            <div className="flex-1 bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
               <b
                 style={{
                   display: "flex",

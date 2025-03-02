@@ -48,4 +48,4 @@ volumes:
 
 networks:
   painkiller-net:
-    external: true
+    driver: bridge

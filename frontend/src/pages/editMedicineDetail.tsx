@@ -103,14 +103,14 @@ const EditMedicineDetail: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#f0f0f0]">
+    <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
       <Sidebar />
         <div className="flex-1 flex flex-col h-screen p-4">
         <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
           <h1 className="text-4xl text-[#444444] font-bold">แก้ไขรายละเอียดยา</h1>
         </header>
 
-        <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-sch">
+        <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-auto">
           <form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-1 overflow-auto pl-1 pr-1">
               <div>

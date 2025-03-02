@@ -121,7 +121,7 @@ const AddMedicineForm: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#f0f0f0]">
+    <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
       <Sidebar />
       <main className="flex-1 p-4">
         <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
@@ -132,7 +132,7 @@ const AddMedicineForm: React.FC = () => {
           </div>
         </header>
 
-        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-4 gap-5 items-start mt-2">
               <div className="col-span-1">

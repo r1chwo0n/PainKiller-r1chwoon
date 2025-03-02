@@ -117,7 +117,7 @@ const Detail: React.FC = () => {
   }, [id]);
 
   return (
-    <div className="flex h-screen bg-[#f0f0f0]">
+    <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
       <Sidebar />
       <div className="flex-1 p-4" style={{ fontFamily: "Arial, sans-serif" }}>
         {/* Delete Confirmation Popup */}
@@ -182,7 +182,7 @@ const Detail: React.FC = () => {
 
             {/* Main Data Container */}
 
-            <div className="flex-grow bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y: auto">
+            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y-auto">
               <b
                 style={{
                   display: "flex",
@@ -197,7 +197,6 @@ const Detail: React.FC = () => {
                   "Drug Name Not Found"}
               </b>
 
-              {/* Stock Section */}
               {/* Stock Section */}
               <div
                 style={{
