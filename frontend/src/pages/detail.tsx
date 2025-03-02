@@ -34,7 +34,7 @@ const Detail: React.FC = () => {
         throw new Error("Failed to delete drug");
       }
 
-      navigate("/doctor"); 
+      navigate("/doctor");
     } catch (error) {
       console.error("Error deleting drug:", error);
     }
@@ -197,17 +197,17 @@ const Detail: React.FC = () => {
           <>
             <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
               {/* Drug Name */}
-              <span className="mb-2 text-4xl text-[#444444] font-bold">
+              <span className="mt-2 text-4xl text-[#444444] font-bold">
                 {data.find((row) => row.label === "ชื่อยา")?.value ??
                   "Drug Name Not Found"}
               </span>
 
               {/* Buttons Container */}
-              <div className="flex gap-2 marginLeft">
+              <div className="flex mt-2 items-center space-x-4">
                 {/* Edit Button */}
                 <button
                   onClick={() => navigate(`/doctor/edit-drug/${id}`)}
-                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
+                  className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200"
                 >
                   <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
                 </button>
@@ -215,14 +215,25 @@ const Detail: React.FC = () => {
                 {/* Delete Button */}
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
+                  className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200"
                 >
-                  <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </button>
               </div>
             </header>
 
-            <div className="flex-grow bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y: auto">
+            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y-auto">
               <b
                 style={{
                   display: "flex",

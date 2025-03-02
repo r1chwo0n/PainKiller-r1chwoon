@@ -81,13 +81,9 @@ const AddMedicineForm: React.FC = () => {
       };
 
       // Send payload to the API
-      const response = await axios.post(
-        "/api/drugs",
-        drugPayload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await axios.post("/api/drugs", drugPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (response.status === 201) {
         showSnackbar({
@@ -114,7 +110,9 @@ const AddMedicineForm: React.FC = () => {
     } catch (error: any) {
       console.error("Error adding drug:", error);
       showSnackbar({
-        message: error.response?.data?.message || "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        message:
+          error.response?.data?.message ||
+          "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }
@@ -126,15 +124,13 @@ const AddMedicineForm: React.FC = () => {
       <main className="flex-1 p-4">
         <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
           <div className="flex justify-between items-center">
-            <h1 className="text-4xl text-[#444444] font-bold">
-              เพิ่มข้อมูลยา
-            </h1>
+            <h1 className="text-4xl text-[#444444] font-bold">เพิ่มข้อมูลยา</h1>
           </div>
         </header>
 
-        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5">
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto max-h-[calc(100vh-120px)]">
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-4 gap-5 items-start mt-2">
+            <div className="grid grid-cols-4 gap-5 items-start mt-2 ">
               <div className="col-span-1">
                 <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
@@ -360,7 +356,6 @@ const AddMedicineForm: React.FC = () => {
         </div>
       </main>
     </div>
-    
   );
 };
 

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import Sidebar from "../components/sidebar";
 import useSnackbar from "../components/useSnackber";
+import useFetchDrugs from "../hooks/useFetchDrugs"; // นำเข้า custom hook
 
 const AddStockForm: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     unit_type: "",
@@ -13,6 +15,7 @@ const AddStockForm: React.FC = () => {
   });
 
   const { showSnackbar, Snackbar } = useSnackbar();
+  const { drugs, loading, error } = useFetchDrugs();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -94,7 +97,7 @@ const AddStockForm: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#f0f0f0]">
+    <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
       <Sidebar />
       <main className="flex-1 p-4">
         <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6">
@@ -103,7 +106,7 @@ const AddStockForm: React.FC = () => {
           </div>
         </header>
 
-        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-sch">
+        <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto">
           {/* Error and success messages */}
 
           <form onSubmit={handleSubmit}>
@@ -113,14 +116,19 @@ const AddStockForm: React.FC = () => {
                 <label htmlFor="name" className="text-[16px] text-[#444444]">
                   ชื่อยา
                 </label>
-                <input
-                  type="text"
-                  id="name"
+                <select
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
+                >
+                  <option value="">เลือกยา</option>
+                  {drugs.map((drugs) => (
+                    <option key={drugs.name} value={drugs.name}>
+                      {drugs.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               {/* Unit */}
               <div className="col-span-1">
@@ -133,10 +141,12 @@ const AddStockForm: React.FC = () => {
                   onChange={handleChange}
                   className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                 >
-                  <option value="">เลือก</option>
-                  <option value="กิโลกรัม">กิโลกรัม</option>
-                  <option value="กระปุก">กระปุก</option>
-                  <option value="ตลับ">ตลับ</option>
+                  <option value="">เลือกหน่วย</option>
+                  {drugs.map((drugs) => (
+                    <option key={drugs.unit_type} value={drugs.unit_type}>
+                      {drugs.unit_type}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
