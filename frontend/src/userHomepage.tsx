@@ -23,7 +23,7 @@ const Homepage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredDrugs, setFilteredDrugs] = useState<Drug[]>([]);
   const [activeTab, setActiveTab] = useState("ทั้งหมด");
-  const options = ["ทั้งหมด", "ยา", "สมุนไพร", "ใกล้หมดคลัง", "ใกล้หมดอายุ"];
+  const options = ["ทั้งหมด", "ยา", "สมุนไพร"];
   const navigate = useNavigate();
   // ฟังก์ชันกรองข้อมูลจาก drugs
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -458,7 +458,7 @@ const jsonErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
 app.use(jsonErrorHandler);
 
 // Running app
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
 });
