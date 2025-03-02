@@ -19,7 +19,7 @@ Follow these steps to set up and run the project locally using Docker and Postgr
 Run the following command to build and start the containers in detached mode:
 
 ```bash
-docker compose up -d --build
+docker compose up -d --force-recreate
 ```
 
 ### 3. Access the Database Container
@@ -66,7 +66,6 @@ Run the following commands:
 
 ```bash
 npm run db:push
-npm run db:prototype
 ```
 
 ### 7. Start the Frontend
