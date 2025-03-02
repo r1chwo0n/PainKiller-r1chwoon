@@ -5,7 +5,6 @@ import useSnackbar from "../components/useSnackber";
 import useFetchDrugs from "../hooks/useFetchDrugs"; // นำเข้า custom hook
 
 const AddStockForm: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     unit_type: "",
@@ -15,7 +14,7 @@ const AddStockForm: React.FC = () => {
   });
 
   const { showSnackbar, Snackbar } = useSnackbar();
-  const { drugs, loading, error } = useFetchDrugs();
+  const { drugs} = useFetchDrugs();
 
   const handleChange = (
     e: React.ChangeEvent<

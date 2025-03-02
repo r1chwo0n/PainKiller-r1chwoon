@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 interface DataRow {
   label: string;
