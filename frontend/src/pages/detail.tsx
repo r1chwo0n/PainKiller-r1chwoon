@@ -34,7 +34,7 @@ const Detail: React.FC = () => {
         throw new Error("Failed to delete drug");
       }
 
-      navigate("/doctor"); 
+      navigate("/doctor");
     } catch (error) {
       console.error("Error deleting drug:", error);
     }
@@ -238,16 +238,20 @@ const Detail: React.FC = () => {
               </b>
 
               {/* Stock Section */}
-              <div className="flex gap-4 overflow-x-auto mb-6">
+              <div className="flex gap-4 overflow-x-auto mb-6 items-center">
+                {/* รายการ Stock */}
                 {data
                   .filter((row) => row.label.startsWith("ล็อตที่"))
                   .map((row, index) => (
                     <div
                       key={index}
-                      className="relative min-w-[220px] flex-0 bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md"
+                      className="relative bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md aspect-[1] w-[200px]" // เพิ่ม aspect-[1] และกำหนด width
                     >
-                      <p className="font-bold">{row.label}</p>
-                      <p>{row.value}</p>
+                      {/* กล่องรายละเอียด Stock */}
+                      <div>
+                        <p className="font-bold">{row.label}</p>
+                        <p>{row.value}</p>
+                      </div>
 
                       {/* ปุ่มลบ Stock */}
                       {row.stockId && (
@@ -284,6 +288,21 @@ const Detail: React.FC = () => {
                       )}
                     </div>
                   ))}
+
+                {/* กล่อง Add Stock */}
+                <div
+                  onClick={() => navigate(`/doctor/add-stock`)}
+                  className="flex flex-col items-center justify-center bg-[#E9E9E9] p-4 rounded-lg text-center cursor-pointer shadow-md hover:bg-gray-300 transition-all duration-200 ease-in-out aspect-[1] w-[200px]" // เพิ่ม aspect-[1] และกำหนด width
+                >
+                  <svg width="40" height="40" fill="gray" viewBox="0 0 24 24">
+                    <path
+                      fillRule="evenodd"
+                      d="M12 4a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6V5a1 1 0 0 1 1-1Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="mt-2 text-gray-600">เพิ่มสต็อก</span>{" "}
+                </div>
               </div>
 
               {/* Main Data Section */}
