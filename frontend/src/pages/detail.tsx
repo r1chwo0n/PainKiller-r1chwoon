@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/sidebar"
+import Sidebar from "../components/sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +18,7 @@ const Detail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  
+
   const handleDelete = () => {
     console.log("Deleted!");
     setIsModalOpen(false);
@@ -28,9 +28,7 @@ const Detail: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `/api/drugs/${encodeURIComponent(drugId)}`
-      );
+      const response = await fetch(`/api/drugs/${encodeURIComponent(drugId)}`);
       if (!response.ok) {
         throw new Error("Failed to fetch data from API");
       }
@@ -42,7 +40,7 @@ const Detail: React.FC = () => {
         0
       );
 
-      console.log("data:",result)
+      console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "ชื่อยา", value: result.data.name ?? "N/A" },
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
@@ -53,7 +51,10 @@ const Detail: React.FC = () => {
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
         { label: "ผลข้างเคียง", value: result?.data.side_effect ?? "N/A" },
-        { label: "อาหารที่ห้ามทานร่วมกับยา", value: result?.data.slang_food ?? "N/A" },
+        {
+          label: "อาหารที่ห้ามทานร่วมกับยา",
+          value: result?.data.slang_food ?? "N/A",
+        },
       ];
 
       const stockData: DataRow[] = result.data?.stock?.map(
@@ -86,6 +87,27 @@ const Detail: React.FC = () => {
     }
   };
 
+  const handleDeleteStock = async (stockId: string) => {
+    if (!stockId) return;
+
+    try {
+      const response = await fetch(`/api/stock/${stockId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete stock");
+      }
+
+      // รีเฟรชข้อมูลใหม่หลังจากลบสำเร็จ
+      if (id) {
+        fetchData(id);
+      }
+    } catch (error) {
+      console.error("Error deleting stock:", error);
+    }
+  };
+
   useEffect(() => {
     if (id) {
       fetchData(id); // Fetch data using the `id` from the URL
@@ -97,10 +119,7 @@ const Detail: React.FC = () => {
   return (
     <div className="flex h-screen bg-[#f0f0f0]">
       <Sidebar />
-      <div
-        className="flex-1 p-4"
-        style={{ fontFamily: "Arial, sans-serif" }}>
-          
+      <div className="flex-1 p-4" style={{ fontFamily: "Arial, sans-serif" }}>
         {/* Delete Confirmation Popup */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
@@ -129,7 +148,6 @@ const Detail: React.FC = () => {
           </div>
         )}
 
-      
         {loading && <div>กำลังโหลดข้อมูล...</div>}
         {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
@@ -138,7 +156,8 @@ const Detail: React.FC = () => {
             <header className="bg-white h-[86px] w-full p-6 rounded-[12px] shadow-md mb-6 flex items-center justify-between">
               {/* Drug Name */}
               <span className="mb-2 text-4xl text-[#444444] font-bold">
-                {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}
+                {data.find((row) => row.label === "ชื่อยา")?.value ??
+                  "Drug Name Not Found"}
               </span>
 
               {/* Buttons Container */}
@@ -146,7 +165,7 @@ const Detail: React.FC = () => {
                 {/* Edit Button */}
                 <button
                   onClick={() => navigate(`/doctor/edit-drug/${id}`)}
-              className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
+                  className={`relative px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200`}
                 >
                   <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
                 </button>
@@ -160,14 +179,34 @@ const Detail: React.FC = () => {
                 </button>
               </div>
             </header>
-            
+
             {/* Main Data Container */}
-            
+
             <div className="flex-grow bg-white h-[670px] rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y: auto">
-            <b style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px", marginTop: "20px"}}>ข้อมูลยา {data.find((row) => row.label === "ชื่อยา")?.value ?? "Drug Name Not Found"}</b>
+              <b
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                  overflowX: "auto",
+                  marginBottom: "20px",
+                  marginTop: "20px",
+                }}
+              >
+                ข้อมูลยา{" "}
+                {data.find((row) => row.label === "ชื่อยา")?.value ??
+                  "Drug Name Not Found"}
+              </b>
 
               {/* Stock Section */}
-              <div style={{ display: "flex", gap: "20px", overflowX: "auto", marginBottom: "20px" }}>
+              {/* Stock Section */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                  overflowX: "auto",
+                  marginBottom: "20px",
+                }}
+              >
                 {data
                   .filter((row) => row.label.startsWith("ล็อตที่"))
                   .map((row, index) => (
@@ -180,16 +219,43 @@ const Detail: React.FC = () => {
                         borderRadius: "8px",
                         backgroundColor: "#E9E9E9",
                         textAlign: "left",
+                        position: "relative", // ให้ปุ่มอยู่มุมขวา
                       }}
                     >
                       <p style={{ fontWeight: "bold" }}>{row.label}</p>
                       <p>{row.value}</p>
+
+                      {/* ปุ่มลบสต็อก */}
+                      <button
+                        onClick={() => {
+                          const stockItem = data.find(
+                            (item) => item.label === row.label
+                          );
+                          if (stockItem && "stock_id" in stockItem) {
+                            handleDeleteStock((stockItem as any).stock_id);
+                          }
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: "5px",
+                          right: "5px",
+                          background: "red",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "5px",
+                          padding: "5px",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        ลบ
+                      </button>
                     </div>
                   ))}
               </div>
 
               {/* Main Data Section */}
-              
+
               {data
                 .filter((row) => !row.label.startsWith("ล็อตที่"))
                 .slice(1)
@@ -201,19 +267,20 @@ const Detail: React.FC = () => {
                       justifyContent: "space-between",
                       borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
                       padding: "15px",
-                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+                      borderBottom:
+                        index === data.length - 1
+                          ? "none"
+                          : "1px solid #e0e0e0",
                     }}
                   >
                     <span style={{ fontWeight: 500 }}>{row.label}</span>
                     <span>{row.value}</span>
                   </div>
                 ))}
-            
             </div>
           </>
         )}
       </div>
-     
     </div>
   );
 };
