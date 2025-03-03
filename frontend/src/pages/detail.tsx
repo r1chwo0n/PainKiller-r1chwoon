@@ -252,7 +252,7 @@ const Detail: React.FC = () => {
               </div>
             </header>
 
-            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y-auto">
+            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2">
               <b
                 style={{
                   display: "flex",
@@ -284,31 +284,27 @@ const Detail: React.FC = () => {
                       <p className="font-bold">{row.label}</p>
                       <p>{row.value}</p>
 
-                      {/* ปุ่มลบ Stock */}
-                      {row.stockId && (
-                        <button
-                          onClick={() => {
-                            setStockId(row.stockId ?? null);
-                            setIsStockModalOpen(true);
-                          }}
-                          style={{
-                            position: "absolute",
-                            top: "5px",
-                            right: "5px",
-                            color: "#e57373",
-                            border: "none",
-                            borderRadius: "5px",
-                            padding: "5px",
-                            fontSize: "12px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <svg
-                            width="24"
-                            height="24"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
+
+                        {/* ปุ่มลบ Stock */}
+                        {row.stockId && (
+                          <button
+                            onClick={() => {
+                              setStockId(row.stockId ?? null);
+                              setIsStockModalOpen(true);
+                            }}
+                            style={{
+                              position: "absolute",
+                              top: "5px",
+                              right: "5px",
+                              color: "#e57373",
+                              border: "none",
+                              borderRadius: "5px",
+                              padding: "5px",
+                              fontSize: "12px",
+                              cursor: "pointer",
+                            }}
                           >
+
                             <path
                               fillRule="evenodd"
                               d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"

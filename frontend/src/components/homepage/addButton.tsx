@@ -74,7 +74,7 @@ const AddDrugButton: React.FC<AddDrugButtonProps> = ({
                   setShowAddPopup(false);
                   navigate("/doctor/add-stock");
                 }}
-                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center"
+                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-[#D9D9D9] flex items-center"
               >
                 เพิ่มสต็อก
               </button>
