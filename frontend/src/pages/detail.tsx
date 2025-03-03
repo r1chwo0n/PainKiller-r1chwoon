@@ -422,3 +422,4 @@ const Detail: React.FC = () => {
 
 export default Detail;
 //woon
+//
