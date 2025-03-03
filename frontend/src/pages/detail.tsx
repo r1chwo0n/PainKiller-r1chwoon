@@ -18,6 +18,8 @@ const Detail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [infoModalContent, setInfoModalContent] = useState<React.ReactNode>(null);
   const [isStockModalOpen, setIsStockModalOpen] = useState<boolean>(false);
   const [stockId, setStockId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -286,63 +288,66 @@ const Detail: React.FC = () => {
               </b>
 
               {/* Stock Section */}
-              <div className="relative w-full py-4">
-                <button
-                  onClick={handlePrev}
-                  className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
-                  disabled={startIndex === 0}
-                >
-                  ◀
-                </button>
-                <div className="flex gap-x-4 justify-center">
-                  {data
-                    .filter((row) => row.label.startsWith("ล็อตที่"))
-                    .slice(startIndex, startIndex + visibleStocks)
-                    .map((row, index) => (
-                      <div
-                        key={index}
-                        className="relative bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md mx-2 min-w-[250px]"
-                      >
-                        <p className="font-bold">{row.label}</p>
-                        <p>{row.value}</p>
+<div className="relative w-full py-4">
+  {data.filter((row) => row.label.startsWith("ล็อตที่")).length > 0 && (
+    <>
+      <button
+        onClick={handlePrev}
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-100 px-3 py-2 rounded-full shadow-md hover:bg-gray-200 disabled:opacity-30"
+        disabled={startIndex === 0}
+      >
+        ◀
+      </button>
+      <div className="flex gap-x-4 justify-center">
+        {data
+          .filter((row) => row.label.startsWith("ล็อตที่"))
+          .slice(startIndex, startIndex + visibleStocks)
+          .map((row, index) => (
+            <div
+              key={index}
+              className="relative bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md mx-2 min-w-[250px]"
+            >
+              <p className="font-bold">{row.label}</p>
+              <p>{row.value}</p>
 
-                        {/* ปุ่มลบ Stock */}
-                        {row.stockId && (
-                          <button
-                            onClick={() => {
-                              setStockId(row.stockId ?? null);
-                              setIsStockModalOpen(true);
-                            }}
-                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
-                          >
-                            <svg
-                              className="w-4 h-4"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                </div>
+              {/* ปุ่มลบ Stock */}
+              {row.stockId && (
                 <button
-                  onClick={handleNext}
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
-                  disabled={
-                    startIndex + visibleStocks >=
-                    data.filter((row) => row.label.startsWith("ล็อตที่")).length
-                  }
+                  onClick={() => {
+                    setStockId(row.stockId ?? null);
+                    setIsStockModalOpen(true);
+                  }}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
                 >
-                  ▶
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </button>
-                {/* </Carousel> */}
-              </div>
+              )}
+            </div>
+          ))}
+      </div>
+      <button
+        onClick={handleNext}
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-100 px-3 py-2 rounded-full shadow-md hover:bg-gray-200 disabled:opacity-30"
+        disabled={
+          startIndex + visibleStocks >=
+          data.filter((row) => row.label.startsWith("ล็อตที่")).length
+        }
+      >
+        ▶
+      </button>
+    </>
+  )}
+</div>
 
               {/* Main Data Section */}
 
@@ -352,25 +357,43 @@ const Detail: React.FC = () => {
                   .slice(1)
                   .map((row, index) => (
                     <div
-                      key={index}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        borderTop: index !== 0 ? "none" : "1px solid #e0e0e0",
-                        padding: "13px",
-                        borderBottom:
-                          index === data.length - 1
-                            ? "none"
-                            : "1px solid #e0e0e0",
-                      }}
-                    >
-                      <span style={{ fontWeight: 500 }}>{row.label}</span>
-                      <span>{row.value}</span>
-                    </div>
+                    key={index}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      borderTop: index !== 0 ? "none" : "1px solid #e0e0e0",
+                      padding: "13px",
+                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
+                    }}
+                  >
+                    <span style={{ flex: 1, textAlign: "left", fontWeight: 500 }}>
+                      {row.label}
+                    </span>
+                    <span style={{ flex: 1 , textAlign: "right",overflow: "hidden",textOverflow: "ellipsis",cursor: "pointer",}}
+                    onClick={() => {
+                      setInfoModalContent(row.value); // เก็บข้อมูลใน state
+                      setIsInfoModalOpen(true); // เปิด modal
+                    }}
+                    >{row.value}</span>
+                  </div>
                   ))}
               </div>
+              {/* Modal for displaying long information */}
+              {isInfoModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center ">
+                <div className="bg-white rounded-[20px] p-8 shadow-xl ">            
+                    <span className="close" onClick={() => setIsInfoModalOpen(false)}>
+                      &times;
+                    </span>
+                    <div
+                      className="modal-content"
+                      style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
+                      dangerouslySetInnerHTML={{ __html: String(infoModalContent) }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
