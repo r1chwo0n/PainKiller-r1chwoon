@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { Carousel } from "flowbite-react";
+import useSnackbar from "../components/useSnackber";
 
 interface DataRow {
   label: string;
@@ -21,6 +21,7 @@ const Detail: React.FC = () => {
   const [isStockModalOpen, setIsStockModalOpen] = useState<boolean>(false);
   const [stockId, setStockId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showSnackbar, Snackbar } = useSnackbar();
 
   // 🌟 ใช้ state จัดการการเลื่อน stock
   const [startIndex, setStartIndex] = useState(0);
@@ -34,13 +35,22 @@ const Detail: React.FC = () => {
         method: "DELETE",
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete drug");
+      if (response.ok) {
+        showSnackbar({
+          message: "ลบข้อมูลยาสำเร็จ!",
+          severity: "success",
+        });
       }
-
+      await new Promise((resolve) => setTimeout(resolve, 500));
       navigate("/doctor");
     } catch (error) {
       console.error("Error deleting drug:", error);
+      showSnackbar({
+        message: "มีข้อผิดพลาดในการลบข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        severity: "error",
+      });
+    } finally {
+      setIsModalOpen(false);
     }
   };
 
@@ -115,18 +125,23 @@ const Detail: React.FC = () => {
         method: "DELETE",
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete stock");
+      if (response.ok) {
+        showSnackbar({
+          message: "ลบข้อมูลยาสำเร็จ!",
+          severity: "success",
+        });
       }
+      setIsStockModalOpen(false);
 
       setData((prevData) => prevData.filter((row) => row.stockId !== stockId));
     } catch (error) {
       console.error("Error deleting stock:", error);
+      showSnackbar({
+        message: "มีข้อผิดพลาดในการลบข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        severity: "error",
+      });
     }
-    setIsStockModalOpen(false);
   };
-
-  
 
   useEffect(() => {
     if (id) {
@@ -136,18 +151,21 @@ const Detail: React.FC = () => {
     }
   }, [id]);
 
-    // ⏩ ปุ่มเลื่อน stock
-    const handleNext = () => {
-      if (startIndex + visibleStocks < data.filter((row) => row.label.startsWith("ล็อตที่")).length) {
-        setStartIndex(startIndex + 1);
-      }
-    };
-  
-    const handlePrev = () => {
-      if (startIndex > 0) {
-        setStartIndex(startIndex - 1);
-      }
-    };
+  // ⏩ ปุ่มเลื่อน stock
+  const handleNext = () => {
+    if (
+      startIndex + visibleStocks <
+      data.filter((row) => row.label.startsWith("ล็อตที่")).length
+    ) {
+      setStartIndex(startIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (startIndex > 0) {
+      setStartIndex(startIndex - 1);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
@@ -252,7 +270,7 @@ const Detail: React.FC = () => {
               </div>
             </header>
 
-            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2 overflow-y-auto">
+            <div className="flex-grow bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-2">
               <b
                 style={{
                   display: "flex",
@@ -266,95 +284,99 @@ const Detail: React.FC = () => {
                 {data.find((row) => row.label === "ชื่อยา")?.value ??
                   "Drug Name Not Found"}
               </b>
-              
-              {/* Stock Section */}
-              <div className="relative w-full py-4">
-              <button onClick={handlePrev} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50" disabled={startIndex === 0}>
-                ◀
-              </button>
-              <div className="flex gap-x-4 justify-center">
-                {data
-                  .filter((row) => row.label.startsWith("ล็อตที่"))
-                  .slice(startIndex, startIndex + visibleStocks)
-                  .map((row, index) => (
-                    <div
-                      key={index}
-                      className="relative flex-0 bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md mx-2 min-w-[250px] "
-                    >
-                      <p className="font-bold">{row.label}</p>
-                      <p>{row.value}</p>
 
-                      {/* ปุ่มลบ Stock */}
-                      {row.stockId && (
-                        <button
-                          onClick={() => {
-                            setStockId(row.stockId ?? null);
-                            setIsStockModalOpen(true);
-                          }}
-                          style={{
-                            position: "absolute",
-                            top: "5px",
-                            right: "5px",
-                            color: "#e57373",
-                            border: "none",
-                            borderRadius: "5px",
-                            padding: "5px",
-                            fontSize: "12px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <svg
-                            width="24"
-                            height="24"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    
-                  ))}
-                </div>
-                <button onClick={handleNext} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
-                disabled={startIndex + visibleStocks >= data.filter((row) => row.label.startsWith("ล็อตที่")).length}>
-                ▶
-              </button>
-              {/* </Carousel> */}
-              </div>
+              {/* Stock Section */}
+<div className="relative w-full py-4">
+  {data.filter((row) => row.label.startsWith("ล็อตที่")).length > 0 && (
+    <>
+      <button
+        onClick={handlePrev}
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
+        disabled={startIndex === 0}
+      >
+        ◀
+      </button>
+      <div className="flex gap-x-4 justify-center">
+        {data
+          .filter((row) => row.label.startsWith("ล็อตที่"))
+          .slice(startIndex, startIndex + visibleStocks)
+          .map((row, index) => (
+            <div
+              key={index}
+              className="relative bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md mx-2 min-w-[250px]"
+            >
+              <p className="font-bold">{row.label}</p>
+              <p>{row.value}</p>
+
+              {/* ปุ่มลบ Stock */}
+              {row.stockId && (
+                <button
+                  onClick={() => {
+                    setStockId(row.stockId ?? null);
+                    setIsStockModalOpen(true);
+                  }}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-transform transform hover:scale-110"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+          ))}
+      </div>
+      <button
+        onClick={handleNext}
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
+        disabled={
+          startIndex + visibleStocks >=
+          data.filter((row) => row.label.startsWith("ล็อตที่")).length
+        }
+      >
+        ▶
+      </button>
+    </>
+  )}
+</div>
 
               {/* Main Data Section */}
 
-              {data
-                .filter((row) => !row.label.startsWith("ล็อตที่"))
-                .slice(1)
-                .map((row, index) => (
-                  <div
+              <div className="max-h-80 overflow-y-auto">
+                {data
+                  .filter((row) => !row.label.startsWith("ล็อตที่"))
+                  .slice(1)
+                  .map((row, index) => (
+                    <div
                     key={index}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
-                      padding: "15px",
-                      borderBottom:
-                        index === data.length - 1
-                          ? "none"
-                          : "1px solid #e0e0e0",
+                      alignItems: "center",
+                      borderTop: index !== 0 ? "none" : "1px solid #e0e0e0",
+                      padding: "13px",
+                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
                     }}
                   >
-                    <span style={{ fontWeight: 500 }}>{row.label}</span>
-                    <span>{row.value}</span>
+                    <span style={{ flex: 1, textAlign: "left", fontWeight: 500 }}>
+                      {row.label}
+                    </span>
+                    <span style={{ flex: 1, textAlign: "right" }}>{row.value}</span>
                   </div>
-                ))}
+                  ))}
+              </div>
             </div>
           </>
         )}
       </div>
+      {Snackbar}
     </div>
   );
 };
