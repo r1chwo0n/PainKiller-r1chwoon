@@ -291,7 +291,7 @@ const Detail: React.FC = () => {
     <>
       <button
         onClick={handlePrev}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-100 px-3 py-2 rounded-full shadow-md hover:bg-gray-200 disabled:opacity-30"
         disabled={startIndex === 0}
       >
         ◀
@@ -335,7 +335,7 @@ const Detail: React.FC = () => {
       </div>
       <button
         onClick={handleNext}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-100 px-3 py-2 rounded-full shadow-md hover:bg-gray-200 disabled:opacity-30"
         disabled={
           startIndex + visibleStocks >=
           data.filter((row) => row.label.startsWith("ล็อตที่")).length
