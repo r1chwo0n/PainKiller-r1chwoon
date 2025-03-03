@@ -225,7 +225,7 @@ const EditMedicineDetail: React.FC = () => {
               <div className="md:col-span-2">
                 <label className="block text-gray-700">อาหารที่ห้ามทานร่วมกับยา</label>
                 <textarea
-                  name="side_effect"
+                  name="slang_food"
                   value={medicineData.slang_food}
                   onChange={handleInputChange}
                   className="resize-none w-full h-[80px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"

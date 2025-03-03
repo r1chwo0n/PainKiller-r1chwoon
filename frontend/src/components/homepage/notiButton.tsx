@@ -27,9 +27,9 @@ const NotificationButton: React.FC<NotificationButtonProps> = ({
   const navigate = useNavigate();
 
   const filterNotifications = () => {
-    const thresholdStock = 10;
+    const thresholdStock = 8;
     const currentDatePlus7 = new Date();
-    currentDatePlus7.setDate(currentDatePlus7.getDate() + 7);
+    currentDatePlus7.setDate(currentDatePlus7.getDate() + 90);
 
     return drugs
       .filter((drug) =>
