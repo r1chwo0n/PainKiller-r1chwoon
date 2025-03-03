@@ -54,7 +54,11 @@ const DrugCards: React.FC<DrugCardsProps> = ({
           className="relative p-4 border border-[#f5f5f5] rounded-[12px] bg-white shadow-md flex flex-col"
         >
           <div className="flex items-center mb-4">
-            <h2 className="font-bold text-2xl">{drug.name}</h2>
+            <h2 className="font-bold text-2xl">
+              {drug.name.length > 15
+                ? `${drug.name.slice(0, 15)}...`
+                : drug.name}
+            </h2>{" "}
             <p className="ml-2 mt-1 text-gray-800">({drug.unit_type})</p>
             <div className="ml-2">
               {drug.drug_type === "herb" ? (
@@ -94,8 +98,19 @@ const DrugCards: React.FC<DrugCardsProps> = ({
           </div>
 
           <p className="text-base mb-2">รหัสยา: {drug.code}</p>
-          <p className="text-base mb-2">รายละเอียด: {drug.detail}</p>
-          <p className="text-base mb-2">ขนาดและวิธีใช้: {drug.usage}</p>
+          <p className="text-base mb-2">
+            รายละเอียด:
+            {drug.detail.length > 30
+              ? `${drug.detail.slice(0, 30)}...`
+              : drug.detail}
+          </p>
+
+          <p className="text-base mb-2">
+            ขนาดและวิธีใช้:{" "}
+            {drug.usage.length > 30
+              ? `${drug.usage.slice(0, 30)}...`
+              : drug.usage}
+          </p>
           <button
             onClick={() => navigate(`/patient/detail/${drug.drug_id}`)}
             className="mt-auto py-2 bg-[#FB6F92] hover:bg-[#e05c7d] text-white text-base text-center rounded-[12px]"
