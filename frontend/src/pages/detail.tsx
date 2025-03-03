@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { Carousel } from "flowbite-react";
 
 interface DataRow {
   label: string;
@@ -20,6 +21,10 @@ const Detail: React.FC = () => {
   const [isStockModalOpen, setIsStockModalOpen] = useState<boolean>(false);
   const [stockId, setStockId] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // 🌟 ใช้ state จัดการการเลื่อน stock
+  const [startIndex, setStartIndex] = useState(0);
+  const visibleStocks = 4; // แสดงทีละ 4 อัน
 
   const handleDelete = async () => {
     if (!id) return;
@@ -121,6 +126,8 @@ const Detail: React.FC = () => {
     setIsStockModalOpen(false);
   };
 
+  
+
   useEffect(() => {
     if (id) {
       fetchData(id); // Fetch data using the `id` from the URL
@@ -128,6 +135,19 @@ const Detail: React.FC = () => {
       setError("No drug ID provided in the URL.");
     }
   }, [id]);
+
+    // ⏩ ปุ่มเลื่อน stock
+    const handleNext = () => {
+      if (startIndex + visibleStocks < data.filter((row) => row.label.startsWith("ล็อตที่")).length) {
+        setStartIndex(startIndex + 1);
+      }
+    };
+  
+    const handlePrev = () => {
+      if (startIndex > 0) {
+        setStartIndex(startIndex - 1);
+      }
+    };
 
   return (
     <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
@@ -246,15 +266,20 @@ const Detail: React.FC = () => {
                 {data.find((row) => row.label === "ชื่อยา")?.value ??
                   "Drug Name Not Found"}
               </b>
-
+              
               {/* Stock Section */}
-              <div className="flex gap-4 overflow-x-auto mb-6">
+              <div className="relative w-full py-4">
+              <button onClick={handlePrev} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50" disabled={startIndex === 0}>
+                ◀
+              </button>
+              <div className="flex gap-x-4 justify-center">
                 {data
                   .filter((row) => row.label.startsWith("ล็อตที่"))
+                  .slice(startIndex, startIndex + visibleStocks)
                   .map((row, index) => (
                     <div
                       key={index}
-                      className="relative min-w-[220px] flex-0 bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md"
+                      className="relative flex-0 bg-[#E9E9E9] p-4 rounded-lg text-left shadow-md mx-2 min-w-[250px] "
                     >
                       <p className="font-bold">{row.label}</p>
                       <p>{row.value}</p>
@@ -293,7 +318,14 @@ const Detail: React.FC = () => {
                         </button>
                       )}
                     </div>
+                    
                   ))}
+                </div>
+                <button onClick={handleNext} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 px-3 py-2 rounded-full shadow-md hover:bg-gray-300 disabled:opacity-50"
+                disabled={startIndex + visibleStocks >= data.filter((row) => row.label.startsWith("ล็อตที่")).length}>
+                ▶
+              </button>
+              {/* </Carousel> */}
               </div>
 
               {/* Main Data Section */}
