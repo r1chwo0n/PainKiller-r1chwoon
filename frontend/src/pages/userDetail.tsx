@@ -11,6 +11,8 @@ const Detail: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Extract the `id` parameter from the URL
   const [data, setData] = useState<DataRow[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [infoModalContent, setInfoModalContent] = useState<React.ReactNode>(null);
   const [error, setError] = useState<string | null>(null);
   const fetchData = async (drugId: string) => {
     setLoading(true);
@@ -106,27 +108,65 @@ const Detail: React.FC = () => {
 
               {/* Main Data Section */}
 
-              {data
-                .filter((row) => !row.label.startsWith("ล็อตที่"))
-                .slice(1)
-                .map((row, index) => (
-                  <div
+              <div className="max-h-80 overflow-y-auto">
+                {data
+                  .filter((row) => !row.label.startsWith("ล็อตที่"))
+                  .slice(1)
+                  .map((row, index) => (
+                    <div
                     key={index}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      borderTop: index != 0 ? "none" : "1px solid #e0e0e0",
-                      padding: "15px",
-                      borderBottom:
-                        index === data.length - 1
-                          ? "none"
-                          : "1px solid #e0e0e0",
+                      alignItems: "center",
+                      borderTop: index !== 0 ? "none" : "1px solid #e0e0e0",
+                      padding: "13px",
+                      borderBottom: index === data.length - 1 ? "none" : "1px solid #e0e0e0",
                     }}
                   >
-                    <span style={{ fontWeight: 500 }}>{row.label}</span>
-                    <span>{row.value}</span>
+                    <span style={{ flex: 1, textAlign: "left", fontWeight: 500 }}>
+                      {row.label}
+                    </span>
+                    <span style={{ flex: 1 , textAlign: "right",overflow: "hidden",textOverflow: "ellipsis",cursor: "pointer",}}
+                    onClick={() => {
+                      setInfoModalContent(row.value); // เก็บข้อมูลใน state
+                      setIsInfoModalOpen(true); // เปิด modal
+                    }}
+                    >{row.value}</span>
                   </div>
-                ))}
+                  ))}
+              </div>
+
+              
+              {/* Modal for displaying long information */}
+              {isInfoModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center ">
+                <div className="bg-white rounded-[20px] p-8 shadow-xl relative">            
+                    <span className="close" onClick={() => setIsInfoModalOpen(false)}
+                      style={{
+                        cursor: "pointer",
+                        fontSize: "22px",
+                        fontWeight: "bold",
+                        color: "#333",
+                        position: "relative",
+                        borderRadius: "100%", 
+                        padding: "8px", 
+                        width: "40px", 
+                        height: "40px", 
+                        display: "flex", 
+                        justifyContent: "center", 
+                        alignItems: "center", 
+                      }}>
+                      &times;
+                    </span>
+                    <div
+                      className="modal-content"
+                      style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
+                      dangerouslySetInnerHTML={{ __html: String(infoModalContent) }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
