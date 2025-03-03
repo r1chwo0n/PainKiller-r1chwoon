@@ -136,8 +136,6 @@ const Detail: React.FC = () => {
                   </div>
                   ))}
               </div>
-
-              
               {/* Modal for displaying long information */}
               {isInfoModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center ">
@@ -145,10 +143,13 @@ const Detail: React.FC = () => {
                     <span className="close" onClick={() => setIsInfoModalOpen(false)}
                       style={{
                         cursor: "pointer",
-                        fontSize: "22px",
+                        fontSize: "22px", 
                         fontWeight: "bold",
-                        color: "#333",
-                        position: "relative",
+                        color: "#333", 
+                        position: "absolute",
+                        top: "10px", 
+                        right: "10px", 
+                        backgroundColor: "#f0f0f0", 
                         borderRadius: "100%", 
                         padding: "8px", 
                         width: "40px", 
