@@ -88,7 +88,7 @@ const AddStockForm: React.FC = () => {
       console.error("Error adding drug:", error);
       showSnackbar({
         message:
-          error.response?.data?.message ||
+          error.response?.data?.error||
           "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });

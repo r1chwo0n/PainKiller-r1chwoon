@@ -16,7 +16,7 @@ router.get("/", async (req, res, next) => {
             unit_price: true,
             amount: true,
             expired: true,
-          }, 
+          },
         },
       },
     });
@@ -31,7 +31,7 @@ router.get("/", async (req, res, next) => {
 // Get a single drug by name
 router.get("/search", async (req, res, next) => {
   try {
-    const drugName = req.query.name; 
+    const drugName = req.query.name;
     if (!drugName) {
       res.status(400).json({ msg: "กรุณาระบุชื่อยา" });
       return;
@@ -46,14 +46,14 @@ router.get("/search", async (req, res, next) => {
             unit_price: true,
             amount: true,
             expired: true,
-          }, 
+          },
         },
       },
     });
 
     res.json({
-        msg: `ค้นหา "${drugName}" สำเร็จ`,
-      data: drugsWithStock
+      msg: `ค้นหา "${drugName}" สำเร็จ`,
+      data: drugsWithStock,
     });
   } catch (err) {
     next(err);
@@ -70,7 +70,7 @@ router.get("/:id", async (req, res, next) => {
     }
 
     const drugWithStock = await dbClient.query.drugTable.findFirst({
-      where: (drugs, { eq }) => eq(drugs.drug_id, drugId), 
+      where: (drugs, { eq }) => eq(drugs.drug_id, drugId),
       with: {
         stock: {
           columns: {
@@ -78,7 +78,7 @@ router.get("/:id", async (req, res, next) => {
             unit_price: true,
             amount: true,
             expired: true,
-          }, 
+          },
         },
       },
     });
@@ -110,11 +110,30 @@ router.post("/", async (req, res, next) => {
     side_effect,
     stock,
   } = req.body;
+
   try {
+    const existingDrug = await dbClient.query.drugTable.findFirst({
+      where: (drug, { eq, and }) =>
+        and(eq(drug.name, name), eq(drug.unit_type, unit_type)),
+    });
+
+    if (existingDrug) {
+      res.status(400).json({ error: "มียานี้อยู่ในคลังแล้ว" });
+      return;
+    }
 
     const [newDrug] = await dbClient
       .insert(drugTable)
-      .values({name, code, detail, usage, slang_food, side_effect, drug_type, unit_type})
+      .values({
+        name,
+        code,
+        detail,
+        usage,
+        slang_food,
+        side_effect,
+        drug_type,
+        unit_type,
+      })
       .returning();
 
     if (!newDrug) {
@@ -122,7 +141,7 @@ router.post("/", async (req, res, next) => {
     }
 
     await dbClient.insert(stockTable).values({
-      drug_id: newDrug.drug_id, // ใช้ drug_id จาก newDrug
+      drug_id: newDrug.drug_id,
       unit_price: stock.unit_price,
       amount: stock.amount,
       expired: stock.expired,
@@ -132,8 +151,6 @@ router.post("/", async (req, res, next) => {
       message: "เพิ่มยาลงในคลังสำเร็จ",
       drug: newDrug,
     });
-
-
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "ไม่สามารถเพิ่มลงคลังได้" });
@@ -143,7 +160,7 @@ router.post("/", async (req, res, next) => {
 // Edit data for a drug
 router.patch("/update", async (req, res, next) => {
   try {
-    const { drug_id, drugData} = req.body;
+    const { drug_id, drugData } = req.body;
     if (!drug_id) throw new Error("ต้องระบุ Drug ID");
     const drugExists = await dbClient.query.drugTable.findMany({
       where: eq(drugTable.drug_id, drug_id),
@@ -169,7 +186,7 @@ router.patch("/update", async (req, res, next) => {
 // Delete a drug
 router.delete("/:id", async (req, res, next) => {
   try {
-    const { id } = req.params ;
+    const { id } = req.params;
     if (!id) throw new Error("กรุณาระบุ ID ยา");
 
     const results = await dbClient.query.drugTable.findMany({
@@ -189,6 +206,6 @@ router.delete("/:id", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-}); 
+});
 
 export default router;

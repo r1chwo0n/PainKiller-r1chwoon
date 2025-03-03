@@ -71,10 +71,12 @@ const DrugCards: React.FC<DrugCardsProps> = ({
       });
 
       onDrugDeleted();
-    } catch (error) {
+    } catch (error : any) {
       console.error("Error deleting drug:", error);
       showSnackbar({
-        message: "มีข้อผิดพลาดในการลบข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        message:
+          error.response?.data?.error ||
+          "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }

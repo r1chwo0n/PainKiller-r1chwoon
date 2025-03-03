@@ -45,10 +45,12 @@ const Detail: React.FC = () => {
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
       navigate("/doctor");
-    } catch (error) {
+    } catch (error : any) {
       console.error("Error deleting drug:", error);
       showSnackbar({
-        message: "มีข้อผิดพลาดในการลบข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        message:
+          error.response?.data?.error ||
+          "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     } finally {
@@ -136,10 +138,12 @@ const Detail: React.FC = () => {
       setIsStockModalOpen(false);
 
       setData((prevData) => prevData.filter((row) => row.stockId !== stockId));
-    } catch (error) {
+    } catch (error : any) {
       console.error("Error deleting stock:", error);
       showSnackbar({
-        message: "มีข้อผิดพลาดในการลบข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        message:
+          error.response?.data?.error ||
+          "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }

@@ -95,10 +95,12 @@ const EditMedicineDetail: React.FC = () => {
         setShowPopup(false);
       }
       navigate(`/doctor/detail/${id}`); 
-    } catch (error) {
+    } catch (error : any) {
       console.error("Error updating drug:", error);
       showSnackbar({
-        message: "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+        message:
+          error.response?.data?.error||
+          "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }

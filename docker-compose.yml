@@ -17,8 +17,8 @@ services:
   backend:
     build: ./backend
     container_name: painkiller-backend
-    # ports:
-    #   - ${BackendPORT}:3003
+    ports:
+      - ${BackendPORT}:3003
     environment:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
