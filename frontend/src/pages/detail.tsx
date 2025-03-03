@@ -18,6 +18,8 @@ const Detail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [infoModalContent, setInfoModalContent] = useState<React.ReactNode>(null);
   const [isStockModalOpen, setIsStockModalOpen] = useState<boolean>(false);
   const [stockId, setStockId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -368,10 +370,30 @@ const Detail: React.FC = () => {
                     <span style={{ flex: 1, textAlign: "left", fontWeight: 500 }}>
                       {row.label}
                     </span>
-                    <span style={{ flex: 1, textAlign: "right" }}>{row.value}</span>
+                    <span style={{ flex: 1 , textAlign: "right",overflow: "hidden",textOverflow: "ellipsis",cursor: "pointer",}}
+                    onClick={() => {
+                      setInfoModalContent(row.value); // เก็บข้อมูลใน state
+                      setIsInfoModalOpen(true); // เปิด modal
+                    }}
+                    >{row.value}</span>
                   </div>
                   ))}
               </div>
+              {/* Modal for displaying long information */}
+              {isInfoModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center ">
+                <div className="bg-white rounded-[20px] p-8 shadow-xl ">            
+                    <span className="close" onClick={() => setIsInfoModalOpen(false)}>
+                      &times;
+                    </span>
+                    <div
+                      className="modal-content"
+                      style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
+                      dangerouslySetInnerHTML={{ __html: String(infoModalContent) }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
