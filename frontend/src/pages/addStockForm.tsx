@@ -14,7 +14,7 @@ const AddStockForm: React.FC = () => {
   });
 
   const { showSnackbar, Snackbar } = useSnackbar();
-  const { drugs} = useFetchDrugs();
+  const { drugs } = useFetchDrugs();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -88,12 +88,15 @@ const AddStockForm: React.FC = () => {
       console.error("Error adding drug:", error);
       showSnackbar({
         message:
-          error.response?.data?.error||
+          error.response?.data?.error ||
           "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }
   };
+
+  // Selected Drug From Drop down choice
+  // const selectedDrug = drugs.find((drug) => drug.name === formData.name);
 
   return (
     <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
@@ -119,14 +122,20 @@ const AddStockForm: React.FC = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                >
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]">
                   <option value="">เลือกยา</option>
-                  {drugs.map((drugs) => (
+                  {/* {drugs.map((drugs) => (
                     <option key={drugs.name} value={drugs.name}>
                       {drugs.name}
                     </option>
-                  ))}
+                  ))} */}
+                  {[...new Set(drugs.map((drug) => drug.name))].map(
+                    (uniqueName) => (
+                      <option key={uniqueName} value={uniqueName}>
+                        {uniqueName}
+                      </option>
+                    )
+                  )}
                 </select>
               </div>
               {/* Unit */}
@@ -138,14 +147,22 @@ const AddStockForm: React.FC = () => {
                   name="unit_type"
                   value={formData.unit_type}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                >
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]">
                   <option value="">เลือกหน่วย</option>
-                  {drugs.map((drugs) => (
+                  {/* {drugs.map((drugs) => (
                     <option key={drugs.unit_type} value={drugs.unit_type}>
                       {drugs.unit_type}
                     </option>
-                  ))}
+                  ))} */}
+                  {drugs
+                    .filter((drug) => drug.name === formData.name) // เลือกเฉพาะยาที่เลือก
+                    .flatMap((drug) => drug.unit_type) // ดึง unit_type จากยาที่เลือก
+                    .filter((unit, index, self) => self.indexOf(unit) === index) // เอาหน่วยที่ไม่ซ้ำกัน
+                    .map((unit) => (
+                      <option key={unit} value={unit}>
+                        {unit}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -193,8 +210,7 @@ const AddStockForm: React.FC = () => {
               <div className="col-span-1">
                 <label
                   htmlFor="unit_price"
-                  className="text-[16px] text-[#444444]"
-                >
+                  className="text-[16px] text-[#444444]">
                   ราคาต่อหน่วย
                 </label>
                 <input
@@ -220,8 +236,7 @@ const AddStockForm: React.FC = () => {
               <div className="mt-5 text-center">
                 <button
                   type="submit"
-                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
-                >
+                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] ">
                   บันทึก
                 </button>
               </div>
