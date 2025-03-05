@@ -99,7 +99,7 @@ const DrugCards: React.FC<DrugCardsProps> = ({
 
           <p className="text-base mb-2">รหัสยา: {drug.code}</p>
           <p className="text-base mb-2">
-            รายละเอียด:
+            รายละเอียด:{" "}
             {drug.detail.length > 30
               ? `${drug.detail.slice(0, 30)}...`
               : drug.detail}
