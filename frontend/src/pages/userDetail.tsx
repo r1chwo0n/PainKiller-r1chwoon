@@ -165,7 +165,7 @@ const Detail: React.FC = () => {
                     </span>
                     <div
                       className="modal-content"
-                      style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
+                      style={{ whiteSpace: "pre-wrap", wordWrap: "break-word",wordBreak: "break-word", }}
                       dangerouslySetInnerHTML={{ __html: String(infoModalContent) }}
                     />
                   </div>
