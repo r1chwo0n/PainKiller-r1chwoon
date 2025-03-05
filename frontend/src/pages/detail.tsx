@@ -245,7 +245,9 @@ const Detail: React.FC = () => {
               {/* Buttons Container */}
               <div className="flex mt-2 items-center space-x-4">
                 {/* Add Stock Button */}
-                <button className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200">
+                <button
+                  onClick={() => navigate("/doctor/add-stock/")}
+                  className="px-2 py-2 bg-gray-100 text-[#8E8E8E] rounded-md hover:bg-gray-200">
                   เพิ่มสต็อก
                 </button>
                 {/* Edit Button */}
