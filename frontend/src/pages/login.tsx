@@ -5,14 +5,16 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
+  const [error, setError] = useState(""); // State for error message
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    if (password === "doctor123") {
+    if (password === "250919dear") {
       login("doctor");
       navigate("/doctor");
     } else {
-      alert("รหัสผ่านไม่ถูกต้อง");
+      setError("รหัสผ่านไม่ถูกต้อง, โปรดลองใหม่อีกครั้ง!");
+      return;
     }
   };
 
@@ -30,10 +32,13 @@ const Login = () => {
         />
         <button
           onClick={handleLogin}
-          className="w-full mt-4 bg-[#FB6F92] hover:bg-[#e05c7d] text-white py-2 rounded-lg transition"
-        >
+          className="w-full mt-4 bg-[#FB6F92] hover:bg-[#e05c7d] text-white py-2 rounded-lg transition">
           เข้าสู่ระบบ
         </button>
+        {/* Display error message below the button */}
+        {error && (
+          <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+        )}
       </div>
     </div>
   );
