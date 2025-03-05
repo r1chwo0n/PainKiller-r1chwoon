@@ -69,7 +69,7 @@ const AddStockForm: React.FC = () => {
 
       if (response.status === 201) {
         showSnackbar({
-          message: "บันทึกข้อมูลสต็อคสำเร็จ!",
+          message: "บันทึกสต็อกสำเร็จ!",
           severity: "success",
         });
 
@@ -89,7 +89,7 @@ const AddStockForm: React.FC = () => {
       showSnackbar({
         message:
           error.response?.data?.error ||
-          "มีข้อผิดพลาดในการบันทึกข้อมูลสต็อค โปรดตรวจสอบอีกครั้ง",
+          "มีข้อผิดพลาดในการบันทึกข้อมูลสต็อก โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }
