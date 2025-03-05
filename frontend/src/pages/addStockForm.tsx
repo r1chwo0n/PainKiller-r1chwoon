@@ -69,7 +69,7 @@ const AddStockForm: React.FC = () => {
 
       if (response.status === 201) {
         showSnackbar({
-          message: "บันทึกข้อมูลยาสำเร็จ!",
+          message: "บันทึกข้อมูลสต็อคสำเร็จ!",
           severity: "success",
         });
 
@@ -85,11 +85,11 @@ const AddStockForm: React.FC = () => {
         throw new Error("Unexpected response from server");
       }
     } catch (error: any) {
-      console.error("Error adding drug:", error);
+      console.error("Error adding stock:", error);
       showSnackbar({
         message:
           error.response?.data?.error ||
-          "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
+          "มีข้อผิดพลาดในการบันทึกข้อมูลสต็อค โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
     }
