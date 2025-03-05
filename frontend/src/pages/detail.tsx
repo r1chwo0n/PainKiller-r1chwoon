@@ -363,6 +363,7 @@ const Detail: React.FC = () => {
                         alignItems: "center",
                         borderTop: index !== 0 ? "none" : "1px solid #e0e0e0",
                         padding: "13px",
+                        wordBreak: "break-word",
                         borderBottom:
                           index === data.length - 1
                             ? "none"
