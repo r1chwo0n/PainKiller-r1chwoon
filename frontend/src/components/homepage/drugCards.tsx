@@ -71,7 +71,7 @@ const DrugCards: React.FC<DrugCardsProps> = ({
       });
 
       onDrugDeleted();
-    } catch (error : any) {
+    } catch (error: any) {
       console.error("Error deleting drug:", error);
       showSnackbar({
         message:
@@ -87,16 +87,14 @@ const DrugCards: React.FC<DrugCardsProps> = ({
       {filteredDrugs.map((drug) => (
         <div
           key={drug.drug_id}
-          className="relative p-4 border border-[#f5f5f5] rounded-[12px] bg-white shadow-md flex flex-col"
-        >
+          className="relative p-4 border border-[#f5f5f5] rounded-[12px] bg-white shadow-md flex flex-col">
           {/* Trash Icon */}
           <button
             onClick={() => {
               setDeleteDrugIdState(drug.drug_id); // เก็บ drug_id ที่จะลบ
               setShowDeletePopup(true);
             }}
-            className="absolute top-4 right-4 text-[#FB6F92] hover:text-[#E15873]"
-          >
+            className="absolute top-4 right-4 text-[#FB6F92] hover:text-[#E15873]">
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
               <path
                 fillRule="evenodd"
@@ -132,14 +130,12 @@ const DrugCards: React.FC<DrugCardsProps> = ({
                   xmlns="http://www.w3.org/2000/svg"
                   className="si-glyph si-glyph-pill"
                   fill="#000000"
-                  style={{ width: "24px", height: "24px" }}
-                >
+                  style={{ width: "24px", height: "24px" }}>
                   <g
                     stroke="none"
                     stroke-width="1"
                     fill="none"
-                    fill-rule="evenodd"
-                  >
+                    fill-rule="evenodd">
                     <path
                       d="M15.897,1.731 L15.241,1.074 C13.887,-0.281 11.745,-0.341 10.46,0.944 L1.957,9.446 C0.673,10.731 0.733,12.871 2.09,14.228 L2.744,14.882 C4.101,16.239 6.242,16.3 7.527,15.016 L16.03,6.511 C17.314,5.229 17.254,3.088 15.897,1.731 L15.897,1.731 Z M11.086,10.164 L6.841,5.917 L11.049,1.709 C11.994,0.765 13.581,0.811 14.584,1.816 L15.188,2.417 C15.678,2.91 15.959,3.552 15.975,4.226 C15.991,4.888 15.75,5.502 15.295,5.955 L11.086,10.164 L11.086,10.164 Z"
                       fill="#ffc673" // This is the blue sky color
@@ -152,8 +148,9 @@ const DrugCards: React.FC<DrugCardsProps> = ({
           </div>
 
           <p className="text-base mb-2">รหัสยา: {drug.code}</p>
+
           <p className="text-base mb-2">
-            รายละเอียด:
+            รายละเอียด:{" "}
             {drug.detail.length > 30
               ? `${drug.detail.slice(0, 30)}...`
               : drug.detail}
@@ -176,12 +173,12 @@ const DrugCards: React.FC<DrugCardsProps> = ({
               : "ไม่พบวันหมดอายุ"}
           </p>
           <p className="text-base mb-4">
-            จำนวนคงเหลือ: {drug.stock.length > 0 ? drug.stock[0].amount : "0"}
+            จำนวนคงเหลือ:{" "}
+            {drug.stock.reduce((total, item) => total + item.amount, 0)}
           </p>
           <button
             onClick={() => navigate(`/doctor/detail/${drug.drug_id}`)}
-            className="mt-auto py-2 bg-[#FB6F92] hover:bg-[#e05c7d] text-white text-base text-center rounded-[12px]"
-          >
+            className="mt-auto py-2 bg-[#FB6F92] hover:bg-[#e05c7d] text-white text-base text-center rounded-[12px]">
             ดูข้อมูล
           </button>
         </div>
@@ -203,14 +200,12 @@ const DrugCards: React.FC<DrugCardsProps> = ({
                   setShowDeletePopup(false);
                   setDeleteDrugIdState(null);
                 }}
-                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-              >
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-[12px] hover:bg-gray-300 focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
                 ยกเลิก
               </button>
               <button
                 onClick={handleDelete}
-                className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105"
-              >
+                className="px-6 py-3 bg-[#E57373] text-white rounded-[12px] hover:bg-[#e15d5d] focus:outline-none transform transition-all duration-200 ease-in-out hover:scale-105">
                 ลบ
               </button>
             </div>

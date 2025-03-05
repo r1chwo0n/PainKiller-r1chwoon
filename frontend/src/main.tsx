@@ -1,6 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 
 import Notification from "./pages/notification.tsx";
 import Homepage from "./homepage.tsx";
@@ -16,13 +21,12 @@ import ProtectedRoute from "./auth/protect.tsx";
 import { AuthProvider } from "./auth/context.tsx";
 import "./input.css";
 
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       <Router>
         <Routes>
-        <Route path="/" element={<Navigate to="/patient" />} />
+          <Route path="/" element={<Navigate to="/patient" />} />
           <Route path="/patient" element={<UserHomepage />} />
           <Route path="/doctor/add-drug" element={<AddDrug />} />
           <Route path="/doctor/edit-drug/:id" element={<EditDrug />} />
@@ -30,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/doctor/detail/:id" element={<DrugDetail />} />
           <Route path="/patient/detail/:id" element={<UserDrugDetail />} />
           <Route path="/doctor/add-stock" element={<AddStock />} />
+          <Route path="/doctor/add-stock/:id" element={<AddStock />} />
 
           <Route path="/login" element={<Login />} />
           <Route
