@@ -27,10 +27,15 @@ const EditMedicineDetail: React.FC = () => {
       const response = await fetch(`/api/drugs/${encodeURIComponent(drugId)}`);
       const data = await response.json();
       if (data.data) {
+        // ตรวจสอบว่าหน่วยที่ได้มาเป็นหนึ่งในตัวเลือกหรือไม่
+        const standardUnits = ["กิโลกรัม", "กระปุก", "ตลับ"];
+        const unitType = data.data.unit_type || "";
+        const isStandardUnit = standardUnits.includes(unitType);
+        
         setMedicineData({
           name: data.data.name || "",
-          unit_type: data.data.unit_type || "",
-          customUnit: data.data.customUnit || "",
+          unit_type: isStandardUnit ? unitType : "อื่นๆ",
+          customUnit: isStandardUnit ? "" : unitType,
           drug_type: data.data.drug_type || "drug",
           code: data.data.code || "",
           detail: data.data.detail || "",
@@ -57,7 +62,20 @@ const EditMedicineDetail: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
-    setMedicineData((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === "unit_type") {
+      // ถ้าเลือกหน่วยจากตัวเลือก
+      if (value !== "อื่นๆ") {
+        setMedicineData(prev => ({ ...prev, unit_type: value, customUnit: "" }));
+      } else {
+        // ถ้าเลือก "อื่นๆ" ให้เคลียร์ค่า customUnit และกำหนดให้ unit_type เป็น "อื่นๆ"
+        setMedicineData(prev => ({ ...prev, unit_type: value, customUnit: "" }));
+      }
+    } else if (name === "customUnit") {
+      setMedicineData(prev => ({ ...prev, customUnit: value }));
+    } else {
+      setMedicineData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   // แสดง popup ยืนยันบันทึก
@@ -76,6 +94,15 @@ const EditMedicineDetail: React.FC = () => {
     if (!id) return;
 
     try {
+      // ถ้าเลือก "อื่นๆ" ให้ใช้ค่าจาก customUnit เป็น unit_type ที่จะส่งไป API
+      const dataToSend = { ...medicineData };
+      if (medicineData.unit_type === "อื่นๆ" && medicineData.customUnit) {
+        dataToSend.unit_type = medicineData.customUnit;
+      }
+      
+      // ไม่ส่ง customUnit ไปที่ API
+      const { customUnit, ...finalData } = dataToSend;
+      
       const response = await fetch(`/api/drugs/update`, {
         method: "PATCH",
         headers: {
@@ -83,7 +110,7 @@ const EditMedicineDetail: React.FC = () => {
         },
         body: JSON.stringify({
           drug_id: id,
-          drugData: { ...medicineData },
+          drugData: finalData,
         }),
       });
       if (response.ok) {
@@ -93,8 +120,8 @@ const EditMedicineDetail: React.FC = () => {
           severity: "success",
         });
         setShowPopup(false);
+        navigate(`/doctor/detail/${id}`);
       }
-      navigate(`/doctor/detail/${id}`);
     } catch (error: any) {
       console.error("Error updating drug:", error);
       showSnackbar({
@@ -147,15 +174,16 @@ const EditMedicineDetail: React.FC = () => {
                       <option value="ตลับ">ตลับ</option>
                       <option value="อื่นๆ">อื่นๆ</option>
                     </select>
-                    <input
-                      type="text"
-                      name="customUnit"
-                      value={medicineData.customUnit}
-                      onChange={handleInputChange}
-                      placeholder="กรุณากรอกหน่วย"
-                      disabled={medicineData.unit_type !== "อื่นๆ"}
-                      className="w-80 h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                    />
+                    {medicineData.unit_type === "อื่นๆ" && (
+                      <input
+                        type="text"
+                        name="customUnit"
+                        value={medicineData.customUnit}
+                        onChange={handleInputChange}
+                        placeholder="กรุณากรอกหน่วย"
+                        className="w-80 h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                      />
+                    )}
                   </div>
                 </div>
 
