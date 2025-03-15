@@ -122,7 +122,8 @@ const AddStockForm: React.FC = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]">
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                >
                   <option value="">เลือกยา</option>
                   {/* {drugs.map((drugs) => (
                     <option key={drugs.name} value={drugs.name}>
@@ -143,27 +144,14 @@ const AddStockForm: React.FC = () => {
                 <label htmlFor="unit" className="text-[16px] text-[#444444]">
                   หน่วย
                 </label>
-                <select
+                <input
+                  type="text"
                   name="unit_type"
                   value={formData.unit_type}
                   onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]">
-                  <option value="">เลือกหน่วย</option>
-                  {/* {drugs.map((drugs) => (
-                    <option key={drugs.unit_type} value={drugs.unit_type}>
-                      {drugs.unit_type}
-                    </option>
-                  ))} */}
-                  {drugs
-                    .filter((drug) => drug.name === formData.name) // เลือกเฉพาะยาที่เลือก
-                    .flatMap((drug) => drug.unit_type) // ดึง unit_type จากยาที่เลือก
-                    .filter((unit, index, self) => self.indexOf(unit) === index) // เอาหน่วยที่ไม่ซ้ำกัน
-                    .map((unit) => (
-                      <option key={unit} value={unit}>
-                        {unit}
-                      </option>
-                    ))}
-                </select>
+                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                  placeholder="พิมพ์หน่วยยา"
+                />
               </div>
             </div>
 
@@ -210,7 +198,8 @@ const AddStockForm: React.FC = () => {
               <div className="col-span-1">
                 <label
                   htmlFor="unit_price"
-                  className="text-[16px] text-[#444444]">
+                  className="text-[16px] text-[#444444]"
+                >
                   ราคาต่อหน่วย
                 </label>
                 <input
@@ -236,7 +225,8 @@ const AddStockForm: React.FC = () => {
               <div className="mt-5 text-center">
                 <button
                   type="submit"
-                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] ">
+                  className="bg-[#FB6F92] text-white py-2 px-20 rounded-lg hover:bg-[#e05b7f] "
+                >
                   บันทึก
                 </button>
               </div>
