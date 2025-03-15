@@ -31,7 +31,7 @@ const EditMedicineDetail: React.FC = () => {
         const standardUnits = ["กิโลกรัม", "กระปุก", "ตลับ"];
         const unitType = data.data.unit_type || "";
         const isStandardUnit = standardUnits.includes(unitType);
-        
+
         setMedicineData({
           name: data.data.name || "",
           unit_type: isStandardUnit ? unitType : "อื่นๆ",
@@ -62,19 +62,27 @@ const EditMedicineDetail: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
-    
+
     if (name === "unit_type") {
       // ถ้าเลือกหน่วยจากตัวเลือก
       if (value !== "อื่นๆ") {
-        setMedicineData(prev => ({ ...prev, unit_type: value, customUnit: "" }));
+        setMedicineData((prev) => ({
+          ...prev,
+          unit_type: value,
+          customUnit: "",
+        }));
       } else {
         // ถ้าเลือก "อื่นๆ" ให้เคลียร์ค่า customUnit และกำหนดให้ unit_type เป็น "อื่นๆ"
-        setMedicineData(prev => ({ ...prev, unit_type: value, customUnit: "" }));
+        setMedicineData((prev) => ({
+          ...prev,
+          unit_type: value,
+          customUnit: "",
+        }));
       }
     } else if (name === "customUnit") {
-      setMedicineData(prev => ({ ...prev, customUnit: value }));
+      setMedicineData((prev) => ({ ...prev, customUnit: value }));
     } else {
-      setMedicineData(prev => ({ ...prev, [name]: value }));
+      setMedicineData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -99,10 +107,10 @@ const EditMedicineDetail: React.FC = () => {
       if (medicineData.unit_type === "อื่นๆ" && medicineData.customUnit) {
         dataToSend.unit_type = medicineData.customUnit;
       }
-      
+
       // ไม่ส่ง customUnit ไปที่ API
       const { customUnit, ...finalData } = dataToSend;
-      
+
       const response = await fetch(`/api/drugs/update`, {
         method: "PATCH",
         headers: {
@@ -146,7 +154,7 @@ const EditMedicineDetail: React.FC = () => {
         <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-auto">
           <form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-1 overflow-auto pl-1 pr-1">
-              <div className="flex items-center space-x-4 md:col-span-2"> 
+              <div className="flex items-center space-x-4 md:col-span-2">
                 <div className="flex flex-col">
                   <label className="text-[16px] text-[#444444]">ชื่อยา</label>
                   <input
@@ -160,7 +168,9 @@ const EditMedicineDetail: React.FC = () => {
                 </div>
 
                 <div className="relative w-24 space-x-5">
-                  <label className="text-[16px] text-[#444444] ml-5">หน่วย</label>
+                  <label className="text-[16px] text-[#444444] ml-5">
+                    หน่วย
+                  </label>
                   <div className="flex items-center space-x-2">
                     <select
                       name="unit_type"
@@ -172,6 +182,8 @@ const EditMedicineDetail: React.FC = () => {
                       <option value="กิโลกรัม">กิโลกรัม</option>
                       <option value="กระปุก">กระปุก</option>
                       <option value="ตลับ">ตลับ</option>
+                      <option value="ขวด">ขวด</option>
+                      <option value="เม็ด">เม็ด</option>
                       <option value="อื่นๆ">อื่นๆ</option>
                     </select>
                     {medicineData.unit_type === "อื่นๆ" && (
@@ -188,7 +200,12 @@ const EditMedicineDetail: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col space-x-60">
-                  <label htmlFor="type" className="text-[16px] text-[#444444] ml-60">ประเภท</label>
+                  <label
+                    htmlFor="type"
+                    className="text-[16px] text-[#444444] ml-60"
+                  >
+                    ประเภท
+                  </label>
                   <div className="flex gap-2 items-center mt-1">
                     <label className="flex items-center gap-1">
                       <input
@@ -208,7 +225,9 @@ const EditMedicineDetail: React.FC = () => {
                         checked={medicineData.drug_type === "herb"}
                         onChange={handleInputChange}
                       />
-                      <label className="text-[16px] text-[#444444]">สมุนไพร</label>
+                      <label className="text-[16px] text-[#444444]">
+                        สมุนไพร
+                      </label>
                     </label>
                   </div>
                 </div>
