@@ -7,6 +7,7 @@ const EditMedicineDetail: React.FC = () => {
   const [medicineData, setMedicineData] = useState({
     name: "",
     unit_type: "",
+    customUnit: "",
     drug_type: "drug",
     code: "",
     detail: "",
@@ -23,14 +24,13 @@ const EditMedicineDetail: React.FC = () => {
   // ดึงข้อมูลยา
   const fetchData = async (drugId: string) => {
     try {
-      const response = await fetch(
-        `/api/drugs/${encodeURIComponent(drugId)}`
-      );
+      const response = await fetch(`/api/drugs/${encodeURIComponent(drugId)}`);
       const data = await response.json();
       if (data.data) {
         setMedicineData({
           name: data.data.name || "",
           unit_type: data.data.unit_type || "",
+          customUnit: data.data.customUnit || "",
           drug_type: data.data.drug_type || "drug",
           code: data.data.code || "",
           detail: data.data.detail || "",
@@ -94,12 +94,12 @@ const EditMedicineDetail: React.FC = () => {
         });
         setShowPopup(false);
       }
-      navigate(`/doctor/detail/${id}`); 
-    } catch (error : any) {
+      navigate(`/doctor/detail/${id}`);
+    } catch (error: any) {
       console.error("Error updating drug:", error);
       showSnackbar({
         message:
-          error.response?.data?.error||
+          error.response?.data?.error ||
           "มีข้อผิดพลาดในการบันทึกข้อมูลยา โปรดตรวจสอบอีกครั้ง",
         severity: "error",
       });
@@ -109,48 +109,58 @@ const EditMedicineDetail: React.FC = () => {
   return (
     <div className="flex h-screen bg-[#f0f0f0] overflow-hidden">
       <Sidebar />
-        <div className="flex-1 flex flex-col h-screen p-4">
+      <div className="flex-1 flex flex-col h-screen p-4">
         <header className="bg-white h-[86px] p-6 rounded-[12px] shadow-md mb-6">
-          <h1 className="text-4xl text-[#444444] font-bold">แก้ไขรายละเอียดยา</h1>
+          <h1 className="text-4xl text-[#444444] font-bold">
+            แก้ไขรายละเอียดยา
+          </h1>
         </header>
 
         <div className="flex-1 bg-white rounded-[12px] pt-4 pr-4 pl-4 overflow-y-auto">
           <form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-1 overflow-auto pl-1 pr-1">
-              <div>
-                <label className="text-[16px] text-[#444444]">ชื่อยา</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={medicineData.name}
-                  onChange={handleInputChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                  placeholder="ชื่อยา"
-                />
-              </div>
+              <div className="flex items-center space-x-4 md:col-span-2"> 
+                <div className="flex flex-col">
+                  <label className="text-[16px] text-[#444444]">ชื่อยา</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={medicineData.name}
+                    onChange={handleInputChange}
+                    className="w-[400px] h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                    placeholder="ชื่อยา"
+                  />
+                </div>
 
-              <div className="flex items-center space-x-20">
-                <div className="relative w-24">
-                  <label className="text-[16px] text-[#444444]">หน่วย</label>
-                  <div className="relative">
+                <div className="relative w-24 space-x-5">
+                  <label className="text-[16px] text-[#444444] ml-5">หน่วย</label>
+                  <div className="flex items-center space-x-2">
                     <select
                       name="unit_type"
                       value={medicineData.unit_type}
                       onChange={handleInputChange}
-                      className="w-[150px] h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                      className="w-80 h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
                     >
                       <option value="">เลือก</option>
                       <option value="กิโลกรัม">กิโลกรัม</option>
                       <option value="กระปุก">กระปุก</option>
                       <option value="ตลับ">ตลับ</option>
+                      <option value="อื่นๆ">อื่นๆ</option>
                     </select>
+                    <input
+                      type="text"
+                      name="customUnit"
+                      value={medicineData.customUnit}
+                      onChange={handleInputChange}
+                      placeholder="กรุณากรอกหน่วย"
+                      disabled={medicineData.unit_type !== "อื่นๆ"}
+                      className="w-80 h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+                    />
                   </div>
                 </div>
 
-                <div className="col-span-1">
-                  <label htmlFor="type" className="text-[16px] text-[#444444]">
-                    ประเภท
-                  </label>
+                <div className="flex flex-col space-x-60">
+                  <label htmlFor="type" className="text-[16px] text-[#444444] ml-60">ประเภท</label>
                   <div className="flex gap-2 items-center mt-1">
                     <label className="flex items-center gap-1">
                       <input
@@ -162,21 +172,21 @@ const EditMedicineDetail: React.FC = () => {
                       />
                       <label className="text-[16px] text-[#444444]">ยา</label>
                     </label>
-                    <input
-                      type="radio"
-                      name="drug_type"
-                      value="herb"
-                      checked={medicineData.drug_type === "herb"}
-                      onChange={handleInputChange}
-                    />
-                    <label className="text-[16px] text-[#444444]">
-                      สมุนไพร
+                    <label className="flex items-center gap-1">
+                      <input
+                        type="radio"
+                        name="drug_type"
+                        value="herb"
+                        checked={medicineData.drug_type === "herb"}
+                        onChange={handleInputChange}
+                      />
+                      <label className="text-[16px] text-[#444444]">สมุนไพร</label>
                     </label>
                   </div>
                 </div>
               </div>
 
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-gray-700">รหัสยา</label>
                 <input
                   type="text"
@@ -225,7 +235,9 @@ const EditMedicineDetail: React.FC = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-gray-700">อาหารที่ห้ามทานร่วมกับยา</label>
+                <label className="block text-gray-700">
+                  อาหารที่ห้ามทานร่วมกับยา
+                </label>
                 <textarea
                   name="slang_food"
                   value={medicineData.slang_food}

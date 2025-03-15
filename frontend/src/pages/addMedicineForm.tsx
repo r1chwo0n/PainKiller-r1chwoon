@@ -8,6 +8,7 @@ const AddMedicineForm: React.FC = () => {
     name: "",
     amount: "",
     unit: "",
+    customUnit: "", // State for custom unit
     type: "",
     code: "",
     unit_price: "",
@@ -36,7 +37,7 @@ const AddMedicineForm: React.FC = () => {
     if (
       !formData.name ||
       !formData.amount ||
-      !formData.unit ||
+      (!formData.unit && !formData.customUnit) || // Check for unit or custom unit
       !formData.type ||
       !formData.code ||
       !formData.unit_price ||
@@ -68,7 +69,7 @@ const AddMedicineForm: React.FC = () => {
         name: formData.name,
         code: formData.code,
         drug_type: formData.type === "herb" ? "herb" : "drug",
-        unit_type: formData.unit,
+        unit_type: formData.unit === "อื่นๆ" ? formData.customUnit : formData.unit, // Use custom unit if "อื่นๆ" is selected
         detail: formData.description,
         usage: formData.usage,
         side_effect: formData.side_effect,
@@ -95,6 +96,7 @@ const AddMedicineForm: React.FC = () => {
           name: "",
           amount: "",
           unit: "",
+          customUnit: "", // Reset custom unit
           type: "",
           code: "",
           unit_price: "",
@@ -131,94 +133,113 @@ const AddMedicineForm: React.FC = () => {
         <div className="flex-1 bg-white rounded-[12px] pt-2 pr-4 pl-4 pb-5 overflow-y-auto max-h-[calc(100vh-120px)]">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-4 gap-5 items-start mt-2 ">
-              <div className="col-span-1">
-                <label htmlFor="name" className="text-[16px] text-[#444444]">
-                  ชื่อยา
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
+  <div className="col-span-1">
+    <label htmlFor="name" className="text-[16px] text-[#444444]">
+      ชื่อยา
+    </label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      value={formData.name}
+      onChange={handleChange}
+      className="w-[385px] h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+    />
+  </div>
 
-              {/* Quantity */}
-              <div className="col-span-1">
-                <label htmlFor="amount" className="text-[16px] text-[#444444]">
-                  จำนวน
-                </label>
-                <input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (/^\d*$/.test(value)) {
-                      // ตรวจสอบว่าเป็นตัวเลขเต็มบวกหรือ 0
-                      handleChange(e);
-                    }
-                  }}
-                  min="0"
-                  step="1"
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0]  focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                />
-              </div>
+  {/* Quantity */}
+  <div className="col-span-1">
+  <div className="ml-[100px]">
+    <label htmlFor="amount" className="text-[16px] text-[#444444]">
+      จำนวน
+    </label>
+    <input
+      type="number"
+      id="amount"
+      name="amount"
+      value={formData.amount}
+      onChange={(e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+          // ตรวจสอบว่าเป็นตัวเลขเต็มบวกหรือ 0
+          handleChange(e);
+        }
+      }}
+      min="0"
+      step="1"
+      className="w-[320px] h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+    />
+    </div>
+  </div>
 
-              {/* Unit */}
-              <div className="col-span-1">
-                <label htmlFor="unit" className="text-[16px] text-[#444444]">
-                  หน่วย
-                </label>
-                <select
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleChange}
-                  className="w-full h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
-                >
-                  <option value="">เลือก</option>
-                  <option value="กิโลกรัม">กิโลกรัม</option>
-                  <option value="กระปุก">กระปุก</option>
-                  <option value="ตลับ">ตลับ</option>
-                </select>
-              </div>
-
-              {/* Type */}
-              <div className="col-span-1">
-                <label htmlFor="type" className="text-[16px] text-[#444444]">
-                  ประเภท
-                </label>
-                <div className="flex gap-2 items-center mt-1">
-                  <label className="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="type"
-                      value="drug"
-                      checked={formData.type === "drug"}
-                      onChange={handleChange}
-                      className="focus:ring-2 focus:ring-[#FB6F92]"
-                    />
-                    <label className="text-[16px] text-[#444444]">ยา</label>
-                  </label>
-                  <label className="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="type"
-                      value="herb"
-                      checked={formData.type === "herb"}
-                      onChange={handleChange}
-                      className="focus:ring-2 focus:ring-[#FB6F92]"
-                    />
-                    <label className="text-[16px] text-[#444444]">
-                      สมุนไพร
-                    </label>
-                  </label>
-                </div>
-              </div>
-            </div>
+  {/* Unit */}
+<div className="col-span-1">
+  <div className="ml-36">
+    <label htmlFor="unit" className="text-[16px] text-[#444444]">
+      หน่วย
+    </label>
+    <div className="flex items-center gap-2">
+      <select
+        name="unit"
+        value={formData.unit}
+        onChange={handleChange}
+        className="w-80 h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+      >
+        <option value="">เลือก</option>
+        <option value="กิโลกรัม">กิโลกรัม</option>
+        <option value="กระปุก">กระปุก</option>
+        <option value="ตลับ">ตลับ</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+      <input
+        type="text"
+        name="customUnit"
+        value={formData.customUnit}
+        onChange={handleChange}
+        placeholder="กรุณากรอกหน่วย"
+        disabled={formData.unit !== "อื่นๆ"}
+        className="w-80 h-[40px] py-1 px-2 rounded-[8px] bg-[#f0f0f0] focus:outline-none focus:ring-2 focus:ring-[#FB6F92]"
+      />
+    </div>
+  </div>
+</div>
+  {/* Type */}
+  <div className="col-span-1">
+    <div className="flex justify-end">
+      <div>
+        <label htmlFor="type" className="text-[16px] text-[#444444] block">
+          ประเภท
+        </label>
+        <div className="flex gap-2 items-center mt-1">
+          <label className="flex items-center gap-1">
+            <input
+              type="radio"
+              name="type"
+              value="drug"
+              checked={formData.type === "drug"}
+              onChange={handleChange}
+              className="focus:ring-2 focus:ring-[#FB6F92]"
+            />
+            <label className="text-[16px] text-[#444444]">ยา</label>
+          </label>
+          <label className="flex items-center gap-1">
+            <input
+              type="radio"
+              name="type"
+              value="herb"
+              checked={formData.type === "herb"}
+              onChange={handleChange}
+              className="focus:ring-2 focus:ring-[#FB6F92]"
+            />
+            <label className="text-[16px] text-[#444444]">
+              สมุนไพร
+            </label>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
             <div className="grid grid-cols-3 gap-5 items-start mt-2">
               {/* Code */}
