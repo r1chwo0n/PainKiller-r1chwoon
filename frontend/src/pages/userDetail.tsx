@@ -27,6 +27,7 @@ const Detail: React.FC = () => {
       console.log("data:", result);
       const formattedData: DataRow[] = [
         { label: "ชื่อยา", value: result.data.name ?? "N/A" },
+        {label: "ชนิด" , value: result.data.drug_type ?? "N/A"},
         { label: "รหัสยา", value: result.data.code ?? "N/A" },
         { label: "รายละเอียดยา", value: result?.data.detail ?? "N/A" },
         { label: "วิธีใช้", value: result?.data.usage ?? "N/A" },
